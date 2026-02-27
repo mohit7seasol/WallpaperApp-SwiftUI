@@ -118,14 +118,7 @@ struct SessionKeys {
 }
 
 struct Constant {
-//    static var commonBlueGradient = LinearGradient(colors: [Color.gradientOne, Color.gradientTwo], startPoint: .bottomLeading, endPoint: .topTrailing)
-//    static var commonClearGradient = LinearGradient(colors: [Color.clear], startPoint: .bottomLeading, endPoint: .topTrailing)
-//    static var commonGrayGradient = LinearGradient(colors: [Color.lightDarkText], startPoint: .bottomLeading, endPoint: .topTrailing)
-//    static var commonOrangeGradient = LinearGradient(colors: [Color(hex: "FD7C29"), Color(hex: "FD9F51"), Color(hex: "FD9A29")], startPoint: .topTrailing, endPoint: .bottomLeading)
-//    static var commonRedGradient = LinearGradient(colors: [Color(hex: "FF4361"), Color(hex: "FF7761")], startPoint: .topTrailing, endPoint: .bottomLeading)
-//    static var commonGreenGradient = LinearGradient(colors: [Color(hex: "46C890"), Color(hex: "34C759")], startPoint: .leading, endPoint: .trailing)
-//    static var commonPurpleOneGradient = LinearGradient(colors: [Color.myPurple], startPoint: .leading, endPoint: .trailing)
-    
+    static var commonBlueGradient = LinearGradient(colors: [Color.gradientOne, Color.gradientTwo], startPoint: .bottomLeading, endPoint: .topTrailing)
 }
 
 

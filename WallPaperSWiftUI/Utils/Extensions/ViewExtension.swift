@@ -1,4 +1,5 @@
 import Foundation
+import SDWebImage
 import SwiftUI
 
 
@@ -150,6 +151,9 @@ extension UIApplication {
         let windowScene = scenes.first as? UIWindowScene
         let window = windowScene?.windows.first
         window?.endEditing(force)
+    }
+    func clearMemoryCache() {
+        SDImageCache.shared.clearMemory()
     }
 }
 

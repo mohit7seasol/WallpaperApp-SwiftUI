@@ -23,6 +23,9 @@ extension Color {
     static var almostClear: Color {
         Color.black.opacity(0.0001)
     }
+    static let pageSelected = Color(hex: "5A5ED9")
+    static let pageUnselected = Color(hex: "303041")
+    static let backgroundBlack = Color.black
 }
 
 // MARK: - Capture Size

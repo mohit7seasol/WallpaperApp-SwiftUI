@@ -9,6 +9,12 @@ import SwiftUI
 
 @main
 struct WallPaperSWiftUIApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    init() {
+        UIView.appearance().overrideUserInterfaceStyle = .dark
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

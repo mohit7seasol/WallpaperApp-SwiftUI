@@ -7,6 +7,11 @@
 
 import Foundation
 import SwiftUI
+import SDWebImage
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+        SDImageCache.shared.clearMemory()
+        SDWebImagePrefetcher.shared.cancelPrefetching()
+    }
 }
