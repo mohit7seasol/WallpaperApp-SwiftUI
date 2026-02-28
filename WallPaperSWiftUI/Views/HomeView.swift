@@ -173,7 +173,7 @@ struct HomeView: View {
                 VStack(spacing: 10) {
                     // Top Gradient View - Height 150
                     TopGradientView()
-                        .frame(height: 150)
+                        .frame(height: 180)
                         .ignoresSafeArea(edges: .top)
                     
                     // Static Categories Section
@@ -181,7 +181,7 @@ struct HomeView: View {
                         categories: staticCategories,
                         selectedIndex: $selectedStaticIndex
                     )
-                    .offset(y: -43)
+                    .offset(y: -114)
                     .padding(.bottom, -43)
                     
                     // Page Controller
@@ -189,7 +189,7 @@ struct HomeView: View {
                         numberOfPages: staticCategories.count,
                         currentPage: selectedStaticIndex
                     )
-                    .padding(.top, 15)
+                    .padding(.top, -50)
                     
                     // Trending Wallpaper Static Title
                     HStack(spacing: 8) {
@@ -205,7 +205,7 @@ struct HomeView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                    .padding(.top, -32)
                     
                     // Scrollable Grid Section
                     if trendingViewModel.isLoading && trendingViewModel.wallpapers.isEmpty {
