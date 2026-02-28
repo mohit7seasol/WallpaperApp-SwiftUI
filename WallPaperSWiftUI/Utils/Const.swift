@@ -32,7 +32,7 @@ public let SECRET = "vXrpX8YzuuevUDdnQG6GxfVs0or6v91bwk0CJEsX"
 struct WebService {
     static var bearerToken : String =  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZmNlOWE0MGFmNTU5MDM5N2JiYjZjMWIwMGZjOGUxYyIsIm5iZiI6MTc0NjU5Njk0MC41NDIsInN1YiI6IjY4MWFmNDRjYWNkYTE2YzMyNjg1MDhhYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.p-W6BpCTbQXniMiNOYcKHbuOYjsLoBHy7BdcKvrkbiI"
     static let imagePrefixUrl : String = "https://image.tmdb.org/t/p/original"
-    static let apiPrefixUrl : String = "https://api-livevideocall.7seasol.in/proxy?url="
+    static let apiPrefixUrl : String = "api-pexels.7seasol.in/api/images/by-category?category=" // "https://api-livevideocall.7seasol.in/proxy?url="
 }
 
 
