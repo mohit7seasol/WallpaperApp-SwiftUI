@@ -28,7 +28,7 @@ struct CategoryDetailView: View {
                         if let path = wallpaper.path,
                            let url = URL(string: path) {
                             
-                            NavigationLink(destination: WallpaperDetailView(wallpaper: wallpaper)) {
+                            NavigationLink(destination: WallpaperDetailView(wallpapers: viewModel.wallpapers, selectedIndex: index)) {
                                 WebImage(url: url)
                                     .resizable()
                                     .indicator(.activity)

@@ -9,6 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 import Alamofire
 import Combine
+import ACarousel
 
 // MARK: - Original Models (with typealias for renaming)
 struct WallpaperModel: Codable {
@@ -257,7 +258,7 @@ struct TrendingWallpapersGrid: View {
                 if let path = wallpaper.path,
                    let url = URL(string: path) {
                     
-                    NavigationLink(destination: WallpaperDetailView(wallpaper: wallpaper)) {
+                    NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
                         WebImage(url: url)
                             .resizable()
                             .indicator(.activity)
@@ -450,7 +451,7 @@ struct TrendingWallpapersSection: View {
                     if let path = wallpaper.path,
                        let url = URL(string: path) {
                         
-                        NavigationLink(destination: WallpaperDetailView(wallpaper: wallpaper)) {
+                        NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
                             WebImage(url: url)
                                 .resizable()
                                 .indicator(.activity)
@@ -483,32 +484,242 @@ struct TrendingWallpapersSection: View {
         }
     }
 }
-// MARK: - Wallpaper Detail View
+
 struct WallpaperDetailView: View {
-    let wallpaper: WallpaperData
+    
+    let wallpapers: [WallpaperData]
+    
+    @State private var selectedIndex: Int
+    @State private var isFavorite: Bool = false
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    init(wallpapers: [WallpaperData], selectedIndex: Int) {
+        self.wallpapers = wallpapers
+        self._selectedIndex = State(initialValue: selectedIndex)
+    }
     
     var body: some View {
         ZStack {
-            Color.backgroundBlack
+            
+            // MARK: - Clean Dark Background (NO BLUR)
+            Color.black
                 .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                
+                topBar
+                    .padding(.top, 50)
+                
+                Spacer(minLength: 20)
+                
+                carouselView
+                    .frame(height: UIScreen.main.bounds.height * 0.7) // Increased height
+                
+                Spacer(minLength: 20)
+                
+                bottomBar
+                    .padding(.bottom, 30)
+            }
+        }
+        .navigationBarHidden(true)
+        .ignoresSafeArea()
+        .onAppear {
+            checkFavoriteStatus()
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////
+// MARK: - TOP BAR
+////////////////////////////////////////////////////////////
+
+private extension WallpaperDetailView {
+    
+    var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.white.opacity(0.2))
+                    .clipShape(Circle())
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+    }
+}
+
+////////////////////////////////////////////////////////////
+// MARK: - CAROUSEL (FIXED PROPER ASPECT HANDLING)
+////////////////////////////////////////////////////////////
+
+private extension WallpaperDetailView {
+    
+    var carouselView: some View {
+        
+        GeometryReader { geo in
+            
+            ACarousel(
+                wallpapers,
+                id: \.id,
+                index: $selectedIndex,
+                spacing: 15,
+                headspace: 50, // Reduced headspace for better visibility
+                sidesScaling: 0.85,
+                isWrap: true,
+                autoScroll: .inactive
+            ) { wallpaper in
+                
+                WallpaperCardView(wallpaper: wallpaper,
+                                  width: geo.size.width * 0.75, // Slightly smaller
+                                  height: geo.size.height * 0.85)
+            }
+        }
+        .frame(height: UIScreen.main.bounds.height * 0.6)
+    }
+}
+
+////////////////////////////////////////////////////////////
+// MARK: - WALLPAPER CARD VIEW (IMPORTANT FIX)
+////////////////////////////////////////////////////////////
+
+struct WallpaperCardView: View {
+    
+    let wallpaper: WallpaperData
+    let width: CGFloat
+    let height: CGFloat
+    
+    var body: some View {
+        
+        ZStack {
+            
+            // Black background inside card
+            Color.black
             
             if let path = wallpaper.path,
                let url = URL(string: path) {
+                
                 WebImage(url: url)
                     .resizable()
                     .indicator(.activity)
-                    .scaledToFit()
-                    .cornerRadius(16)
-                    .padding()
+                    .scaledToFill()  // Changed from scaledToFit to scaledToFill for better coverage
+                    .frame(width: width, height: height)
+                    .clipped()
             }
         }
-        .navigationTitle("Detail")
-        .navigationBarTitleDisplayMode(.inline)
-        .foregroundColor(.white)
-        .onDisappear {
-            // Clear memory cache when leaving detail view
-            SDImageCache.shared.clearMemory()
+        .frame(width: width, height: height)
+        .cornerRadius(32) // Slightly larger corner radius
+        .overlay(
+            RoundedRectangle(cornerRadius: 32)
+                .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
+        )
+        .shadow(color: .black.opacity(0.5),
+                radius: 20,
+                x: 0,
+                y: 10)
+    }
+}
+
+////////////////////////////////////////////////////////////
+// MARK: - BOTTOM BAR
+////////////////////////////////////////////////////////////
+
+private extension WallpaperDetailView {
+    
+    var bottomBar: some View {
+        
+        HStack(spacing: 25) {
+            
+            Button {
+                shareWallpaper()
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 22))
+                    .foregroundColor(.white)
+                    .frame(width: 56, height: 56)
+                    .background(Color.white.opacity(0.15))
+                    .clipShape(Circle())
+            }
+            
+            Button {
+                downloadWallpaper()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.down")
+                        .font(.system(size: 18))
+                    Text("Download")
+                        .font(.system(size: 18, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .frame(height: 58)
+                .padding(.horizontal, 50)
+                .background(Color.white.opacity(0.15))
+                .clipShape(Capsule())
+            }
+            
+            Button {
+                toggleFavorite()
+            } label: {
+                Image(systemName: isFavorite ? "heart.fill" : "heart")
+                    .font(.system(size: 22))
+                    .foregroundColor(isFavorite ? .red : .white)
+                    .frame(width: 56, height: 56)
+                    .background(Color.white.opacity(0.15))
+                    .clipShape(Circle())
+            }
         }
+    }
+}
+
+////////////////////////////////////////////////////////////
+// MARK: - ACTIONS
+////////////////////////////////////////////////////////////
+
+private extension WallpaperDetailView {
+    
+    func checkFavoriteStatus() {
+        guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
+        let key = "fav_\(wallpaper.id ?? "")"
+        isFavorite = UserDefaults.standard.bool(forKey: key)
+    }
+    
+    func toggleFavorite() {
+        guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
+        let key = "fav_\(wallpaper.id ?? "")"
+        isFavorite.toggle()
+        UserDefaults.standard.set(isFavorite, forKey: key)
+    }
+    
+    func shareWallpaper() {
+        guard let wallpaper = wallpapers[safe: selectedIndex],
+              let path = wallpaper.path,
+              let url = URL(string: path) else { return }
+        
+        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        
+        // Better way to present on iOS 15+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(vc, animated: true)
+        }
+    }
+    
+    func downloadWallpaper() {
+        guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
+        print("Download wallpaper id: \(wallpaper.id ?? "")")
+    }
+}
+
+// MARK: - Safe Array Extension
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }
 
