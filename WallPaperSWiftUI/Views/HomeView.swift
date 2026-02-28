@@ -569,19 +569,27 @@ private extension WallpaperDetailView {
                 wallpapers,
                 id: \.id,
                 index: $selectedIndex,
-                spacing: 15,
-                headspace: 50, // Reduced headspace for better visibility
-                sidesScaling: 0.85,
-                isWrap: true,
+                spacing: 10, // Increased spacing
+                headspace: 35, // Adjusted headspace for better side visibility
+                sidesScaling: 0.85, // Increased from 0.85 to show sides better
+                isWrap: true, // Changed to true for infinite scrolling
                 autoScroll: .inactive
             ) { wallpaper in
                 
-                WallpaperCardView(wallpaper: wallpaper,
-                                  width: geo.size.width * 0.75, // Slightly smaller
-                                  height: geo.size.height * 0.85)
+                WallpaperCardView(
+                    wallpaper: wallpaper,
+                    width: geo.size.width * 0.8, // Adjusted width
+                    height: geo.size.height * 0.85
+                )
+                .scaleEffect(wallpaper.id == wallpapers[selectedIndex].id ? 1.0 : 0.95)
+                .shadow(color: wallpaper.id == wallpapers[selectedIndex].id ?
+                        Color.white.opacity(0.3) : Color.clear,
+                        radius: 15, x: 0, y: 0)
+                .zIndex(wallpaper.id == wallpapers[selectedIndex].id ? 2 : 1)
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedIndex)
             }
         }
-        .frame(height: UIScreen.main.bounds.height * 0.6)
+        .frame(height: UIScreen.main.bounds.height * 0.75) // Slightly reduced height
     }
 }
 
