@@ -119,6 +119,7 @@ struct SessionKeys {
 
 struct Constant {
     static var commonBlueGradient = LinearGradient(colors: [Color.gradientOne, Color.gradientTwo], startPoint: .bottomLeading, endPoint: .topTrailing)
+    static var previewBlueGradient = LinearGradient(colors: [Color.gradientThree, Color.gradientFour], startPoint: .topLeading, endPoint: .bottomTrailing)
 }
 
 

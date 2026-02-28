@@ -503,9 +503,8 @@ struct WallpaperDetailView: View {
         ZStack {
             
             // MARK: - Clean Dark Background (NO BLUR)
-            Color.black
+            Constant.previewBlueGradient
                 .ignoresSafeArea()
-            
             VStack(spacing: 0) {
                 
                 topBar
@@ -519,7 +518,7 @@ struct WallpaperDetailView: View {
                 Spacer(minLength: 20)
                 
                 bottomBar
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 0)
             }
         }
         .navigationBarHidden(true)
