@@ -647,20 +647,24 @@ private extension WallpaperDetailView {
             Button {
                 shareWallpaper()
             } label: {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 22))
+                Image("share_ic")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
                     .foregroundColor(.white)
                     .frame(width: 56, height: 56)
                     .background(Color.white.opacity(0.15))
-                    .clipShape(Circle())
+                    .cornerRadius(10)
             }
             
             Button {
                 downloadWallpaper()
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "arrow.down")
-                        .font(.system(size: 18))
+                    Image("down_arrow")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
                     Text("Download")
                         .font(.system(size: 18, weight: .semibold))
                 }
@@ -668,18 +672,19 @@ private extension WallpaperDetailView {
                 .frame(height: 58)
                 .padding(.horizontal, 50)
                 .background(Color.white.opacity(0.15))
-                .clipShape(Capsule())
+                .cornerRadius(10)
             }
             
             Button {
                 toggleFavorite()
             } label: {
-                Image(systemName: isFavorite ? "heart.fill" : "heart")
-                    .font(.system(size: 22))
-                    .foregroundColor(isFavorite ? .red : .white)
+                Image("favourite")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 42, height: 42)
                     .frame(width: 56, height: 56)
                     .background(Color.white.opacity(0.15))
-                    .clipShape(Circle())
+                    .cornerRadius(10)
             }
         }
     }
