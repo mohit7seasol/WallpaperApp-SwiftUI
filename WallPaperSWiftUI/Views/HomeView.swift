@@ -169,8 +169,6 @@ struct TrendingWallpapersGrid: View {
     let cellHeight: CGFloat
     
     @StateObject private var favoritesManager = FavoritesManager.shared
-    @State private var showToast = false
-    @State private var toastMessage = ""
     
     let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -178,91 +176,61 @@ struct TrendingWallpapersGrid: View {
     ]
     
     var body: some View {
-        ZStack {
-            LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
-                    ZStack(alignment: .bottomTrailing) {
-                        NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
-                            WebImage(url: URL(string: wallpaper.src.medium))
-                                .resizable()
-                                .indicator(.activity)
-                                .transition(.fade(duration: 0.5))
-                                .scaledToFill()
-                                .frame(width: cellWidth, height: cellHeight)
-                                .cornerRadius(16)
-                                .clipped()
-                                .onAppear {
-                                    // Preload next images when approaching the end
-                                    if index >= wallpapers.count - 6 {
-                                        let urls = wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
-                                        SDWebImagePrefetcher.shared.prefetchURLs(urls)
-                                    }
-                                    
-                                    // Trigger load more when approaching the end
-                                    if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
-                                        loadMore()
-                                    }
+        LazyVGrid(columns: columns, spacing: 12) {
+            ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
+                ZStack(alignment: .bottomTrailing) {
+                    NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
+                        WebImage(url: URL(string: wallpaper.src.medium))
+                            .resizable()
+                            .indicator(.activity)
+                            .transition(.fade(duration: 0.5))
+                            .scaledToFill()
+                            .frame(width: cellWidth, height: cellHeight)
+                            .cornerRadius(16)
+                            .clipped()
+                            .onAppear {
+                                // Preload next images when approaching the end
+                                if index >= wallpapers.count - 6 {
+                                    let urls = wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                    SDWebImagePrefetcher.shared.prefetchURLs(urls)
                                 }
-                        }
-                        
-                        // Favorite Button
-                        Button(action: {
-                            toggleFavorite(for: wallpaper)
-                        }) {
-                            Image(favoritesManager.isFavorite(wallpaper) ? "favourite" : "unfavourite")
-                                .resizable()
-                                .frame(width: 32, height: 32)
-                                .foregroundColor(.white)
-                                .background(Color.white.opacity(0.3))
-                                .clipShape(Circle())
-                        }
-                        .padding(8)
+                                
+                                // Trigger load more when approaching the end
+                                if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
+                                    loadMore()
+                                }
+                            }
                     }
-                }
-                
-                // Loading indicator at bottom
-                if isLoading && !wallpapers.isEmpty {
-                    ProgressView()
-                        .tint(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
+                    
+                    // Favorite Button with Bounce Effect
+                    FavoriteButton(
+                        isFavorite: favoritesManager.isFavorite(wallpaper),
+                        action: {
+                            favoritesManager.toggleFavorite(wallpaper)
+                        }
+                    )
+                    .padding(8)
                 }
             }
-            .padding(.horizontal, 16)
             
-            // Toast Message
-            if showToast {
-                VStack {
-                    Spacer()
-                    Text(toastMessage)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(Color.black.opacity(0.8))
-                        .cornerRadius(20)
-                        .padding(.bottom, 30)
-                }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .animation(.easeInOut, value: showToast)
+            // Loading indicator at bottom
+            if isLoading && !wallpapers.isEmpty {
+                ProgressView()
+                    .tint(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
             }
         }
-    }
-    
-    private func toggleFavorite(for wallpaper: PexelWallpaperData) {
-        favoritesManager.toggleFavorite(wallpaper)
-        toastMessage = favoritesManager.isFavorite(wallpaper) ? "Added to favorites" : "Removed from favorites"
-        showToast = true
-        
-        // Hide toast after 2 seconds
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            showToast = false
-        }
+        .padding(.horizontal, 16)
+        .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
     }
 }
 
 // MARK: - Top Gradient View
 struct TopGradientView: View {
+    @StateObject private var favoritesManager = FavoritesManager.shared
+    @State private var animateFavorite = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -272,13 +240,27 @@ struct TopGradientView: View {
                 
                 Spacer()
                 
-                // Favorite Icon - Navigation to Favorites
+                // Favorite Icon - Navigation to Favorites with animation
                 NavigationLink(destination: FavouriteWallpaperListView()) {
                     Image("favourite_home")
                         .resizable()
                         .frame(width: 32, height: 32)
                         .foregroundColor(.white)
+                        .scaleEffect(animateFavorite ? 1.2 : 1.0)
                 }
+                .simultaneousGesture(TapGesture().onEnded {
+                    // Animate when tapped
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                        animateFavorite = true
+                    }
+                    
+                    // Reset animation
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation {
+                            animateFavorite = false
+                        }
+                    }
+                })
                 .padding(.trailing, 8)
                 
                 // Settings Icon
@@ -295,12 +277,6 @@ struct TopGradientView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(
             Constant.commonBlueGradient
-                /* .overlay(
-                    Circle()
-                        .fill(Color.white.opacity(0.1))
-                        .frame(width: 200, height: 200)
-                        .offset(x: 150, y: -30)
-                ) */
         )
     }
 }

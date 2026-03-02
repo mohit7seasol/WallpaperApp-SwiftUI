@@ -11,6 +11,7 @@ import SDWebImageSwiftUI
 struct CategoryDetailView: View {
     let category: StaticCategory
     @StateObject private var viewModel = CategoryWallpaperViewModel()
+    @StateObject private var favoritesManager = FavoritesManager.shared
     
     // Get screen width
     let screenWidth = UIScreen.main.bounds.width
@@ -42,27 +43,38 @@ struct CategoryDetailView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(Array(viewModel.wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
-                        NavigationLink(destination: WallpaperDetailView(wallpapers: viewModel.wallpapers, selectedIndex: index)) {
-                            WebImage(url: URL(string: wallpaper.src.medium))
-                                .resizable()
-                                .indicator(.activity)
-                                .transition(.fade(duration: 0.5))
-                                .scaledToFill()
-                                .frame(width: cellWidth, height: cellHeight)
-                                .cornerRadius(16)
-                                .clipped()
-                                .onAppear {
-                                    // Preload next images when approaching the end
-                                    if index >= viewModel.wallpapers.count - 6 {
-                                        let urls = viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
-                                        SDWebImagePrefetcher.shared.prefetchURLs(urls)
+                        ZStack(alignment: .bottomTrailing) {
+                            NavigationLink(destination: WallpaperDetailView(wallpapers: viewModel.wallpapers, selectedIndex: index)) {
+                                WebImage(url: URL(string: wallpaper.src.medium))
+                                    .resizable()
+                                    .indicator(.activity)
+                                    .transition(.fade(duration: 0.5))
+                                    .scaledToFill()
+                                    .frame(width: cellWidth, height: cellHeight)
+                                    .cornerRadius(16)
+                                    .clipped()
+                                    .onAppear {
+                                        // Preload next images when approaching the end
+                                        if index >= viewModel.wallpapers.count - 6 {
+                                            let urls = viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                            SDWebImagePrefetcher.shared.prefetchURLs(urls)
+                                        }
+                                        
+                                        // Trigger load more when approaching the end
+                                        if index >= viewModel.wallpapers.count - 4 && viewModel.hasMorePages && !viewModel.isLoading {
+                                            viewModel.loadMore()
+                                        }
                                     }
-                                    
-                                    // Trigger load more when approaching the end
-                                    if index >= viewModel.wallpapers.count - 4 && viewModel.hasMorePages && !viewModel.isLoading {
-                                        viewModel.loadMore()
-                                    }
+                            }
+                            
+                            // Favorite Button with Bounce Effect
+                            FavoriteButton(
+                                isFavorite: favoritesManager.isFavorite(wallpaper),
+                                action: {
+                                    favoritesManager.toggleFavorite(wallpaper)
                                 }
+                            )
+                            .padding(8)
                         }
                     }
                     
@@ -90,5 +102,6 @@ struct CategoryDetailView: View {
             // Cancel any ongoing requests
             NetworkManager.cancelAllRequests()
         }
+        .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
     }
 }

@@ -60,6 +60,7 @@ struct WallpaperDetailView: View {
                 buttons: getDownloadButtons()
             )
         }
+        .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
     }
     
     // Get download buttons based on available image qualities
@@ -312,17 +313,13 @@ private extension WallpaperDetailView {
                 .cornerRadius(10)
             }
             
-            Button {
-                toggleFavorite()
-            } label: {
-                Image(isFavorite ? "favourite_detail" : "unfavourite_detail")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 42, height: 42)
-                    .frame(width: 56, height: 56)
-                    .background(Color.white.opacity(0.15))
-                    .cornerRadius(10)
-            }
+            // Detail Favorite Button with Bounce Effect
+            DetailFavoriteButton(
+                isFavorite: isFavorite,
+                action: {
+                    toggleFavorite()
+                }
+            )
         }
     }
 }
@@ -361,5 +358,79 @@ private extension WallpaperDetailView {
 extension Collection {
     subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
+    }
+}
+
+// MARK: - Favorite Button with Bounce Effect
+struct FavoriteButton: View {
+    let isFavorite: Bool
+    let action: () -> Void
+    
+    @State private var animate = false
+    @StateObject private var favoritesManager = FavoritesManager.shared
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.5)) {
+                animate = true
+                action()
+            }
+            
+            // Reset animation after delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation {
+                    animate = false
+                }
+            }
+        }) {
+            Image(isFavorite ? "favourite" : "unfavourite")
+                .resizable()
+                .frame(width: 32, height: 32)
+                .foregroundColor(.white)
+                .background(
+                    Circle()
+                        .fill(Color.white.opacity(0.3))
+                        .scaleEffect(animate ? 1.3 : 1.0)
+                )
+                .scaleEffect(animate ? 1.2 : 1.0)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Detail Favorite Button with Bounce Effect
+struct DetailFavoriteButton: View {
+    let isFavorite: Bool
+    let action: () -> Void
+    
+    @State private var animate = false
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.5)) {
+                animate = true
+                action()
+            }
+            
+            // Reset animation after delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation {
+                    animate = false
+                }
+            }
+        }) {
+            Image(isFavorite ? "favourite_detail" : "unfavourite_detail")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 42, height: 42)
+                .frame(width: 56, height: 56)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.white.opacity(0.15))
+                        .scaleEffect(animate ? 1.1 : 1.0)
+                )
+                .scaleEffect(animate ? 1.1 : 1.0)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }

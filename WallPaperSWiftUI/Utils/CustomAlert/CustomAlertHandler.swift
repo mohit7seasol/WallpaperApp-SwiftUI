@@ -55,3 +55,36 @@ struct CustomAlertHandler<AlertContent, AlertActions>: ViewModifier where AlertC
         }
     }
 }
+// MARK: - Toast View Modifier
+struct ToastModifier: ViewModifier {
+    @Binding var isShowing: Bool
+    let message: String
+    
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            
+            if isShowing {
+                VStack {
+                    Spacer()
+                    Text(message)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(Color.black.opacity(0.8))
+                        .cornerRadius(20)
+                        .padding(.bottom, 30)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                .zIndex(1)
+            }
+        }
+    }
+}
+
+extension View {
+    func toast(isShowing: Binding<Bool>, message: String) -> some View {
+        self.modifier(ToastModifier(isShowing: isShowing, message: message))
+    }
+}

@@ -7,29 +7,42 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 // MARK: - Favorites Manager
 class FavoritesManager: ObservableObject {
     static let shared = FavoritesManager()
     
     @Published var favoriteWallpapers: [PexelWallpaperData] = []
+    @Published var showToast: Bool = false
+    @Published var toastMessage: String = ""
     
     private let favoritesKey = "favorite_wallpapers"
+    private var toastWorkItem: DispatchWorkItem?
     
-    init() {
+    private init() {
         loadFavorites()
     }
     
     func loadFavorites() {
-        if let data = UserDefaults.standard.data(forKey: favoritesKey),
-           let decoded = try? JSONDecoder().decode([PexelWallpaperData].self, from: data) {
-            favoriteWallpapers = decoded
+        guard let data = UserDefaults.standard.data(forKey: favoritesKey) else { return }
+        
+        do {
+            let decoded = try JSONDecoder().decode([PexelWallpaperData].self, from: data)
+            DispatchQueue.main.async {
+                self.favoriteWallpapers = decoded
+            }
+        } catch {
+            print("Failed to load favorites: \(error.localizedDescription)")
         }
     }
     
     func saveFavorites() {
-        if let encoded = try? JSONEncoder().encode(favoriteWallpapers) {
+        do {
+            let encoded = try JSONEncoder().encode(favoriteWallpapers)
             UserDefaults.standard.set(encoded, forKey: favoritesKey)
+        } catch {
+            print("Failed to save favorites: \(error.localizedDescription)")
         }
     }
     
@@ -39,16 +52,26 @@ class FavoritesManager: ObservableObject {
     
     func addToFavorites(_ wallpaper: PexelWallpaperData) {
         if !isFavorite(wallpaper) {
-            favoriteWallpapers.append(wallpaper)
-            saveFavorites()
-            objectWillChange.send()
+            DispatchQueue.main.async {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                    self.favoriteWallpapers.append(wallpaper)
+                    self.saveFavorites()
+                    self.objectWillChange.send()
+                    self.showToastMessage("Added to favorites")
+                }
+            }
         }
     }
     
     func removeFromFavorites(_ wallpaper: PexelWallpaperData) {
-        favoriteWallpapers.removeAll(where: { $0.id == wallpaper.id })
-        saveFavorites()
-        objectWillChange.send()
+        DispatchQueue.main.async {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                self.favoriteWallpapers.removeAll(where: { $0.id == wallpaper.id })
+                self.saveFavorites()
+                self.objectWillChange.send()
+                self.showToastMessage("Removed from favorites")
+            }
+        }
     }
     
     func toggleFavorite(_ wallpaper: PexelWallpaperData) {
@@ -56,6 +79,39 @@ class FavoritesManager: ObservableObject {
             removeFromFavorites(wallpaper)
         } else {
             addToFavorites(wallpaper)
+        }
+    }
+    
+    private func showToastMessage(_ message: String) {
+        // Cancel previous toast
+        toastWorkItem?.cancel()
+        
+        // Set new toast message
+        toastMessage = message
+        withAnimation(.easeInOut) {
+            showToast = true
+        }
+        
+        // Create new work item to hide toast
+        let workItem = DispatchWorkItem { [weak self] in
+            withAnimation(.easeInOut) {
+                self?.showToast = false
+            }
+        }
+        toastWorkItem = workItem
+        
+        // Schedule hiding toast after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: workItem)
+    }
+    
+    func clearAllFavorites() {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.favoriteWallpapers.removeAll()
+                self.saveFavorites()
+                self.objectWillChange.send()
+                self.showToastMessage("All favorites cleared")
+            }
         }
     }
 }
