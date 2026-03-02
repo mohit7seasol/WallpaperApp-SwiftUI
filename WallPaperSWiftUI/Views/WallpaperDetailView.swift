@@ -315,7 +315,7 @@ private extension WallpaperDetailView {
             Button {
                 toggleFavorite()
             } label: {
-                Image("favourite")
+                Image("unfavourite_detail")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 42, height: 42)

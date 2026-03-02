@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "unfavourite_detail.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

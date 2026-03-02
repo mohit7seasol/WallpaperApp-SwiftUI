@@ -225,7 +225,7 @@ struct TopGradientView: View {
                 
                 // Favorite Icon
                 Button(action: {}) {
-                    Image("favourite")
+                    Image("favourite_home")
                         .resizable()
                         .frame(width: 32, height: 32)
                         .foregroundColor(.white)
