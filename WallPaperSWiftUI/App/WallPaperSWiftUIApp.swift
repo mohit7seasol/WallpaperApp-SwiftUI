@@ -11,6 +11,7 @@ import Toasts
 @main
 struct WallPaperSWiftUIApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject private var favoritesManager = FavoritesManager.shared
     
     init() {
         UIView.appearance().overrideUserInterfaceStyle = .dark
@@ -20,6 +21,7 @@ struct WallPaperSWiftUIApp: App {
         WindowGroup {
             ContentView()
                 .installToast(position: .bottom)
+                .environmentObject(favoritesManager)
         }
     }
 }

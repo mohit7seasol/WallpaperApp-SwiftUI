@@ -17,6 +17,7 @@ struct WallpaperDetailView: View {
     @State private var isFavorite: Bool = false
     @State private var showDownloadOptions = false
     @State private var selectedWallpaperForDownload: PexelWallpaperData?
+    @StateObject private var favoritesManager = FavoritesManager.shared
     
     @Environment(\.dismiss) private var dismiss
     
@@ -277,9 +278,7 @@ struct WallpaperCardView: View {
 private extension WallpaperDetailView {
     
     var bottomBar: some View {
-        
         HStack(spacing: 25) {
-            
             Button {
                 shareWallpaper()
             } label: {
@@ -295,6 +294,7 @@ private extension WallpaperDetailView {
             
             Button {
                 // Show download options
+                selectedWallpaperForDownload = wallpapers[safe: selectedIndex]
                 showDownloadOptions = true
             } label: {
                 HStack(spacing: 8) {
@@ -315,7 +315,7 @@ private extension WallpaperDetailView {
             Button {
                 toggleFavorite()
             } label: {
-                Image("unfavourite_detail")
+                Image(isFavorite ? "favourite_detail" : "unfavourite_detail")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 42, height: 42)
@@ -335,15 +335,13 @@ private extension WallpaperDetailView {
     
     func checkFavoriteStatus() {
         guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
-        let key = "fav_\(wallpaper.id)"
-        isFavorite = UserDefaults.standard.bool(forKey: key)
+        isFavorite = favoritesManager.isFavorite(wallpaper)
     }
     
     func toggleFavorite() {
         guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
-        let key = "fav_\(wallpaper.id)"
+        favoritesManager.toggleFavorite(wallpaper)
         isFavorite.toggle()
-        UserDefaults.standard.set(isFavorite, forKey: key)
     }
     
     func shareWallpaper() {

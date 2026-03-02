@@ -168,47 +168,96 @@ struct TrendingWallpapersGrid: View {
     let cellWidth: CGFloat
     let cellHeight: CGFloat
     
+    @StateObject private var favoritesManager = FavoritesManager.shared
+    @State private var showToast = false
+    @State private var toastMessage = ""
+    
     let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12)
     ]
     
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
-            ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
-                NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
-                    WebImage(url: URL(string: wallpaper.src.medium))
-                        .resizable()
-                        .indicator(.activity)
-                        .transition(.fade(duration: 0.5))
-                        .scaledToFill()
-                        .frame(width: cellWidth, height: cellHeight)
-                        .cornerRadius(16)
-                        .clipped()
-                        .onAppear {
-                            // Preload next images when approaching the end
-                            if index >= wallpapers.count - 6 {
-                                let urls = wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
-                                SDWebImagePrefetcher.shared.prefetchURLs(urls)
-                            }
-                            
-                            // Trigger load more when approaching the end
-                            if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
-                                loadMore()
-                            }
+        ZStack {
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
+                    ZStack(alignment: .bottomTrailing) {
+                        NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
+                            WebImage(url: URL(string: wallpaper.src.medium))
+                                .resizable()
+                                .indicator(.activity)
+                                .transition(.fade(duration: 0.5))
+                                .scaledToFill()
+                                .frame(width: cellWidth, height: cellHeight)
+                                .cornerRadius(16)
+                                .clipped()
+                                .onAppear {
+                                    // Preload next images when approaching the end
+                                    if index >= wallpapers.count - 6 {
+                                        let urls = wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                        SDWebImagePrefetcher.shared.prefetchURLs(urls)
+                                    }
+                                    
+                                    // Trigger load more when approaching the end
+                                    if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
+                                        loadMore()
+                                    }
+                                }
                         }
+                        
+                        // Favorite Button
+                        Button(action: {
+                            toggleFavorite(for: wallpaper)
+                        }) {
+                            Image(favoritesManager.isFavorite(wallpaper) ? "favourite" : "unfavourite")
+                                .resizable()
+                                .frame(width: 32, height: 32)
+                                .foregroundColor(.white)
+                                .background(Color.white.opacity(0.3))
+                                .clipShape(Circle())
+                        }
+                        .padding(8)
+                    }
+                }
+                
+                // Loading indicator at bottom
+                if isLoading && !wallpapers.isEmpty {
+                    ProgressView()
+                        .tint(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
                 }
             }
+            .padding(.horizontal, 16)
             
-            // Loading indicator at bottom
-            if isLoading && !wallpapers.isEmpty {
-                ProgressView()
-                    .tint(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
+            // Toast Message
+            if showToast {
+                VStack {
+                    Spacer()
+                    Text(toastMessage)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(Color.black.opacity(0.8))
+                        .cornerRadius(20)
+                        .padding(.bottom, 30)
+                }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .animation(.easeInOut, value: showToast)
             }
         }
-        .padding(.horizontal, 16)
+    }
+    
+    private func toggleFavorite(for wallpaper: PexelWallpaperData) {
+        favoritesManager.toggleFavorite(wallpaper)
+        toastMessage = favoritesManager.isFavorite(wallpaper) ? "Added to favorites" : "Removed from favorites"
+        showToast = true
+        
+        // Hide toast after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            showToast = false
+        }
     }
 }
 
@@ -223,8 +272,8 @@ struct TopGradientView: View {
                 
                 Spacer()
                 
-                // Favorite Icon
-                Button(action: {}) {
+                // Favorite Icon - Navigation to Favorites
+                NavigationLink(destination: FavouriteWallpaperListView()) {
                     Image("favourite_home")
                         .resizable()
                         .frame(width: 32, height: 32)
