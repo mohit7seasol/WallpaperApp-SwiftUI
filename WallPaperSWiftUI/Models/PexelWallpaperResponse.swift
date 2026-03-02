@@ -1,9 +1,11 @@
 //
-//  NewWallpaperResponse.swift
+//  PexelWallpaperResponse.swift
 //  WallPaperSWiftUI
 //
 //  Created by DREAMWORLD on 28/02/26.
 //
+
+import Foundation
 
 struct PexelWallpaperResponse: Codable {
     let total: Int
@@ -27,10 +29,27 @@ struct PexelWallpaperData: Codable, Identifiable {
     let liked: Bool
     let category: String
     let src: PexelWallpaperSrc
+    let createdAt: String?
+    let updatedAt: String?
+    let v: Int?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
-        case pexelsId, width, height, url, alt, photographer, photographerId, photographerUrl, avgColor, liked, category, src
+        case pexelsId
+        case width
+        case height
+        case url
+        case alt
+        case photographer
+        case photographerId
+        case photographerUrl
+        case avgColor
+        case liked
+        case category
+        case src
+        case createdAt
+        case updatedAt
+        case v = "__v"
     }
 }
 

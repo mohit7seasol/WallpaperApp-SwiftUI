@@ -10,14 +10,17 @@ import Combine
 import Alamofire
 
 class TrendingWallpaperViewModel: ObservableObject {
-    @Published var wallpapers: [WallpaperData] = []
+    @Published var wallpapers: [PexelWallpaperData] = []
     @Published var isLoading = false
     @Published var hasMorePages = true
+    @Published var totalCount = 0
     
     private var currentPage = 1
     private var totalPages = 1
+    private var currentCategory = "trending"
+    
     private var currentRequestUrl: String {
-        return "https://wallhaven.cc/api/v1/search?q=&ratios=portrait&atleast=1080x1920&page=\(currentPage)&sorting=toplist"
+        return "\(WebService.apiPrefixUrl)\(currentCategory)"
     }
     
     func fetchTrendingWallpapers(loadMore: Bool = false) {
@@ -44,33 +47,34 @@ class TrendingWallpaperViewModel: ObservableObject {
             currentPage += 1
         }
         
+        var parameters: Parameters = [:]
+        parameters["page"] = currentPage
+        parameters["limit"] = 20
+        
         NetworkManager.callWebService(
             url: currentRequestUrl,
             httpMethod: .get,
-            params: [:],
+            params: parameters,
             encoding: URLEncoding.default,
-            headers: [:]
-        ) { [weak self] (response: WallpaperModel) in
+            headers: [:] // Empty headers since bearer token is not needed
+        ) { [weak self] (response: PexelWallpaperResponse) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 
-                if let meta = response.meta {
-                    self.totalPages = meta.last_page ?? 1
-                    self.hasMorePages = self.currentPage < self.totalPages
-                }
-                
-                let newWallpapers = response.data ?? []
+                self.totalPages = response.totalPages
+                self.totalCount = response.total
+                self.hasMorePages = self.currentPage < self.totalPages
                 
                 if loadMore {
                     // Append for pagination
-                    self.wallpapers.append(contentsOf: newWallpapers)
+                    self.wallpapers.append(contentsOf: response.data)
                 } else {
                     // Replace for fresh load
-                    self.wallpapers = newWallpapers
+                    self.wallpapers = response.data
                 }
                 
                 self.isLoading = false
-                print("📱 Loaded page \(self.currentPage)/\(self.totalPages)")
+                print("📱 Loaded page \(self.currentPage)/\(self.totalPages) - Total: \(self.totalCount) images")
             }
         } callbackFailure: { [weak self] error in
             DispatchQueue.main.async {

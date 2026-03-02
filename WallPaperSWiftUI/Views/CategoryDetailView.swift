@@ -12,6 +12,23 @@ struct CategoryDetailView: View {
     let category: StaticCategory
     @StateObject private var viewModel = CategoryWallpaperViewModel()
     
+    // Get screen width
+    let screenWidth = UIScreen.main.bounds.width
+    
+    // Calculate cell width based on device
+    var cellWidth: CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return (screenWidth - 64) / 4 // iPad: 4 columns with padding
+        } else {
+            return (screenWidth - 48) / 2 // iPhone: 2 columns with padding
+        }
+    }
+    
+    // Cell height based on device
+    var cellHeight: CGFloat {
+        return UIDevice.current.userInterfaceIdiom == .pad ? 250 : 220
+    }
+    
     let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12)
@@ -25,33 +42,27 @@ struct CategoryDetailView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(Array(viewModel.wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
-                        if let path = wallpaper.path,
-                           let url = URL(string: path) {
-                            
-                            NavigationLink(destination: WallpaperDetailView(wallpapers: viewModel.wallpapers, selectedIndex: index)) {
-                                WebImage(url: url)
-                                    .resizable()
-                                    .indicator(.activity)
-                                    .transition(.fade(duration: 0.5))
-                                    .scaledToFill()
-                                    .frame(height: 200)
-                                    .frame(maxWidth: .infinity)
-                                    .cornerRadius(16)
-                                    .clipped()
-                                    .onAppear {
-                                        // Preload next images when approaching the end
-                                        if index >= viewModel.wallpapers.count - 6 {
-                                            SDWebImagePrefetcher.shared.prefetchURLs(
-                                                viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.path ?? "") }
-                                            )
-                                        }
-                                        
-                                        // Trigger load more when approaching the end
-                                        if index >= viewModel.wallpapers.count - 4 && viewModel.hasMorePages && !viewModel.isLoading {
-                                            viewModel.loadMore()
-                                        }
+                        NavigationLink(destination: WallpaperDetailView(wallpapers: viewModel.wallpapers, selectedIndex: index)) {
+                            WebImage(url: URL(string: wallpaper.src.medium))
+                                .resizable()
+                                .indicator(.activity)
+                                .transition(.fade(duration: 0.5))
+                                .scaledToFill()
+                                .frame(width: cellWidth, height: cellHeight)
+                                .cornerRadius(16)
+                                .clipped()
+                                .onAppear {
+                                    // Preload next images when approaching the end
+                                    if index >= viewModel.wallpapers.count - 6 {
+                                        let urls = viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                        SDWebImagePrefetcher.shared.prefetchURLs(urls)
                                     }
-                            }
+                                    
+                                    // Trigger load more when approaching the end
+                                    if index >= viewModel.wallpapers.count - 4 && viewModel.hasMorePages && !viewModel.isLoading {
+                                        viewModel.loadMore()
+                                    }
+                                }
                         }
                     }
                     
@@ -81,4 +92,3 @@ struct CategoryDetailView: View {
         }
     }
 }
-

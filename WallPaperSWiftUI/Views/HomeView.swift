@@ -11,18 +11,19 @@ import Alamofire
 import Combine
 import ACarousel
 
-// Rename using typealias
-typealias HomeWallpaperModel = WallpaperModel
-typealias HomeData = WallpaperData
-typealias HomeThumbs = WallpaperThumbs
-typealias HomeMeta = WallpaperMeta
-
 // MARK: - Static Category Model
 struct StaticCategory: Identifiable {
     let id = UUID()
     let title: String
     let imageName: String
     let searchKeyword: String
+    
+    init(title: String, searchKeyword: String) {
+        self.title = title
+        self.searchKeyword = searchKeyword
+        // Create image name from title (lowercase, no spaces)
+        self.imageName = title.lowercased().replacingOccurrences(of: " ", with: "")
+    }
 }
 
 // MARK: - HomeView
@@ -30,10 +31,54 @@ struct HomeView: View {
     @StateObject private var trendingViewModel = TrendingWallpaperViewModel()
     @State private var selectedStaticIndex = 0
     
-    let staticCategories = [
-        StaticCategory(title: "Cool Wallpaper", imageName: "cool", searchKeyword: "cool"),
-        StaticCategory(title: "Landscape", imageName: "landscape", searchKeyword: "landscape"),
-        StaticCategory(title: "Forests", imageName: "forest", searchKeyword: "forest")
+    // Get screen width for cell calculation
+    let screenWidth = UIScreen.main.bounds.width
+    
+    // Calculate cell width based on device
+    var cellWidth: CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return (screenWidth - 64) / 4 // iPad: 4 columns with padding
+        } else {
+            return (screenWidth - 48) / 2 // iPhone: 2 columns with padding
+        }
+    }
+    
+    // Cell height based on device
+    var cellHeight: CGFloat {
+        return UIDevice.current.userInterfaceIdiom == .pad ? 250 : 220
+    }
+    
+    let staticCategories: [StaticCategory] = [
+        StaticCategory(title: "Cool Wallpaper", searchKeyword: "coolWallpaper"),
+        StaticCategory(title: "Landscape", searchKeyword: "landscape"),
+        StaticCategory(title: "Forests", searchKeyword: "forests"),
+        StaticCategory(title: "Garden", searchKeyword: "garden"),
+        StaticCategory(title: "Hills", searchKeyword: "hills"),
+        StaticCategory(title: "Wildlife", searchKeyword: "wildlife"),
+        StaticCategory(title: "Beaches", searchKeyword: "beaches"),
+        StaticCategory(title: "Birds", searchKeyword: "birds"),
+        StaticCategory(title: "Lord", searchKeyword: "lord"),
+        StaticCategory(title: "Clouds", searchKeyword: "clouds"),
+        StaticCategory(title: "Architecture", searchKeyword: "architecture"),
+        StaticCategory(title: "Bikes", searchKeyword: "bikes"),
+        StaticCategory(title: "Minimalist", searchKeyword: "minimalist"),
+        StaticCategory(title: "Galaxy", searchKeyword: "galaxy"),
+        StaticCategory(title: "Planets", searchKeyword: "planets"),
+        StaticCategory(title: "Magic", searchKeyword: "magic"),
+        StaticCategory(title: "Cartoons", searchKeyword: "cartoons"),
+        StaticCategory(title: "Romance", searchKeyword: "romance"),
+        StaticCategory(title: "eSports", searchKeyword: "eSports"),
+        StaticCategory(title: "Digital Art", searchKeyword: "digitalArt"),
+        StaticCategory(title: "Festival", searchKeyword: "festival"),
+        StaticCategory(title: "Cute", searchKeyword: "cute"),
+        StaticCategory(title: "Rain", searchKeyword: "rain"),
+        StaticCategory(title: "Plant", searchKeyword: "plant"),
+        StaticCategory(title: "3D Wallpaper", searchKeyword: "wallpaper3D"),
+        StaticCategory(title: "4K Wallpaper", searchKeyword: "wallpaper4K"),
+        StaticCategory(title: "8K Wallpaper", searchKeyword: "wallpaper8K"),
+        StaticCategory(title: "32K Wallpaper", searchKeyword: "wallpaper32K"),
+        StaticCategory(title: "Live Wallpaper", searchKeyword: "liveWallpaper"),
+        StaticCategory(title: "Trending", searchKeyword: "trending")
     ]
     
     var body: some View {
@@ -57,7 +102,7 @@ struct HomeView: View {
                     .offset(y: -114)
                     .padding(.bottom, -43)
                     
-                    // Page Controller
+                    // Page Control
                     PageControl(
                         numberOfPages: staticCategories.count,
                         currentPage: selectedStaticIndex
@@ -95,7 +140,9 @@ struct HomeView: View {
                                     isLoading: trendingViewModel.isLoading,
                                     loadMore: {
                                         trendingViewModel.loadMore()
-                                    }
+                                    },
+                                    cellWidth: cellWidth,
+                                    cellHeight: cellHeight
                                 )
                                 .padding(.top, 8)
                                 .padding(.bottom, 20)
@@ -112,12 +159,15 @@ struct HomeView: View {
         }
     }
 }
-// MARK: - Trending Wallpapers Grid (Scrollable content only)
+
+// MARK: - Trending Wallpapers Grid
 struct TrendingWallpapersGrid: View {
-    let wallpapers: [WallpaperData]
+    let wallpapers: [PexelWallpaperData]
     let hasMorePages: Bool
     let isLoading: Bool
     let loadMore: () -> Void
+    let cellWidth: CGFloat
+    let cellHeight: CGFloat
     
     let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -127,33 +177,27 @@ struct TrendingWallpapersGrid: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: 12) {
             ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
-                if let path = wallpaper.path,
-                   let url = URL(string: path) {
-                    
-                    NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
-                        WebImage(url: url)
-                            .resizable()
-                            .indicator(.activity)
-                            .transition(.fade(duration: 0.5))
-                            .scaledToFill()
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
-                            .cornerRadius(16)
-                            .clipped()
-                            .onAppear {
-                                // Preload next images when approaching the end
-                                if index >= wallpapers.count - 6 {
-                                    SDWebImagePrefetcher.shared.prefetchURLs(
-                                        wallpapers.suffix(6).compactMap { URL(string: $0.path ?? "") }
-                                    )
-                                }
-                                
-                                // Trigger load more when approaching the end
-                                if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
-                                    loadMore()
-                                }
+                NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
+                    WebImage(url: URL(string: wallpaper.src.medium))
+                        .resizable()
+                        .indicator(.activity)
+                        .transition(.fade(duration: 0.5))
+                        .scaledToFill()
+                        .frame(width: cellWidth, height: cellHeight)
+                        .cornerRadius(16)
+                        .clipped()
+                        .onAppear {
+                            // Preload next images when approaching the end
+                            if index >= wallpapers.count - 6 {
+                                let urls = wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                SDWebImagePrefetcher.shared.prefetchURLs(urls)
                             }
-                    }
+                            
+                            // Trigger load more when approaching the end
+                            if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
+                                loadMore()
+                            }
+                        }
                 }
             }
             
@@ -187,7 +231,7 @@ struct TopGradientView: View {
                         .frame(width: 32, height: 32)
                         .foregroundColor(.white)
                 }
-                .padding(.trailing, 8) // Reduced space between buttons
+                .padding(.trailing, 8)
                 
                 // Settings Icon
                 Button(action: {}) {
@@ -274,418 +318,25 @@ struct StaticCategoryCell: View {
     }
 }
 
-
 // MARK: - Page Control
 struct PageControl: View {
     let numberOfPages: Int
     let currentPage: Int
+    let fixedWidth: CGFloat = 200 // Fixed width of 250
     
     var body: some View {
-        HStack(spacing: 8) {
-            ForEach(0..<numberOfPages, id: \.self) { index in
-                Circle()
-                    .fill(index == currentPage ? Color.pageSelected : Color.pageUnselected)
-                    .frame(width: 8, height: 8)
-            }
-        }
-    }
-}
-
-// MARK: - Trending Wallpapers Section
-struct TrendingWallpapersSection: View {
-    let wallpapers: [WallpaperData]
-    let hasMorePages: Bool
-    let isLoading: Bool
-    let loadMore: () -> Void
-    
-    let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                Image("trend")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(.white)
-                
-                Text("Trending Wallpaper")
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-            }
-            .padding(.horizontal, 16)
-            
-            LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
-                    if let path = wallpaper.path,
-                       let url = URL(string: path) {
-                        
-                        NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
-                            WebImage(url: url)
-                                .resizable()
-                                .indicator(.activity)
-                                .transition(.fade(duration: 0.5))
-                                .scaledToFill()
-                                .frame(height: 200)
-                                .frame(maxWidth: .infinity)
-                                .cornerRadius(16)
-                                .clipped()
-                        }
-                        .onAppear {
-                            // Trigger load more when approaching the end
-                            if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
-                                print("🔄 Triggering load more at index: \(index)")
-                                loadMore()
-                            }
-                        }
-                    }
-                }
-                
-                // Loading indicator at bottom
-                if isLoading && !wallpapers.isEmpty {
-                    ProgressView()
-                        .tint(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
+                ForEach(0..<numberOfPages, id: \.self) { index in
+                    Circle()
+                        .fill(index == currentPage ? Color.pageSelected : Color.pageUnselected)
+                        .frame(width: 8, height: 8)
                 }
             }
             .padding(.horizontal, 16)
         }
-    }
-}
-
-struct WallpaperDetailView: View {
-    
-    let wallpapers: [WallpaperData]
-    
-    @State private var selectedIndex: Int
-    @State private var isFavorite: Bool = false
-    
-    @Environment(\.dismiss) private var dismiss
-    
-    init(wallpapers: [WallpaperData], selectedIndex: Int) {
-        self.wallpapers = wallpapers
-        self._selectedIndex = State(initialValue: selectedIndex)
-    }
-    
-    var body: some View {
-        ZStack {
-            
-            // MARK: - Clean Dark Background (NO BLUR)
-            Constant.previewBlueGradient
-                .ignoresSafeArea()
-            VStack(spacing: 0) {
-                
-                topBar
-                    .padding(.top, 50)
-                
-                Spacer(minLength: 20)
-                
-                carouselView
-                    .frame(height: UIScreen.main.bounds.height * 0.7) // Increased height
-                
-                Spacer(minLength: 20)
-                
-                bottomBar
-                    .padding(.bottom, 0)
-            }
-        }
-        .navigationBarHidden(true)
-        .ignoresSafeArea()
-        .onAppear {
-            checkFavoriteStatus()
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////
-// MARK: - TOP BAR
-////////////////////////////////////////////////////////////
-
-private extension WallpaperDetailView {
-    
-    var topBar: some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.white)
-                    .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.2))
-                    .clipShape(Circle())
-            }
-            
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-    }
-}
-
-////////////////////////////////////////////////////////////
-// MARK: - CAROUSEL (FIXED PROPER ASPECT HANDLING)
-////////////////////////////////////////////////////////////
-
-private extension WallpaperDetailView {
-    
-    var carouselView: some View {
-        
-        GeometryReader { geo in
-            
-            ACarousel(
-                wallpapers,
-                id: \.id,
-                index: $selectedIndex,
-                spacing: 10, // Increased spacing
-                headspace: 35, // Adjusted headspace for better side visibility
-                sidesScaling: 0.85, // Increased from 0.85 to show sides better
-                isWrap: true, // Changed to true for infinite scrolling
-                autoScroll: .inactive
-            ) { wallpaper in
-                
-                WallpaperCardView(
-                    wallpaper: wallpaper,
-                    width: geo.size.width * 0.8, // Adjusted width
-                    height: geo.size.height * 0.85
-                )
-                .scaleEffect(wallpaper.id == wallpapers[selectedIndex].id ? 1.0 : 0.95)
-                .shadow(color: wallpaper.id == wallpapers[selectedIndex].id ?
-                        Color.white.opacity(0.3) : Color.clear,
-                        radius: 15, x: 0, y: 0)
-                .zIndex(wallpaper.id == wallpapers[selectedIndex].id ? 2 : 1)
-                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedIndex)
-            }
-        }
-        .frame(height: UIScreen.main.bounds.height * 0.75) // Slightly reduced height
-    }
-}
-
-////////////////////////////////////////////////////////////
-// MARK: - WALLPAPER CARD VIEW (IMPORTANT FIX)
-////////////////////////////////////////////////////////////
-
-struct WallpaperCardView: View {
-    
-    let wallpaper: WallpaperData
-    let width: CGFloat
-    let height: CGFloat
-    
-    var body: some View {
-        
-        ZStack {
-            
-            // Black background inside card
-            Color.black
-            
-            if let path = wallpaper.path,
-               let url = URL(string: path) {
-                
-                WebImage(url: url)
-                    .resizable()
-                    .indicator(.activity)
-                    .scaledToFill()  // Changed from scaledToFit to scaledToFill for better coverage
-                    .frame(width: width, height: height)
-                    .clipped()
-            }
-        }
-        .frame(width: width, height: height)
-        .cornerRadius(32) // Slightly larger corner radius
-        .overlay(
-            RoundedRectangle(cornerRadius: 32)
-                .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
-        )
-        .shadow(color: .black.opacity(0.5),
-                radius: 20,
-                x: 0,
-                y: 10)
-    }
-}
-
-////////////////////////////////////////////////////////////
-// MARK: - BOTTOM BAR
-////////////////////////////////////////////////////////////
-
-private extension WallpaperDetailView {
-    
-    var bottomBar: some View {
-        
-        HStack(spacing: 25) {
-            
-            Button {
-                shareWallpaper()
-            } label: {
-                Image("share_ic")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-                    .foregroundColor(.white)
-                    .frame(width: 56, height: 56)
-                    .background(Color.white.opacity(0.15))
-                    .cornerRadius(10)
-            }
-            
-            Button {
-                downloadWallpaper()
-            } label: {
-                HStack(spacing: 8) {
-                    Image("down_arrow")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                    Text("Download")
-                        .font(.system(size: 18, weight: .semibold))
-                }
-                .foregroundColor(.white)
-                .frame(height: 58)
-                .padding(.horizontal, 50)
-                .background(Color.white.opacity(0.15))
-                .cornerRadius(10)
-            }
-            
-            Button {
-                toggleFavorite()
-            } label: {
-                Image("favourite")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 42, height: 42)
-                    .frame(width: 56, height: 56)
-                    .background(Color.white.opacity(0.15))
-                    .cornerRadius(10)
-            }
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////
-// MARK: - ACTIONS
-////////////////////////////////////////////////////////////
-
-private extension WallpaperDetailView {
-    
-    func checkFavoriteStatus() {
-        guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
-        let key = "fav_\(wallpaper.id ?? "")"
-        isFavorite = UserDefaults.standard.bool(forKey: key)
-    }
-    
-    func toggleFavorite() {
-        guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
-        let key = "fav_\(wallpaper.id ?? "")"
-        isFavorite.toggle()
-        UserDefaults.standard.set(isFavorite, forKey: key)
-    }
-    
-    func shareWallpaper() {
-        guard let wallpaper = wallpapers[safe: selectedIndex],
-              let path = wallpaper.path,
-              let url = URL(string: path) else { return }
-        
-        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-        
-        // Better way to present on iOS 15+
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = windowScene.windows.first?.rootViewController {
-            rootVC.present(vc, animated: true)
-        }
-    }
-    
-    func downloadWallpaper() {
-        guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
-        print("Download wallpaper id: \(wallpaper.id ?? "")")
-    }
-}
-
-// MARK: - Safe Array Extension
-extension Collection {
-    subscript(safe index: Index) -> Element? {
-        return indices.contains(index) ? self[index] : nil
-    }
-}
-
-// MARK: - Home Wallpaper ViewModel with NetworkManager
-class HomeWallpaperViewModel: ObservableObject {
-    @Published var wallpapers: [WallpaperData] = []
-    @Published var isLoading = false
-    @Published var errorMessage: String?
-    @Published var showError = false
-    
-    private var currentPage = 1
-    private var currentQuery = "cool"
-    private var currentRequestUrl: String {
-        return "https://wallhaven.cc/api/v1/search?q=\(currentQuery)&ratios=portrait&atleast=1080x1920&page=\(currentPage)"
-    }
-    
-    func fetchWallpapers(for query: String) {
-        NetworkManager.cancelRequest(url: currentRequestUrl)
-        
-        isLoading = true
-        currentPage = 1
-        currentQuery = query
-        
-        NetworkManager.callWebService(
-            url: currentRequestUrl,
-            httpMethod: .get,
-            params: [:],
-            encoding: URLEncoding.default,
-            headers: [:]
-        ) { [weak self] (response: WallpaperModel) in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                self?.wallpapers = response.data ?? []
-                print("✅ Loaded \(self?.wallpapers.count ?? 0) wallpapers for query: \(query)")
-            }
-        } callbackFailure: { [weak self] error in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                self?.errorMessage = "Failed to load: \(error.localizedDescription)"
-                self?.showError = true
-                print("❌ Error: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    func loadMore() {
-        guard !isLoading else { return }
-        
-        NetworkManager.cancelRequest(url: currentRequestUrl)
-        
-        currentPage += 1
-        
-        NetworkManager.callWebService(
-            url: currentRequestUrl,
-            httpMethod: .get,
-            params: [:],
-            encoding: URLEncoding.default,
-            headers: [:]
-        ) { [weak self] (response: WallpaperModel) in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                if let newWallpapers = response.data {
-                    self?.wallpapers.append(contentsOf: newWallpapers)
-                    print("✅ Loaded \(newWallpapers.count) more wallpapers")
-                }
-            }
-        } callbackFailure: { [weak self] error in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                self?.errorMessage = "Failed to load more: \(error.localizedDescription)"
-                self?.showError = true
-            }
-        }
-    }
-    
-    func refreshWallpapers() {
-        wallpapers.removeAll()
-        fetchWallpapers(for: currentQuery)
-    }
-    
-    deinit {
-        NetworkManager.cancelRequest(url: currentRequestUrl)
+        .frame(width: fixedWidth) // Fixed width container
+        .frame(maxWidth: .infinity) // Center it horizontally
     }
 }
 

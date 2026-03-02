@@ -28,23 +28,58 @@ struct NetworkManager {
         httpMethod: HTTPMethod = .get,
         params: [String: Any] = [:],
         encoding: ParameterEncoding = URLEncoding.default,
-        headers: HTTPHeaders = ["Authorization" : WebService.bearerToken],
+        headers: HTTPHeaders = [:], // Empty headers by default
         callbackSuccess: @escaping (T) -> (),
         callbackFailure: @escaping (_ err: Error) -> () = { _ in }
     ) {
-        AF.request(url,
+        // Ensure URL has proper scheme
+        var finalURL = url
+        if !url.hasPrefix("http://") && !url.hasPrefix("https://") {
+            finalURL = "https://" + url
+        }
+        
+        print("==================================================================")
+        print("Request URL:", finalURL)
+        print("Method:", httpMethod.rawValue)
+        print("Headers:", headers)
+        print("Parameters:", params)
+        
+        AF.request(finalURL,
                    method: httpMethod,
                    parameters: params,
                    encoding: encoding,
                    headers: headers)
-        .responseString { response in
-            print("==================================================================")
-            print("Request URL:", response.request?.url?.absoluteString ?? "")
-            print("Method:", httpMethod.rawValue)
-            print("Headers:", headers)
-            print("Parameters:", params)
+        .validate()
+        .responseDecodable(of: T.self) { response in
             print("Time Duration in second:", response.metrics?.taskInterval.duration ?? 0)
-            response.value.decode(callbackSuccess: callbackSuccess, callbackFailure: callbackFailure)
+            
+            switch response.result {
+            case .success(let value):
+                print("✅ Successfully decoded response")
+                callbackSuccess(value)
+                
+            case .failure(let error):
+                print("❌ Network Error:", error)
+                
+                // Print response data for debugging
+                if let data = response.data, let jsonString = String(data: data, encoding: .utf8) {
+                    print("Raw Response:", jsonString)
+                }
+                
+                // Try to decode error message if available
+                if let data = response.data {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        if let message = json?["message"] as? String {
+                            print("Error message:", message)
+                        }
+                    } catch {
+                        print("Could not parse error response")
+                    }
+                }
+                
+                callbackFailure(error)
+            }
         }
     }
     
@@ -84,14 +119,19 @@ struct NetworkManager {
         .uploadProgress { progress in
             print("Upload Progress:", progress.fractionCompleted)
         }
-        .responseString { response in
+        .responseDecodable(of: T.self) { response in
             print("==================================================================")
             print("Request URL:", response.request?.url?.absoluteString ?? "")
             print("Headers:", headers)
             print("Parameters:", params)
             print("Time Duration in second:", response.metrics?.taskInterval.duration ?? 0)
             
-            response.value.decode(callbackSuccess: callbackSuccess, callbackFailure: callbackFailure)
+            switch response.result {
+            case .success(let value):
+                callbackSuccess(value)
+            case .failure(let error):
+                callbackFailure(error)
+            }
         }
     }
     
@@ -106,29 +146,3 @@ struct NetworkManager {
         }
     }
 }
-
-// MARK: - Extensions
-extension Optional where Wrapped == String {
-    func decode<T: Codable>(callbackSuccess: @escaping (T) -> (), callbackFailure: @escaping (_ err: Error) -> ()) {
-        guard let value = self else { return }
-        if let data = value.data(using: .utf8) {
-            data.decode(callbackSuccess: callbackSuccess, callbackFailure: callbackFailure)
-        }
-    }
-}
-
-extension Data {
-    func decode<T: Codable>(callbackSuccess: @escaping (T) -> (), callbackFailure: @escaping (_ err: Error) -> ()) {
-        let decoder = JSONDecoder()
-        do {
-            print("Raw JSON:", String(data: self, encoding: .utf8) ?? "")
-            let jsonData = try decoder.decode(T.self, from: self)
-            callbackSuccess(jsonData)
-        } catch {
-            print("Decoding error:", error)
-            callbackFailure(error)
-        }
-    }
-}
-
-

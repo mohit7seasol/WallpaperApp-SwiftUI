@@ -30,9 +30,40 @@ public let SECRET = "vXrpX8YzuuevUDdnQG6GxfVs0or6v91bwk0CJEsX"
 
 
 struct WebService {
-    static var bearerToken : String =  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZmNlOWE0MGFmNTU5MDM5N2JiYjZjMWIwMGZjOGUxYyIsIm5iZiI6MTc0NjU5Njk0MC41NDIsInN1YiI6IjY4MWFmNDRjYWNkYTE2YzMyNjg1MDhhYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.p-W6BpCTbQXniMiNOYcKHbuOYjsLoBHy7BdcKvrkbiI"
-    static let imagePrefixUrl : String = "https://image.tmdb.org/t/p/original"
-    static let apiPrefixUrl : String = "api-pexels.7seasol.in/api/images/by-category?category=" // "https://api-livevideocall.7seasol.in/proxy?url="
+    static let apiPrefixUrl: String = "api-pexels.7seasol.in/api/images/by-category?category="
+    
+    static let categories: [String] = [
+        "coolWallpaper",
+        "landscape",
+        "forests",
+        "garden",
+        "hills",
+        "wildlife",
+        "beaches",
+        "birds",
+        "lord",
+        "clouds",
+        "architecture",
+        "bikes",
+        "minimalist",
+        "galaxy",
+        "planets",
+        "magic",
+        "cartoons",
+        "romance",
+        "eSports",
+        "digitalArt",
+        "festival",
+        "cute",
+        "rain",
+        "plant",
+        "wallpaper3D",
+        "wallpaper4K",
+        "wallpaper8K",
+        "wallpaper32K",
+        "liveWallpaper",
+        "trending"
+    ]
 }
 
 
@@ -160,13 +191,6 @@ struct BackgroundModifier: ViewModifier {
             .animation(.easeInOut(duration: 0.3), value: orientationObserver.orientation)
     }
 }
-
-extension String {
-    func withImagePrefix() -> String {
-        return WebService.imagePrefixUrl + (self.isEmpty ? "" : self)
-    }
-}
-
 
 import SwiftUI
 import Combine
