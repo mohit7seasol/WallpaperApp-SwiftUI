@@ -49,7 +49,7 @@ struct HomeView: View {
     }
     
     let staticCategories: [StaticCategory] = [
-        StaticCategory(title: "Cool Wallpaper", searchKeyword: "coolWallpaper"),
+        StaticCategory(title: "Cool Wallpaper", searchKeyword: "coolwallpaper"),
         StaticCategory(title: "Landscape", searchKeyword: "landscape"),
         StaticCategory(title: "Forests", searchKeyword: "forests"),
         StaticCategory(title: "Garden", searchKeyword: "garden"),
@@ -67,17 +67,17 @@ struct HomeView: View {
         StaticCategory(title: "Magic", searchKeyword: "magic"),
         StaticCategory(title: "Cartoons", searchKeyword: "cartoons"),
         StaticCategory(title: "Romance", searchKeyword: "romance"),
-        StaticCategory(title: "eSports", searchKeyword: "eSports"),
-        StaticCategory(title: "Digital Art", searchKeyword: "digitalArt"),
+        StaticCategory(title: "eSports", searchKeyword: "esports"),
+        StaticCategory(title: "Digital Art", searchKeyword: "digitalart"),
         StaticCategory(title: "Festival", searchKeyword: "festival"),
         StaticCategory(title: "Cute", searchKeyword: "cute"),
         StaticCategory(title: "Rain", searchKeyword: "rain"),
         StaticCategory(title: "Plant", searchKeyword: "plant"),
-        StaticCategory(title: "3D Wallpaper", searchKeyword: "wallpaper3D"),
-        StaticCategory(title: "4K Wallpaper", searchKeyword: "wallpaper4K"),
-        StaticCategory(title: "8K Wallpaper", searchKeyword: "wallpaper8K"),
-        StaticCategory(title: "32K Wallpaper", searchKeyword: "wallpaper32K"),
-        StaticCategory(title: "Live Wallpaper", searchKeyword: "liveWallpaper"),
+        StaticCategory(title: "3D Wallpaper", searchKeyword: "wallpaper3d"),
+        StaticCategory(title: "4K Wallpaper", searchKeyword: "wallpaper4k"),
+        StaticCategory(title: "8K Wallpaper", searchKeyword: "wallpaper8k"),
+        StaticCategory(title: "32K Wallpaper", searchKeyword: "wallpaper32k"),
+        StaticCategory(title: "Live Wallpaper", searchKeyword: "livewallpaper"),
         StaticCategory(title: "Trending", searchKeyword: "trending")
     ]
     

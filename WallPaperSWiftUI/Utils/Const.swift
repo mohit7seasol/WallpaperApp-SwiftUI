@@ -33,7 +33,7 @@ struct WebService {
     static let apiPrefixUrl: String = "api-pexels.7seasol.in/api/images/by-category?category="
     
     static let categories: [String] = [
-        "coolWallpaper",
+        "coolwallpaper",
         "landscape",
         "forests",
         "garden",
@@ -51,17 +51,17 @@ struct WebService {
         "magic",
         "cartoons",
         "romance",
-        "eSports",
-        "digitalArt",
+        "esports",
+        "digitalart",
         "festival",
         "cute",
         "rain",
         "plant",
-        "wallpaper3D",
-        "wallpaper4K",
-        "wallpaper8K",
-        "wallpaper32K",
-        "liveWallpaper",
+        "wallpaper3d",
+        "wallpaper4k",
+        "wallpaper8k",
+        "wallpaper32k",
+        "livewallpaper",
         "trending"
     ]
 }
