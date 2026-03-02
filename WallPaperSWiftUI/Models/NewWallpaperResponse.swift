@@ -5,15 +5,15 @@
 //  Created by DREAMWORLD on 28/02/26.
 //
 
-struct NewWallpaperResponse: Codable {
+struct PexelWallpaperResponse: Codable {
     let total: Int
     let page: Int
     let limit: Int
     let totalPages: Int
-    let data: [NewWallpaperData]
+    let data: [PexelWallpaperData]
 }
 
-struct NewWallpaperData: Codable, Identifiable {
+struct PexelWallpaperData: Codable, Identifiable {
     let id: String
     let pexelsId: Int
     let width: Int
@@ -26,7 +26,7 @@ struct NewWallpaperData: Codable, Identifiable {
     let avgColor: String
     let liked: Bool
     let category: String
-    let src: NewWallpaperSrc
+    let src: PexelWallpaperSrc
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -34,7 +34,7 @@ struct NewWallpaperData: Codable, Identifiable {
     }
 }
 
-struct NewWallpaperSrc: Codable {
+struct PexelWallpaperSrc: Codable {
     let original: String
     let large2x: String
     let large: String
