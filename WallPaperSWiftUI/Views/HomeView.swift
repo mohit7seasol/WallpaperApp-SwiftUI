@@ -77,8 +77,7 @@ struct HomeView: View {
         StaticCategory(title: "4K Wallpaper", searchKeyword: "wallpaper4k"),
         StaticCategory(title: "8K Wallpaper", searchKeyword: "wallpaper8k"),
         StaticCategory(title: "32K Wallpaper", searchKeyword: "wallpaper32k"),
-        StaticCategory(title: "Live Wallpaper", searchKeyword: "livewallpaper"),
-        StaticCategory(title: "Trending", searchKeyword: "trending")
+        StaticCategory(title: "Live Wallpaper", searchKeyword: "livewallpaper")
     ]
     
     var body: some View {
@@ -300,7 +299,7 @@ struct StaticCategoryCell: View {
                 .cornerRadius(20)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(isSelected ? Color.pageSelected : Color.clear, lineWidth: 3)
+                        .stroke(isSelected ? Color.pageSelected : Color.clear, lineWidth: 1)
                 )
             
             // Dark Overlay
