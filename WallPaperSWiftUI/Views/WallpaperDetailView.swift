@@ -45,12 +45,15 @@ struct WallpaperDetailView: View {
                 Spacer(minLength: 20)
                 
                 bottomBar
-                    .padding(.bottom, 0)
+                    .padding(.bottom, 30)
             }
         }
         .navigationBarHidden(true)
         .ignoresSafeArea()
         .onAppear {
+            checkFavoriteStatus()
+        }
+        .onChange(of: selectedIndex) { _ in
             checkFavoriteStatus()
         }
         .actionSheet(isPresented: $showDownloadOptions) {
@@ -60,7 +63,7 @@ struct WallpaperDetailView: View {
                 buttons: getDownloadButtons()
             )
         }
-        .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
+        // Removed .toast modifier
     }
     
     // Get download buttons based on available image qualities
@@ -337,8 +340,14 @@ private extension WallpaperDetailView {
     
     func toggleFavorite() {
         guard let wallpaper = wallpapers[safe: selectedIndex] else { return }
+        
+        // Optimistically update UI with animation
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+            isFavorite.toggle()
+        }
+        
+        // Toggle in favorites manager (no toast now)
         favoritesManager.toggleFavorite(wallpaper)
-        isFavorite.toggle()
     }
     
     func shareWallpaper() {
@@ -367,7 +376,6 @@ struct FavoriteButton: View {
     let action: () -> Void
     
     @State private var animate = false
-    @StateObject private var favoritesManager = FavoritesManager.shared
     
     var body: some View {
         Button(action: {
