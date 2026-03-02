@@ -218,7 +218,7 @@ struct TopGradientView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("Wallpaper")
-                    .font(.system(size: 36, weight: .bold))
+                    .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
                 
                 Spacer()
@@ -246,12 +246,12 @@ struct TopGradientView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(
             Constant.commonBlueGradient
-                .overlay(
+                /* .overlay(
                     Circle()
                         .fill(Color.white.opacity(0.1))
                         .frame(width: 200, height: 200)
                         .offset(x: 150, y: -30)
-                )
+                ) */
         )
     }
 }
