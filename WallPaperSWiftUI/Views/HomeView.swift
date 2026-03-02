@@ -30,6 +30,7 @@ struct StaticCategory: Identifiable {
 struct HomeView: View {
     @StateObject private var trendingViewModel = TrendingWallpaperViewModel()
     @State private var selectedStaticIndex = 0
+    @StateObject private var favoritesManager = FavoritesManager.shared
     
     // Get screen width for cell calculation
     let screenWidth = UIScreen.main.bounds.width
@@ -156,6 +157,7 @@ struct HomeView: View {
         .onAppear {
             trendingViewModel.fetchTrendingWallpapers(loadMore: false)
         }
+        .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
     }
 }
 

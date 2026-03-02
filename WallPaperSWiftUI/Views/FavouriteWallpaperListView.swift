@@ -29,22 +29,23 @@ struct FavouriteWallpaperListView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Custom Navigation Bar (similar to CategoryDetailView)
+                // Custom Navigation Bar matching CategoryDetailView style
                 HStack {
                     Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.white)
-                            .frame(width: 40, height: 40)
-                            .background(Color.white.opacity(0.2))
-                            .clipShape(Circle())
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 20, weight: .semibold))
+                            Text("Back")
+                                .font(.system(size: 17))
+                        }
+                        .foregroundColor(.white)
                     }
                     
                     Spacer()
                     
                     Text("Favorites")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                         .foregroundColor(.white)
                     
                     Spacer()
@@ -58,8 +59,6 @@ struct FavouriteWallpaperListView: View {
                                 .font(.system(size: 18))
                                 .foregroundColor(.white)
                                 .frame(width: 40, height: 40)
-                                .background(Color.white.opacity(0.2))
-                                .clipShape(Circle())
                         }
                     } else {
                         // Empty view for balance
@@ -67,18 +66,16 @@ struct FavouriteWallpaperListView: View {
                             .frame(width: 40, height: 40)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 60)
-                .padding(.bottom, 20)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 8)
                 
                 if favoritesManager.favoriteWallpapers.isEmpty {
-                    // Empty State View (with animation)
+                    // Empty State View
                     VStack(spacing: 20) {
                         Image(systemName: "heart.slash")
                             .font(.system(size: 70))
                             .foregroundColor(.gray)
-                            .scaleEffect(favoritesManager.showToast ? 0.8 : 1.0)
-                            .animation(.spring(response: 0.5, dampingFraction: 0.6), value: favoritesManager.showToast)
                         
                         Text("No Favorites Yet")
                             .font(.title2)
@@ -147,6 +144,7 @@ struct FavouriteWallpaperListView: View {
             }
         }
         .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
     }
 }
