@@ -232,6 +232,7 @@ struct TrendingWallpapersGrid: View {
 struct TopGradientView: View {
     @StateObject private var favoritesManager = FavoritesManager.shared
     @State private var animateFavorite = false
+    @State private var showingSetting = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -265,8 +266,8 @@ struct TopGradientView: View {
                 })
                 .padding(.trailing, 8)
                 
-                // Settings Icon
-                Button(action: {}) {
+                // Settings Icon - Navigate to SettingView
+                NavigationLink(destination: SettingView()) {
                     Image("setting_ic")
                         .resizable()
                         .frame(width: 32, height: 32)
