@@ -78,6 +78,7 @@ struct LanguageView: View {
                                 .opacity(0.3)
                         )
                         .clipShape(Capsule())
+                        .glassEffect()
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, -50)
