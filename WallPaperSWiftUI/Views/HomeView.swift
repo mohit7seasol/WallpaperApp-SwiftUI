@@ -358,21 +358,35 @@ struct StaticCategoryCell: View {
 struct PageControl: View {
     let numberOfPages: Int
     let currentPage: Int
-    let fixedWidth: CGFloat = 200 // Fixed width of 250
+    let fixedWidth: CGFloat = 120 // Fixed width of 250
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(0..<numberOfPages, id: \.self) { index in
-                    Circle()
-                        .fill(index == currentPage ? Color.pageSelected : Color.pageUnselected)
-                        .frame(width: 8, height: 8)
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(0..<numberOfPages, id: \.self) { index in
+                        Circle()
+                            .fill(index == currentPage ? Color.pageSelected : Color.pageUnselected)
+                            .frame(width: 8, height: 8)
+                            .id(index) // Add ID for scroll positioning
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+            .frame(width: fixedWidth) // Fixed width container
+            .frame(maxWidth: .infinity) // Center it horizontally
+            .disabled(true) // Disable user interaction - prevents manual scrolling
+            .onChange(of: currentPage) { newPage in
+                // Calculate the target index to scroll to
+                // We want to center the selected dot in the visible area
+                let targetIndex = min(max(newPage, 0), numberOfPages - 1)
+                
+                withAnimation {
+                    // Scroll to the selected index
+                    proxy.scrollTo(targetIndex, anchor: .center)
                 }
             }
-            .padding(.horizontal, 16)
         }
-        .frame(width: fixedWidth) // Fixed width container
-        .frame(maxWidth: .infinity) // Center it horizontally
     }
 }
 
