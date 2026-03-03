@@ -12,20 +12,20 @@ enum Language: String {
 //    case Arabic = "ar"
     case English = "en"
     case Chinese = "zh-Hans"
-//    case Danish = "da"
-//    case Dutch = "nl"
+    case Danish = "da"
+    case Dutch = "nl"
     case French = "fr"
     case German = "de"
 //    case Greek = "el"
     case Hindi = "hi"
 //    case Indonesian = "id"
     case Italian = "it"
-//    case Japanese = "ja"
+    case Japanese = "ja"
     case Korean = "ko"
 //    case Norwegian = "no"
 //    case Polish = "pl"
     case Portuguese = "pt-PT"
-//    case Russian = "ru"
+    case Russian = "ru"
     case Spanish = "es"
 //    case Swedish = "sv"
 //    case Thai = "th"
@@ -99,6 +99,11 @@ let languages = [
     AppLanguage(LocalName: "한국인", image: .korean, englishName: "korean", languageCode: .Korean),
     AppLanguage(LocalName: "Português", image: .portugal, englishName: "Portuguese", languageCode: .Portuguese),
     AppLanguage(LocalName: "Española", image: .spanish, englishName: "Spanish", languageCode: .Spanish),
-    AppLanguage(LocalName: "Türkçe", image: .turkey, englishName: "Turkish", languageCode: .Turkish)
+    AppLanguage(LocalName: "Türkçe", image: .turkey, englishName: "Turkish", languageCode: .Turkish),
+    
+    AppLanguage(LocalName: "Dansk", image: .danish, englishName: "Danish", languageCode: .Danish),
+    AppLanguage(LocalName: "Nederlands", image: .dutch, englishName: "Dutch", languageCode: .Dutch),
+    AppLanguage(LocalName: "日本語", image: .danish, englishName: "Japanese", languageCode: .Danish),
+    AppLanguage(LocalName: "Русский", image: .dutch, englishName: "Russian", languageCode: .Dutch)
 ]
 

@@ -160,6 +160,10 @@ extension Image {
     static let spanish                      = Image("spanish")
     static let turkey                       = Image("turkey")
     static let uk                           = Image("uk")
+    static let danish                       = Image("danish")
+    static let dutch                        = Image("dutch")
+    static let japanese                     = Image("japanese")
+    static let russian                      = Image("russian")
     
     
     // MARK: Quiz Images
