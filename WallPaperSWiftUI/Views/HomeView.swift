@@ -84,7 +84,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.backgroundBlack
+                Color.appBgColor
                     .ignoresSafeArea()
                 
                 // Main Content

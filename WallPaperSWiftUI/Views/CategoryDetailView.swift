@@ -37,7 +37,7 @@ struct CategoryDetailView: View {
     
     var body: some View {
         ZStack {
-            Color.backgroundBlack
+            Color.appBgColor
                 .ignoresSafeArea()
             
             ScrollView {

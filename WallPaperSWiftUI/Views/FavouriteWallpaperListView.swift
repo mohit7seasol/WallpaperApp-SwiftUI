@@ -25,7 +25,7 @@ struct FavouriteWallpaperListView: View {
     
     var body: some View {
         ZStack {
-            Color.backgroundBlack
+            Color.appBgColor
                 .ignoresSafeArea()
             
             if favoritesManager.favoriteWallpapers.isEmpty {

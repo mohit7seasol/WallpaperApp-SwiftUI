@@ -26,6 +26,7 @@ extension Color {
     static let pageSelected = Color(hex: "5A5ED9")
     static let pageUnselected = Color(hex: "303041")
     static let backgroundBlack = Color.black
+    static let appBgColor = Color("appTheme")
 }
 
 // MARK: - Capture Size
