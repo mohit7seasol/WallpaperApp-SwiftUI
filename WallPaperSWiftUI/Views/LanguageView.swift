@@ -119,6 +119,18 @@ struct LanguageRow: View {
     let cellHeight: CGFloat
     let iconSize: CGFloat
     
+    private var styledLanguageText: AttributedString {
+        var english = AttributedString(item.englishName)
+        english.foregroundColor = .white
+        english.font = .systemFont(ofSize: 16, weight: .medium)
+        
+        var local = AttributedString(" (\(item.LocalName))")
+        local.foregroundColor = UIColor(Color(hex: "#717186"))
+        local.font = .systemFont(ofSize: 16, weight: .medium)
+        
+        return english + local
+    }
+    
     var body: some View {
         HStack(spacing: 15) {
             
@@ -128,9 +140,7 @@ struct LanguageRow: View {
                 .frame(width: iconSize, height: iconSize)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             
-            Text("\(item.englishName) (\(item.LocalName))")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.white)
+            Text(styledLanguageText)
             
             Spacer()
             
