@@ -57,7 +57,7 @@ struct LanguageView: View {
                         .frame(width: 132, height: 132)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 20)
+                .padding(.top, 12)
                 
                 // MARK: Continue Button
                 Button {
@@ -80,7 +80,7 @@ struct LanguageView: View {
                         .clipShape(Capsule())
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 16)
+                .padding(.top, -50)
                 
                 // MARK: Language List
                 ScrollView(showsIndicators: false) {
@@ -103,6 +103,7 @@ struct LanguageView: View {
                     .padding(.top, 25)
                     .padding(.bottom, 40)
                 }
+                .padding(.top, 4)
             }
         }
         .onAppear {
@@ -136,10 +137,10 @@ struct LanguageRow: View {
                 Image("selected_language")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 14, height: 22)
+                    .frame(width: 22, height: 14)
             }
         }
-        .padding(.horizontal, 18)
+        .padding(.horizontal, 12)
         .frame(maxWidth: .infinity)
         .frame(height: cellHeight)
         .background(
