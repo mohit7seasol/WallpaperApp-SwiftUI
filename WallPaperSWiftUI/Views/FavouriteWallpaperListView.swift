@@ -72,10 +72,17 @@ struct FavouriteWallpaperListView: View {
                         ForEach(Array(favoritesManager.favoriteWallpapers.enumerated()), id: \.element.id) { index, wallpaper in
                             NavigationLink(destination: WallpaperDetailView(wallpapers: favoritesManager.favoriteWallpapers, selectedIndex: index)) {
                                 ZStack(alignment: .bottomTrailing) {
+                                    // Placeholder image
+                                    Image("placeholder2")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: cellWidth, height: cellWidth * 1.5)
+                                        .clipped()
+                                        .cornerRadius(12)
+                                    
+                                    // WebImage without indicator
                                     WebImage(url: URL(string: wallpaper.src.medium))
                                         .resizable()
-                                        .indicator(.activity)
-                                        .transition(.fade(duration: 0.5))
                                         .scaledToFill()
                                         .frame(width: cellWidth, height: cellWidth * 1.5)
                                         .clipped()

@@ -45,26 +45,35 @@ struct CategoryDetailView: View {
                     ForEach(Array(viewModel.wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
                         ZStack(alignment: .bottomTrailing) {
                             NavigationLink(destination: WallpaperDetailView(wallpapers: viewModel.wallpapers, selectedIndex: index)) {
-                                WebImage(url: URL(string: wallpaper.src.medium))
-                                    .resizable()
-                                    .indicator(.activity)
-                                    .transition(.fade(duration: 0.5))
-                                    .scaledToFill()
-                                    .frame(width: cellWidth, height: cellHeight)
-                                    .cornerRadius(16)
-                                    .clipped()
-                                    .onAppear {
-                                        // Preload next images when approaching the end
-                                        if index >= viewModel.wallpapers.count - 6 {
-                                            let urls = viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
-                                            SDWebImagePrefetcher.shared.prefetchURLs(urls)
-                                        }
-                                        
-                                        // Trigger load more when approaching the end
-                                        if index >= viewModel.wallpapers.count - 4 && viewModel.hasMorePages && !viewModel.isLoading {
-                                            viewModel.loadMore()
-                                        }
+                                ZStack {
+                                    // Placeholder image
+                                    Image("placeholder1")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: cellWidth, height: cellHeight)
+                                        .cornerRadius(16)
+                                        .clipped()
+                                    
+                                    // WebImage without indicator
+                                    WebImage(url: URL(string: wallpaper.src.medium))
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: cellWidth, height: cellHeight)
+                                        .cornerRadius(16)
+                                        .clipped()
+                                }
+                                .onAppear {
+                                    // Preload next images when approaching the end
+                                    if index >= viewModel.wallpapers.count - 6 {
+                                        let urls = viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                        SDWebImagePrefetcher.shared.prefetchURLs(urls)
                                     }
+                                    
+                                    // Trigger load more when approaching the end
+                                    if index >= viewModel.wallpapers.count - 4 && viewModel.hasMorePages && !viewModel.isLoading {
+                                        viewModel.loadMore()
+                                    }
+                                }
                             }
                             
                             // Favorite Button with Bounce Effect

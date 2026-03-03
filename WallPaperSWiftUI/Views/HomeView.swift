@@ -182,26 +182,35 @@ struct TrendingWallpapersGrid: View {
             ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
                 ZStack(alignment: .bottomTrailing) {
                     NavigationLink(destination: WallpaperDetailView(wallpapers: wallpapers, selectedIndex: index)) {
-                        WebImage(url: URL(string: wallpaper.src.medium))
-                            .resizable()
-                            .indicator(.activity)
-                            .transition(.fade(duration: 0.5))
-                            .scaledToFill()
-                            .frame(width: cellWidth, height: cellHeight)
-                            .cornerRadius(16)
-                            .clipped()
-                            .onAppear {
-                                // Preload next images when approaching the end
-                                if index >= wallpapers.count - 6 {
-                                    let urls = wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
-                                    SDWebImagePrefetcher.shared.prefetchURLs(urls)
-                                }
-                                
-                                // Trigger load more when approaching the end
-                                if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
-                                    loadMore()
-                                }
+                        ZStack {
+                            // Placeholder image
+                            Image("placeholder1")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: cellWidth, height: cellHeight)
+                                .cornerRadius(16)
+                                .clipped()
+                            
+                            // WebImage without indicator
+                            WebImage(url: URL(string: wallpaper.src.medium))
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: cellWidth, height: cellHeight)
+                                .cornerRadius(16)
+                                .clipped()
+                        }
+                        .onAppear {
+                            // Preload next images when approaching the end
+                            if index >= wallpapers.count - 6 {
+                                let urls = wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                SDWebImagePrefetcher.shared.prefetchURLs(urls)
                             }
+                            
+                            // Trigger load more when approaching the end
+                            if index >= wallpapers.count - 4 && hasMorePages && !isLoading {
+                                loadMore()
+                            }
+                        }
                     }
                     
                     // Favorite Button with Bounce Effect

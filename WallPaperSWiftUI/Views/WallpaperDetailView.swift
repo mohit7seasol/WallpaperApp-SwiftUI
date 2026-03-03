@@ -45,7 +45,7 @@ struct WallpaperDetailView: View {
                 Spacer(minLength: 20)
                 
                 bottomBar
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 0)
             }
         }
         .navigationBarHidden(true)
@@ -255,9 +255,16 @@ struct WallpaperCardView: View {
             // Black background inside card
             Color.black
             
+            // Placeholder image
+            Image("placeholder3")
+                .resizable()
+                .scaledToFill()
+                .frame(width: width, height: height)
+                .clipped()
+            
+            // WebImage without indicator
             WebImage(url: URL(string: wallpaper.src.large))
                 .resizable()
-                .indicator(.activity)
                 .scaledToFill()
                 .frame(width: width, height: height)
                 .clipped()
