@@ -8,5 +8,9 @@
 	<array>
 		<dict/>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Oxanium-SemiBold.ttf</string>
+	</array>
 </dict>
 </plist>
