@@ -12,6 +12,7 @@ struct SettingView: View {
     
     @Environment(\.dismiss) var dismiss
     @State private var showingRateDialog = false
+    @State private var navigateToLanguage = false
     
     private var isIpad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -27,7 +28,7 @@ struct SettingView: View {
     
     // MARK: - Settings Data
     let settingsItems: [SettingItem] = [
-        SettingItem(icon: "language", title: "Language", action: .none),
+        SettingItem(icon: "language", title: "Language", action: .language),
         SettingItem(icon: "privacypolicy", title: "Privacy Policy", action: .url("privacyPolicy")),
         SettingItem(icon: "aboutus", title: "About Us", action: .url("aboutUs")),
         SettingItem(icon: "termsofuse", title: "Terms Of Use", action: .url("termsOfUse")),
@@ -59,6 +60,7 @@ struct SettingView: View {
                         SettingCell(
                             item: item,
                             showingRateDialog: $showingRateDialog,
+                            navigateToLanguage: $navigateToLanguage,
                             cellHeight: cellHeight,
                             iconSize: iconSize
                         )
@@ -95,14 +97,29 @@ struct SettingView: View {
                         .frame(width: 44, height: 44)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0)
+                .padding(.top, safeAreaTop())
                 
                 Spacer()
+            }
+            
+            // ✅ Hidden NavigationLink (No UI change)
+            NavigationLink(
+                destination: LanguageView(),
+                isActive: $navigateToLanguage
+            ) {
+                EmptyView()
             }
         }
         .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
+    }
+    
+    // MARK: - Safe Area Fix
+    private func safeAreaTop() -> CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?.windows.first?.safeAreaInsets.top ?? 0
     }
 }
 
@@ -116,7 +133,7 @@ struct SettingItem: Identifiable {
 }
 
 enum SettingAction {
-    case none
+    case language
     case url(String)
     case rate
 }
@@ -127,6 +144,7 @@ struct SettingCell: View {
     
     let item: SettingItem
     @Binding var showingRateDialog: Bool
+    @Binding var navigateToLanguage: Bool
     let cellHeight: CGFloat
     let iconSize: CGFloat
     
@@ -136,7 +154,6 @@ struct SettingCell: View {
         }) {
             HStack(spacing: 15) {
                 
-                // Icon
                 Image(item.icon)
                     .resizable()
                     .scaledToFit()
@@ -151,14 +168,11 @@ struct SettingCell: View {
             .padding(.horizontal, 12)
             .frame(maxWidth: .infinity)
             .frame(height: cellHeight)
-//            .glassEffect()
             .background(
                 ZStack {
-                    // Dark background
                     RoundedRectangle(cornerRadius: 22)
                         .fill(Color.black.opacity(0.45))
                     
-                    // Border like screenshot
                     RoundedRectangle(cornerRadius: 22)
                         .stroke(
                             LinearGradient(
@@ -188,12 +202,14 @@ struct SettingCell: View {
     
     private func handleTap() {
         switch item.action {
+        case .language:
+            navigateToLanguage = true
+            
         case .url(let linkName):
             handleURLNavigation(linkName: linkName)
+            
         case .rate:
             showingRateDialog = true
-        case .none:
-            break
         }
     }
     
@@ -246,6 +262,8 @@ struct SettingCell: View {
 
 struct SettingView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingView()
+        NavigationStack {
+            SettingView()
+        }
     }
 }
