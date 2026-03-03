@@ -31,6 +31,7 @@ struct HomeView: View {
     @StateObject private var trendingViewModel = TrendingWallpaperViewModel()
     @State private var selectedStaticIndex = 0
     @StateObject private var favoritesManager = FavoritesManager.shared
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     // Get screen width for cell calculation
     let screenWidth = UIScreen.main.bounds.width
