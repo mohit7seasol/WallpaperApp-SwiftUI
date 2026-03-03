@@ -430,7 +430,7 @@ struct DetailFavoriteButton: View {
             Image(isFavorite ? "favourite_detail" : "unfavourite_detail")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 42, height: 42)
+                .frame(width: 20, height: 18)
                 .frame(width: 56, height: 56)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
