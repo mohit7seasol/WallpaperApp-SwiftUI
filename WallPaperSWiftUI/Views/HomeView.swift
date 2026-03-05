@@ -110,6 +110,11 @@ struct HomeView: View {
                     )
                     .padding(.top, -50)
                     
+                    // Live Wallpaper Banner
+                    WallpaperBannerView()
+                        .padding(.horizontal, 15)
+                        .padding(.top, -30)
+                    
                     // Trending Wallpaper Static Title
                     HStack(spacing: 8) {
                         Image("trend")
@@ -124,7 +129,7 @@ struct HomeView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
-                    .padding(.top, -32)
+                    .padding(.top, 0)
                     
                     // Scrollable Grid Section
                     if trendingViewModel.isLoading && trendingViewModel.wallpapers.isEmpty {
@@ -390,7 +395,42 @@ struct PageControl: View {
         }
     }
 }
-
+// MARK: - Wallpaper Banner View
+struct WallpaperBannerView: View {
+    
+    var bannerHeight: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 140 : 110
+    }
+    
+    let screenWidth = UIScreen.main.bounds.width
+    
+    var body: some View {
+        ZStack(alignment: .leading) {
+            
+            // Background Image
+            Image("wall_banner")
+                .resizable()
+                .scaledToFill()
+                .frame(width: screenWidth - 30, height: bannerHeight)
+                .clipped()
+                .cornerRadius(20)
+            
+            // Text Content
+            VStack(alignment: .leading, spacing: 6) {
+                
+                Text("Live Wallpaper")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(.white)
+                
+                Text("Set animated wallpapers effortlessly")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white)
+            }
+            .padding(.leading, 20)
+        }
+        .frame(width: screenWidth - 30, height: bannerHeight)
+    }
+}
 // MARK: - Preview
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {

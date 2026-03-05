@@ -14,6 +14,11 @@ import SwiftUI
 
 struct OnBoardingView: View {
     
+    @Environment(\.presentationMode) var presentationMode
+    
+    @AppStorage(SessionKeys.isLanguageDone) var isLanguageDone = false
+    @AppStorage(SessionKeys.isOnboardingDone) var isOnboardingDone = false
+    
     @State private var currentIndex = 0
     
     private var isIpad: Bool {
@@ -52,98 +57,113 @@ struct OnBoardingView: View {
     ]
     
     var body: some View {
-        ZStack {
+        
+        // MARK: Language Screen First
+        if !isLanguageDone {
+            LanguageView()
+        }
+        
+        // MARK: Onboarding Screens
+        else if !isOnboardingDone {
             
-            // MARK: Background
-            Image(pages[currentIndex].background)
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
-            
-            // MARK: Dark Overlay
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-            
-            VStack {
+            ZStack {
                 
-                Spacer()
-                
-                // MARK: Center Image
-                Image(pages[currentIndex].centerImage)
+                // Background
+                Image(pages[currentIndex].background)
                     .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: isIpad ? 450 : 280)
-                    .padding(.bottom, 30)
+                    .scaledToFill()
+                    .ignoresSafeArea()
                 
-                // MARK: Title
-                Text(pages[currentIndex].title)
-                    .font(.custom("Oxanium-SemiBold", size: 32))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 30)
+                // Dark overlay
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
                 
-                Spacer()
-                
-                // MARK: Bottom Controls
-                HStack {
+                VStack {
                     
-                    // Previous Button (Hidden on First Screen)
-                    if currentIndex != 0 {
-                        Button {
-                            withAnimation {
-                                currentIndex -= 1
+                    Spacer()
+                    
+                    // Center Image
+                    Image(pages[currentIndex].centerImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: isIpad ? 450 : 280)
+                        .padding(.bottom, 30)
+                    
+                    // Title
+                    Text(pages[currentIndex].title)
+                        .font(.custom("Oxanium-SemiBold", size: 32))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 30)
+                    
+                    Spacer()
+                    
+                    // Bottom Controls
+                    HStack {
+                        
+                        // Previous Button
+                        if currentIndex != 0 {
+                            Button {
+                                withAnimation {
+                                    currentIndex -= 1
+                                }
+                            } label: {
+                                Image("on_previous")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: buttonSize, height: buttonSize)
                             }
+                        } else {
+                            Spacer()
+                                .frame(width: buttonSize, height: buttonSize)
+                        }
+                        
+                        Spacer()
+                        
+                        // Page Indicator
+                        HStack(spacing: 8) {
+                            ForEach(0..<pages.count, id: \.self) { index in
+                                Circle()
+                                    .fill(index == currentIndex ? Color.white : Color.white.opacity(0.4))
+                                    .frame(width: 8, height: 8)
+                            }
+                        }
+                        .frame(width: pageControlWidth)
+                        
+                        Spacer()
+                        
+                        // Next / Done Button
+                        Button {
+                            
+                            if currentIndex < pages.count - 1 {
+                                
+                                withAnimation {
+                                    currentIndex += 1
+                                }
+                                
+                            } else {
+                                
+                                // MARK: Last Screen Finished
+                                isOnboardingDone = true
+                                
+                                // dismiss onboarding
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                            
                         } label: {
-                            Image("on_previous")
+                            Image(currentIndex == pages.count - 1 ? "on_done" : "on_next")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: buttonSize, height: buttonSize)
                         }
-                    } else {
-                        // Keep spacing alignment
-                        Spacer()
-                            .frame(width: buttonSize, height: buttonSize)
                     }
-                    
-                    Spacer()
-                    
-                    // Page Indicator
-                    HStack(spacing: 8) {
-                        ForEach(0..<pages.count, id: \.self) { index in
-                            Circle()
-                                .fill(index == currentIndex ? Color.white : Color.white.opacity(0.4))
-                                .frame(width: 8, height: 8)
-                        }
-                    }
-                    .frame(width: pageControlWidth)
-                    
-                    Spacer()
-                    
-                    // Next / Done Button
-                    Button {
-                        if currentIndex < pages.count - 1 {
-                            withAnimation {
-                                currentIndex += 1
-                            }
-                        } else {
-                            // Done Action
-                            print("Onboarding Finished")
-                        }
-                    } label: {
-                        Image(currentIndex == pages.count - 1 ? "on_done" : "on_next")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: buttonSize, height: buttonSize)
-                    }
+                    .padding(.horizontal, 30)
+                    .padding(.bottom, isIpad ? 60 : 40)
                 }
-                .padding(.horizontal, 30)
-                .padding(.bottom, isIpad ? 60 : 40)
             }
         }
     }
 }
-
-// MARK: - Model
 
 struct OnboardingItem {
     let background: String
