@@ -84,7 +84,7 @@ struct SplashContent: View {
                 Spacer()
 
                 MyLottieView(
-                    animationFileName: "SplashProgress",
+                    animationFileName: "Loader",
                     loopMode: .loop
                 )
                 .frame(width: 100, height: 100)
