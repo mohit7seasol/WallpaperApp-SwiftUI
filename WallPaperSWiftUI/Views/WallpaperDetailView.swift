@@ -45,7 +45,7 @@ struct WallpaperDetailView: View {
                 Spacer(minLength: 20)
                 
                 bottomBar
-                    .padding(.bottom, 0)
+                    .padding(.bottom, 40)
             }
         }
         .navigationBarHidden(true)
