@@ -39,6 +39,7 @@ struct VideoPlayerComponent: View {
                 if player?.timeControlStatus != .playing {
                     Button(action: onPlaySelection) {
                         ZStack {
+                            
                             Circle()
                                 .fill(.black.opacity(0.6))
                                 .frame(width: 70,height: 70)
@@ -51,53 +52,65 @@ struct VideoPlayerComponent: View {
                 }
             }
             
-            // MARK: Action Buttons
-            HStack(spacing: 12) {
+            //////////////////////////////////////////////////////
+            // MARK: Preview Button
+            //////////////////////////////////////////////////////
+            
+            Button(action: onPlaySelection) {
                 
-                Button(action: onPlaySelection) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "play.circle.fill")
-                        Text("Preview")
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
-                    .padding(.horizontal,16)
-                    .padding(.vertical,8)
-                    .background(.blue.opacity(0.1))
-                    .clipShape(Capsule())
+                HStack(spacing: 8) {
+                    
+                    Image(systemName: "play.fill")
+                        .font(.subheadline)
+                    
+                    Text("Preview")
+                        .font(.headline)
+                        .fontWeight(.semibold)
                 }
-                
-                Button(action: onSeekToStart) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "gobackward")
-                        Text("Reset")
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal,16)
-                    .padding(.vertical,8)
-                    .background(.gray.opacity(0.1))
-                    .clipShape(Capsule())
-                }
-                
-                Button(action: onShowAspectRatioWarning) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "info.circle")
-                        Text("Info")
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(.orange)
-                    .padding(.horizontal,16)
-                    .padding(.vertical,8)
-                    .background(.orange.opacity(0.1))
-                    .clipShape(Capsule())
-                }
-                
-                Spacer()
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(
+                    LinearGradient(
+                        colors: [
+                            Color.gradientOne,
+                            Color.gradientOne
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             
+            //////////////////////////////////////////////////////
+            // MARK: Info Button
+            //////////////////////////////////////////////////////
+            
+            Button(action: onShowAspectRatioWarning) {
+                
+                HStack(spacing: 6) {
+                    
+                    Image(systemName: "info.circle")
+                    
+                    Text("Info")
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(
+                    Color.white.opacity(0.08)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            
+            //////////////////////////////////////////////////////
             // MARK: Aspect Ratio Warning
+            //////////////////////////////////////////////////////
+            
             if showAspectRatioWarning {
+                
                 AspectRatioWarningView(
                     currentRatio: aspectRatio,
                     resolution: videoResolution,
@@ -123,106 +136,379 @@ struct AspectRatioWarningView: View {
         resolution.height > resolution.width
     }
     
-    private var aspectRatioStatus: (message: String, color: Color, icon: String) {
+    private var aspectRatioStatus: (title: String, message: String, color: Color, icon: String) {
         
         let idealRatio: CGFloat = 9.0/16.0
-        
-        let currentDisplayRatio =
-        isPortrait
-        ? resolution.width / resolution.height
-        : resolution.height / resolution.width
+        let currentDisplayRatio = isPortrait ? resolution.width / resolution.height : resolution.height / resolution.width
         
         if abs(currentDisplayRatio - idealRatio) < 0.1 {
-            return ("Perfect for Live Wallpapers!", .green, "checkmark.circle.fill")
-        }
-        else if abs(currentDisplayRatio - idealRatio) < 0.2 {
-            return ("Good aspect ratio", .orange, "exclamationmark.triangle.fill")
-        }
-        else {
-            return ("May not fill screen perfectly", .red, "xmark.circle.fill")
+            return (
+                title: "Perfect Match",
+                message: "Your video is perfectly optimized for Live Wallpapers",
+                color: .green,
+                icon: "checkmark.circle.fill"
+            )
+        } else if abs(currentDisplayRatio - idealRatio) < 0.2 {
+            return (
+                title: "Good Compatibility",
+                message: "Your video has good aspect ratio for Live Wallpapers",
+                color: .orange,
+                icon: "exclamationmark.triangle.fill"
+            )
+        } else {
+            return (
+                title: "Compatibility Warning",
+                message: "Your video may not fill the screen perfectly",
+                color: .red,
+                icon: "xmark.circle.fill"
+            )
         }
     }
     
     var body: some View {
-        
-        VStack(spacing: 16) {
-            
-            // Header
+        VStack(spacing: 20) {
+            // Header with enhanced styling
             HStack {
+                // Icon with gradient background
+                ZStack {
+                    Circle()
+                        .fill(aspectRatioStatus.color.opacity(0.2))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: aspectRatioStatus.icon)
+                        .foregroundColor(aspectRatioStatus.color)
+                        .font(.title3)
+                }
                 
-                Image(systemName: aspectRatioStatus.icon)
-                    .foregroundColor(aspectRatioStatus.color)
-                    .font(.title2)
-                
-                Text("Video Analysis")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(aspectRatioStatus.title)
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                    
+                    Text("Video Analysis Report")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
                 
                 Spacer()
                 
+                // Dismiss button with enhanced styling
                 Button(action: onDismiss) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
-                        .font(.title2)
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.1))
+                            .frame(width: 36, height: 36)
+                        
+                        Image(systemName: "xmark")
+                            .font(.subheadline.bold())
+                            .foregroundColor(.gray)
+                    }
                 }
+                .buttonStyle(PlainButtonStyle())
             }
             
-            // Status
-            Text(aspectRatioStatus.message)
-                .font(.subheadline)
-                .foregroundColor(aspectRatioStatus.color)
-                .fontWeight(.medium)
-            
-            // Specs
+            // Status Card
             VStack(spacing: 12) {
-                
-                HStack {
-                    Text("Resolution:")
+                // Status message with icon
+                HStack(spacing: 12) {
+                    Image(systemName: aspectRatioStatus.icon)
+                        .font(.title2)
+                        .foregroundColor(aspectRatioStatus.color)
+                    
+                    Text(aspectRatioStatus.message)
+                        .font(.subheadline)
                         .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                    
                     Spacer()
-                    Text("\(Int(resolution.width)) × \(Int(resolution.height))")
-                        .foregroundColor(.secondary)
                 }
                 
-                HStack {
-                    Text("Orientation:")
-                        .fontWeight(.medium)
-                    Spacer()
-                    Text(isPortrait ? "Portrait" : "Landscape")
-                        .foregroundColor(.secondary)
-                }
-                
-                HStack {
-                    Text("Aspect Ratio:")
-                        .fontWeight(.medium)
-                    Spacer()
-                    Text(String(format: "%.2f:1", currentRatio))
-                        .foregroundColor(.secondary)
+                // Progress indicator for aspect ratio match
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Compatibility Score")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        
+                        Spacer()
+                        
+                        Text(compatibilityScore)
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(aspectRatioStatus.color)
+                    }
+                    
+                    // Custom progress bar
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            Rectangle()
+                                .fill(Color.white.opacity(0.1))
+                                .frame(height: 6)
+                                .cornerRadius(3)
+                            
+                            Rectangle()
+                                .fill(aspectRatioStatus.color)
+                                .frame(width: geometry.size.width * compatibilityPercentage, height: 6)
+                                .cornerRadius(3)
+                        }
+                    }
+                    .frame(height: 6)
                 }
             }
-            .font(.subheadline)
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white.opacity(0.05))
+            )
             
-            // Tips
-            VStack(alignment: .leading, spacing: 8) {
+            // Video Specifications Card
+            VStack(alignment: .leading, spacing: 16) {
+                Text("VIDEO SPECIFICATIONS")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.gray)
+                    .tracking(0.5)
                 
-                Text("💡 Tips for best results:")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("• Portrait videos (9:16) work best")
-                    Text("• Square videos (1:1) are also good")
-                    Text("• Landscape videos may have black bars")
+                VStack(spacing: 16) {
+                    // Resolution row
+                    HStack {
+                        Label {
+                            Text("Resolution")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        } icon: {
+                            Image(systemName: "rectangle.split.3x3")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                                .frame(width: 24)
+                        }
+                        
+                        Spacer()
+                        
+                        Text("\(Int(resolution.width)) × \(Int(resolution.height))")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(Color.blue.opacity(0.2))
+                            )
+                    }
+                    
+                    Divider()
+                        .background(Color.gray.opacity(0.3))
+                    
+                    // Orientation row
+                    HStack {
+                        Label {
+                            Text("Orientation")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        } icon: {
+                            Image(systemName: isPortrait ? "iphone" : "tv")
+                                .font(.caption)
+                                .foregroundColor(.purple)
+                                .frame(width: 24)
+                        }
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: isPortrait ? "arrow.up.and.down" : "arrow.left.and.right")
+                                .font(.caption2)
+                                .foregroundColor(.purple)
+                            
+                            Text(isPortrait ? "Portrait" : "Landscape")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.purple)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color.purple.opacity(0.2))
+                        )
+                    }
+                    
+                    Divider()
+                        .background(Color.gray.opacity(0.3))
+                    
+                    // Aspect Ratio row
+                    HStack {
+                        Label {
+                            Text("Aspect Ratio")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        } icon: {
+                            Image(systemName: "rectangle.ratio.3.to.4")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                                .frame(width: 24)
+                        }
+                        
+                        Spacer()
+                        
+                        Text(String(format: "%.2f:1", currentRatio))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.orange)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(Color.orange.opacity(0.2))
+                            )
+                    }
                 }
-                .font(.caption)
-                .foregroundColor(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white.opacity(0.05))
+            )
+            
+            // Tips Card
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Image(systemName: "lightbulb.fill")
+                        .font(.caption)
+                        .foregroundColor(.yellow)
+                    
+                    Text("PRO TIPS")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.gray)
+                        .tracking(0.5)
+                }
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    TipRow(
+                        icon: "checkmark.circle.fill",
+                        iconColor: .green,
+                        text: "Portrait videos (9:16) work best for Live Wallpapers"
+                    )
+                    
+                    TipRow(
+                        icon: "checkmark.circle.fill",
+                        iconColor: .green,
+                        text: "Square videos (1:1) are also good"
+                    )
+                    
+                    TipRow(
+                        icon: "exclamationmark.triangle.fill",
+                        iconColor: .orange,
+                        text: "Landscape videos may have black bars on sides"
+                    )
+                }
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.yellow.opacity(0.1),
+                                Color.orange.opacity(0.05)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.yellow.opacity(0.2), lineWidth: 1)
+                    )
+            )
         }
-        .padding()
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.1), radius: 8)
+        .padding(20)
+        .background(
+            ZStack {
+                // Main background
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color(red: 0.08, green: 0.08, blue: 0.1))
+                
+                // Subtle gradient overlay
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                
+                // Border
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.white.opacity(0.1),
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            }
+        )
+        .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
+        .shadow(color: aspectRatioStatus.color.opacity(0.1), radius: 15, x: 0, y: 5)
+    }
+    
+    // Computed properties for compatibility score
+    private var compatibilityPercentage: Double {
+        let idealRatio: CGFloat = 9.0/16.0
+        let currentDisplayRatio = isPortrait ? resolution.width / resolution.height : resolution.height / resolution.width
+        let difference = abs(currentDisplayRatio - idealRatio)
+        return max(0, min(1, 1 - (difference * 2.5)))
+    }
+    
+    private var compatibilityScore: String {
+        let percentage = compatibilityPercentage * 100
+        if percentage >= 80 {
+            return "Excellent"
+        } else if percentage >= 60 {
+            return "Good"
+        } else if percentage >= 40 {
+            return "Fair"
+        } else {
+            return "Poor"
+        }
+    }
+}
+
+// MARK: - Supporting View
+struct TipRow: View {
+    let icon: String
+    let iconColor: Color
+    let text: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(iconColor)
+                .frame(width: 16)
+            
+            Text(text)
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.9))
+                .lineSpacing(2)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            Spacer(minLength: 0)
+        }
     }
 }
 
