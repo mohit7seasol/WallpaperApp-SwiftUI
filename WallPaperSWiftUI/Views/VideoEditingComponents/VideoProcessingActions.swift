@@ -64,7 +64,9 @@ struct VideoProcessingActions: View {
                         ProgressView()
                             .tint(.white)
                     } else {
-                        Image(systemName: trimmedVideoURL == nil ? "scissors" : "sparkles")
+                        // Changed from "scissors" to "scissors.circle.fill" as requested
+                        Image(systemName: trimmedVideoURL == nil ? "scissors.circle.fill" : "sparkles")
+                            .font(.title3)
                     }
                     
                     Text(isProcessing ? "Processing..." : buttonTitle)
@@ -82,7 +84,6 @@ struct VideoProcessingActions: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
             .disabled(!canExecute || isProcessing)
-            
             
             // MARK: Preview Button
             
