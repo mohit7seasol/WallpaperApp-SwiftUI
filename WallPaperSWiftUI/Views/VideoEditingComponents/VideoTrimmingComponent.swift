@@ -33,10 +33,10 @@ struct VideoTrimmingComponent: View {
                 
                 Text("Max 5 Seconds")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color(red: 153/255, green: 147/255, blue: 177/255))
             }
             
-            HStack(spacing:14){
+            HStack(spacing:10){
                 
                 TrimInfoBox(
                     title: "Start",

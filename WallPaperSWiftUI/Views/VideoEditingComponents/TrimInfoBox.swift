@@ -17,10 +17,10 @@ struct TrimInfoBox: View {
         VStack(spacing:6){
             Text(title)
                 .font(.caption)
-                .foregroundColor(.gray)
+                .foregroundColor(.white)
             
             Text(value)
-                .font(.headline)
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(color)
         }
         .frame(maxWidth:.infinity)

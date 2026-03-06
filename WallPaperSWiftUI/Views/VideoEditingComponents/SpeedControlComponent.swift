@@ -123,11 +123,11 @@ struct SpeedControlComponent: View {
                 
                 HStack(spacing: 6) {
                     Image(systemName: "info.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color(red: 120/255, green: 124/255, blue: 238/255))
                     
                     Text("Speed Conversion Preview :")
                         .font(.caption)
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color(red: 120/255, green: 124/255, blue: 238/255))
                 }
                 
                 Text("\(formatTime(originalDuration)) at \(speedMultiplier, specifier: "%.1f")x = \(formatTime(finalDuration)) final duration")
