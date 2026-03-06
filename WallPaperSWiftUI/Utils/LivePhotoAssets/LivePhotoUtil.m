@@ -15,105 +15,173 @@
  */
 @implementation LivePhotoUtil
 
-/**
- * Convert a standard video file to a Live Photo format and save it to the Photos library
- *
- * @param path Path to the source video file to convert
- * @param complete Completion handler called when the conversion completes
- *        - success: Whether the conversion was successful
- *        - message: Description of any error that occurred
- */
-+ (void)convertVideo:(NSString*)path complete:(void(^)(BOOL, NSString*))complete;{
-    // Initialize resources for Live Photo creation
-    NSURL *metaURL = [NSBundle.mainBundle URLForResource:@"metadata" withExtension:@"mov"];
-    CGSize livePhotoSize = CGSizeMake(1080, 1920); // Standard Live Photo size
-    CMTime livePhotoDuration = CMTimeMake(550, 600); // ~0.92 seconds - optimal for Live Photos
-    NSString *assetIdentifier = NSUUID.UUID.UUIDString; // Generate unique identifier
++ (void)convertVideo:(NSString*)path complete:(void(^)(BOOL, NSString*))complete {
+
+    // MARK: Metadata File
+    NSURL *metaURL = [[NSBundle mainBundle] URLForResource:@"metadata" withExtension:@"mov"];
     
-    // Setup temporary file paths
+    if (!metaURL) {
+        NSLog(@"❌ metadata.mov not found in bundle");
+        complete(NO, @"metadata.mov missing from bundle");
+        return;
+    }
+
+    CGSize livePhotoSize = CGSizeMake(1080, 1920);
+    CMTime livePhotoDuration = CMTimeMake(550, 600);
+    NSString *assetIdentifier = NSUUID.UUID.UUIDString;
+
+    // MARK: Temp Paths
     NSString *documentPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSString *durationPath = [documentPath stringByAppendingString:@"/duration.mp4"];
-    NSString *acceleratePath = [documentPath stringByAppendingString:@"/accelerate.mp4"];
-    NSString *resizePath = [documentPath stringByAppendingString:@"/resize.mp4"];
-    
-    // Clean up any previous temporary files
-    [NSFileManager.defaultManager removeItemAtPath:durationPath error:nil];
-    [NSFileManager.defaultManager removeItemAtPath:acceleratePath error:nil];
-    [NSFileManager.defaultManager removeItemAtPath:resizePath error:nil];
+
+    NSString *durationPath = [documentPath stringByAppendingPathComponent:@"duration.mp4"];
+    NSString *acceleratePath = [documentPath stringByAppendingPathComponent:@"accelerate.mp4"];
+    NSString *resizePath = [documentPath stringByAppendingPathComponent:@"resize.mp4"];
+
+    [[NSFileManager defaultManager] removeItemAtPath:durationPath error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:acceleratePath error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:resizePath error:nil];
+
     NSString *finalPath = resizePath;
-    
-    // Create converter for video processing
+
     Converter4Video *converter = [[Converter4Video alloc] initWithPath:finalPath];
-    
-    // Step 1: Adjust video duration to target length (3 seconds)
-    [converter durationVideoAt:path outputPath:durationPath targetDuration:3 completion:^(BOOL success, NSError * error) {
-        // Step 2: Adjust playback speed to match Live Photo requirements
-        [converter accelerateVideoAt:durationPath to:livePhotoDuration outputPath:acceleratePath completion:^(BOOL success, NSError * error) {
-            // Step 3: Resize the video to standard Live Photo dimensions
-            [converter resizeVideoAt:acceleratePath outputPath:resizePath outputSize:livePhotoSize completion:^(BOOL success, NSError * error) {
-                // Step 4: Generate a still image from the video
+
+    // MARK: Step 1 - Duration Fix
+    [converter durationVideoAt:path
+                    outputPath:durationPath
+                targetDuration:3
+                    completion:^(BOOL success, NSError *error) {
+
+        if (!success) {
+            complete(NO, error.localizedDescription);
+            return;
+        }
+
+        // MARK: Step 2 - Speed Adjust
+        [converter accelerateVideoAt:durationPath
+                                   to:livePhotoDuration
+                           outputPath:acceleratePath
+                           completion:^(BOOL success, NSError *error) {
+
+            if (!success) {
+                complete(NO, error.localizedDescription);
+                return;
+            }
+
+            // MARK: Step 3 - Resize
+            [converter resizeVideoAt:acceleratePath
+                           outputPath:resizePath
+                           outputSize:livePhotoSize
+                           completion:^(BOOL success, NSError *error) {
+
+                if (!success) {
+                    complete(NO, error.localizedDescription);
+                    return;
+                }
+
+                // MARK: Step 4 - Extract Frame
                 AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:finalPath] options:nil];
+
                 AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
                 generator.appliesPreferredTrackTransform = YES;
                 generator.requestedTimeToleranceAfter = kCMTimeZero;
                 generator.requestedTimeToleranceBefore = kCMTimeZero;
-                
-                // Extract frame at 0.5 seconds (typically a good representative frame)
-                NSMutableArray *times = [NSMutableArray array];
+                generator.maximumSize = CGSizeMake(1080, 1920);
+
                 CMTime time = CMTimeMakeWithSeconds(0.5, asset.duration.timescale);
-                [times addObject:[NSValue valueWithCMTime:time]];
-                
+                NSArray *times = @[[NSValue valueWithCMTime:time]];
+
                 dispatch_queue_t q = dispatch_queue_create("image", DISPATCH_QUEUE_SERIAL);
-                __block int index = 0;
-                
-                // Generate the image asynchronously
-                [generator generateCGImagesAsynchronouslyForTimes:times completionHandler:^(CMTime requestedTime, CGImageRef _Nullable image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
-                    if (image) {
-                        // Step 5: Save the image and video components with matching assetIdentifier
-                        NSString *picturePath = [documentPath stringByAppendingFormat:@"/%@%d.heic", @"live", index, nil];
-                        NSString *videoPath = [documentPath stringByAppendingFormat:@"/%@%d.mov", @"live", index, nil];
-                        index += 1;
-                        
-                        // Clean up any previous files
-                        [NSFileManager.defaultManager removeItemAtPath:picturePath error:nil];
-                        [NSFileManager.defaultManager removeItemAtPath:videoPath error:nil];
-                        
-                        // Create the still image component with metadata
-                        Converter4Image *converter4Image = [[Converter4Image alloc] initWithImage:[UIImage imageWithCGImage:image]];
-                        dispatch_async(q, ^{
-                            // Write the image with the asset identifier
-                            [converter4Image writeWithDest:picturePath assetIdentifier:assetIdentifier];
-                            
-                            // Write the video with the asset identifier and metadata
-                            [converter writeWithDest:videoPath assetIdentifier:assetIdentifier metaURL:metaURL completion:^(BOOL success, NSError * error) {
-                                if (!success) {
-                                    NSLog(@"merge failed: %@", error);
-                                    complete(NO, error.localizedDescription);
-                                    return;
-                                }
-                                
-                                // Step 6: Save both components to the Photos library as a Live Photo
-                                [PHPhotoLibrary.sharedPhotoLibrary performChanges:^{
-                                    PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAsset];
-                                    NSURL *photoURL = [NSURL fileURLWithPath:picturePath];
-                                    NSURL *pairedVideoURL = [NSURL fileURLWithPath:videoPath];
-                                    
-                                    // Add both components to the request
-                                    [request addResourceWithType:PHAssetResourceTypePhoto fileURL:photoURL options:[PHAssetResourceCreationOptions new]];
-                                    [request addResourceWithType:PHAssetResourceTypePairedVideo fileURL:pairedVideoURL options:[PHAssetResourceCreationOptions new]];
-                                } completionHandler:^(BOOL success, NSError * _Nullable error) {
-                                    // Return success/failure on main thread
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        complete(error==nil, error.localizedDescription);
-                                    });
-                                }];
-                            }];
+
+                [generator generateCGImagesAsynchronouslyForTimes:times
+                                                 completionHandler:^(CMTime requestedTime,
+                                                                     CGImageRef image,
+                                                                     CMTime actualTime,
+                                                                     AVAssetImageGeneratorResult result,
+                                                                     NSError *error) {
+
+                    if (!image) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            complete(NO, @"Failed to extract image frame");
                         });
+                        return;
                     }
+
+                    NSString *picturePath = [documentPath stringByAppendingPathComponent:@"live.heic"];
+                    NSString *videoPath = [documentPath stringByAppendingPathComponent:@"live.mov"];
+
+                    [[NSFileManager defaultManager] removeItemAtPath:picturePath error:nil];
+                    [[NSFileManager defaultManager] removeItemAtPath:videoPath error:nil];
+
+                    Converter4Image *converter4Image =
+                    [[Converter4Image alloc] initWithImage:[UIImage imageWithCGImage:image]];
+
+                    dispatch_async(q, ^{
+
+                        // MARK: Write Image
+                        [converter4Image writeWithDest:picturePath assetIdentifier:assetIdentifier];
+
+                        // MARK: Write Video
+                        [converter writeWithDest:videoPath
+                                 assetIdentifier:assetIdentifier
+                                         metaURL:metaURL
+                                      completion:^(BOOL success, NSError *error) {
+
+                            if (!success) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    complete(NO, error.localizedDescription);
+                                });
+                                return;
+                            }
+
+                            // MARK: Save Live Photo
+                            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+
+                                PHAssetCreationRequest *request =
+                                [PHAssetCreationRequest creationRequestForAsset];
+
+                                NSURL *photoURL = [NSURL fileURLWithPath:picturePath];
+                                NSURL *pairedVideoURL = [NSURL fileURLWithPath:videoPath];
+
+                                PHAssetResourceCreationOptions *photoOptions =
+                                [[PHAssetResourceCreationOptions alloc] init];
+
+                                PHAssetResourceCreationOptions *videoOptions =
+                                [[PHAssetResourceCreationOptions alloc] init];
+
+                                [request addResourceWithType:PHAssetResourceTypePhoto
+                                                     fileURL:photoURL
+                                                     options:photoOptions];
+
+                                [request addResourceWithType:PHAssetResourceTypePairedVideo
+                                                     fileURL:pairedVideoURL
+                                                     options:videoOptions];
+
+                            } completionHandler:^(BOOL success, NSError *error) {
+
+                                dispatch_async(dispatch_get_main_queue(), ^{
+
+                                    if (success) {
+                                        complete(YES, @"Live Photo saved successfully");
+                                    } else {
+                                        complete(NO, error.localizedDescription);
+                                    }
+
+                                });
+
+                            }];
+
+                        }];
+
+                    });
+
                 }];
+
             }];
+
         }];
+
     }];
+
 }
 
 @end

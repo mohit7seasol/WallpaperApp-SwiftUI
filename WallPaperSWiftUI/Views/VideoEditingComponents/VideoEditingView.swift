@@ -39,6 +39,7 @@ struct VideoEditingView: View {
     // MARK: - Video Info
     @State private var aspectRatio: CGFloat = 0
     @State private var videoResolution: CGSize = .zero
+    @StateObject private var viewModel = WallpaperViewModel()
     
     // MARK: - Computed
     
@@ -123,17 +124,25 @@ struct VideoEditingView: View {
                 
                 VideoProcessingActions(
                     speedMultiplier: $speedMultiplier,
-                    isProcessing: $isProcessing,
+                    isProcessing: $viewModel.isProcessing,
                     showAlert: $showAlert,
                     alertMessage: $alertMessage,
                     asset: asset,
                     startTime: startTime,
                     endTime: endTime,
                     canProcess: canProcess,
-                    trimmedVideoURL: trimmedVideoURL,
-                    onCreateWallpaper: handleCreateLiveWallpaper, // Unified action
+                    trimmedVideoURL: viewModel.trimmedVideoURL,
+                    onCreateWallpaper: handleCreateLiveWallpaper,
                     onPreview: playSelection
                 )
+                .alert("🎉 Success!", isPresented: $viewModel.showSuccessMessage) {
+//                    SuccessAlertButtons(
+//                        showVideoPicker: $showVideoPicker,
+//                        onReset: { viewModel.resetVideo() }
+//                    )
+                } message: {
+                    SuccessAlertMessage()
+                }
             }
             .padding()
         }
@@ -163,15 +172,14 @@ struct VideoEditingView: View {
     
     // MARK: - Unified action (like reference code)
     private func handleCreateLiveWallpaper() {
-        print("🎬 handleCreateLiveWallpaper called!")
-        print("🎬 trimmedVideoURL exists: \(trimmedVideoURL != nil)")
-        
-        if trimmedVideoURL != nil {
-            print("🎬 Video already processed, saving to library...")
-            saveToPhotoLibrary()
+        viewModel.startTime = startTime
+        viewModel.endTime = endTime
+        viewModel.speedMultiplier = speedMultiplier
+
+        if viewModel.trimmedVideoURL != nil {
+            viewModel.saveToPhotoLibrary()
         } else {
-            print("🎬 Video not processed yet, processing first...")
-            processVideo()
+            viewModel.processVideo()
         }
     }
 }
@@ -186,15 +194,17 @@ struct VideoEditingView: View {
 extension VideoEditingView {
     
     func setupVideo() {
-        
+
         asset = AVAsset(url: videoURL)
         player = AVPlayer(url: videoURL)
-        
+
+        viewModel.selectedVideoURL = videoURL
+
         guard let asset = asset else { return }
-        
+
         videoDuration = asset.duration.seconds
         endTime = min(5, videoDuration)
-        
+
         if let track = asset.tracks(withMediaType: .video).first {
             let size = track.naturalSize.applying(track.preferredTransform)
             videoResolution = CGSize(width: abs(size.width), height: abs(size.height))
@@ -223,124 +233,6 @@ extension VideoEditingView {
     
     func updatePlayerRate() {
         player?.rate = Float(speedMultiplier)
-    }
-    
-    // MARK: - Process Video (Trim)
-    func processVideo() {
-        guard let asset = asset else { return }
-        
-        isProcessing = true
-        
-        // Create export session
-        guard let exportSession = AVAssetExportSession(
-            asset: asset,
-            presetName: AVAssetExportPresetHighestQuality
-        ) else {
-            isProcessing = false
-            alertMessage = "Could not create export session"
-            showAlert = true
-            return
-        }
-        
-        // Create output URL
-        let outputURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString)
-            .appendingPathExtension("mov")
-        
-        // Configure export
-        let startCMTime = CMTime(seconds: startTime, preferredTimescale: 600)
-        let durationCMTime = CMTime(seconds: endTime - startTime, preferredTimescale: 600)
-        
-        exportSession.outputURL = outputURL
-        exportSession.outputFileType = .mov
-        exportSession.timeRange = CMTimeRange(start: startCMTime, duration: durationCMTime)
-        
-        // Export asynchronously
-        exportSession.exportAsynchronously {
-            DispatchQueue.main.async {
-                isProcessing = false
-                
-                switch exportSession.status {
-                case .completed:
-                    print("✅ Video processing completed")
-                    trimmedVideoURL = outputURL
-                    alertMessage = "Video trimmed successfully! Tap 'Create Live Wallpaper' to save."
-                    showAlert = true
-                    
-                case .failed:
-                    print("❌ Video processing failed: \(exportSession.error?.localizedDescription ?? "Unknown error")")
-                    alertMessage = "Failed to process video: \(exportSession.error?.localizedDescription ?? "Unknown error")"
-                    showAlert = true
-                    
-                case .cancelled:
-                    print("⏸️ Video processing cancelled")
-                    
-                default:
-                    break
-                }
-            }
-        }
-    }
-    
-    // MARK: - Save to Photo Library (Live Photo ready)
-    func saveToPhotoLibrary() {
-        guard let trimmedVideoURL = trimmedVideoURL else {
-            alertMessage = "No processed video found"
-            showAlert = true
-            return
-        }
-        
-        // Check if video exists
-        guard FileManager.default.fileExists(atPath: trimmedVideoURL.path) else {
-            alertMessage = "Video file not found"
-            showAlert = true
-            return
-        }
-        
-        isProcessing = true
-        
-        // Request authorization
-        PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
-            DispatchQueue.main.async {
-                switch status {
-                case .authorized, .limited:
-                    // Save to photo library
-                    PHPhotoLibrary.shared().performChanges({
-                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: trimmedVideoURL)
-                    }) { success, error in
-                        DispatchQueue.main.async {
-                            isProcessing = false
-                            
-                            if success {
-                                print("✅ Video saved successfully to photo library")
-                                alertMessage = "Live Wallpaper saved to your photo library!"
-                                showAlert = true
-                            } else {
-                                print("❌ Failed to save: \(error?.localizedDescription ?? "Unknown error")")
-                                alertMessage = "Failed to save: \(error?.localizedDescription ?? "Unknown error")"
-                                showAlert = true
-                            }
-                        }
-                    }
-                    
-                case .denied, .restricted:
-                    isProcessing = false
-                    alertMessage = "Photos access denied. Please enable access in Settings."
-                    showAlert = true
-                    
-                case .notDetermined:
-                    // This shouldn't happen as we requested authorization
-                    isProcessing = false
-                    alertMessage = "Photos access not determined"
-                    showAlert = true
-                    
-                @unknown default:
-                    isProcessing = false
-                    alertMessage = "Unknown authorization status"
-                    showAlert = true
-                }
-            }
-        }
     }
     
     // MARK: - Auto-adjust selection for speed changes
@@ -403,5 +295,12 @@ extension VideoEditingView {
             startTime = newStartTime
             endTime = newEndTime
         }
+    }
+}
+struct SuccessAlertMessage: View {
+    // MARK: - Body
+    
+    var body: some View {
+        Text("Your Live Wallpaper has been saved to Photos!\n\nTo set it as your wallpaper:\n• Go to Settings > Wallpaper\n• Choose your new Live Photo\n• Set it as Lock Screen")
     }
 }
