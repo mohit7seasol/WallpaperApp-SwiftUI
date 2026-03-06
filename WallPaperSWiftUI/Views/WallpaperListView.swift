@@ -9,7 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct WallpaperListView: View {
-    @StateObject private var viewModel = WallpaperViewModel()
+    @StateObject private var viewModel = WallpaperViewModelTextAPI()
     @State private var selectedWallpaper: Wallpaper?
     @State private var scrollOffset: CGFloat = 0
     @State private var columnHeights: [Int: CGFloat] = [:]

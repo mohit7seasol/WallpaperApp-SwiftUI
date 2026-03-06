@@ -11,7 +11,7 @@ import Combine
 import Alamofire
 
 // MARK: - Wallpaper ViewModel
-class WallpaperViewModel: ObservableObject {
+class WallpaperViewModelTextAPI: ObservableObject {
     @Published var wallpapers: [Wallpaper] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
