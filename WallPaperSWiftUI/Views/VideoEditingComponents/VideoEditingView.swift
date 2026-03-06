@@ -40,6 +40,7 @@ struct VideoEditingView: View {
     @State private var aspectRatio: CGFloat = 0
     @State private var videoResolution: CGSize = .zero
     @StateObject private var viewModel = WallpaperViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     // MARK: - Computed
     
@@ -136,10 +137,10 @@ struct VideoEditingView: View {
                     onPreview: playSelection
                 )
                 .alert("🎉 Success!", isPresented: $viewModel.showSuccessMessage) {
-//                    SuccessAlertButtons(
-//                        showVideoPicker: $showVideoPicker,
-//                        onReset: { viewModel.resetVideo() }
-//                    )
+                    Button("OK") {
+                        dismiss()   // Navigate back to previous/root view
+                    }
+                    
                 } message: {
                     SuccessAlertMessage()
                 }
@@ -298,9 +299,18 @@ extension VideoEditingView {
     }
 }
 struct SuccessAlertMessage: View {
-    // MARK: - Body
     
     var body: some View {
-        Text("Your Live Wallpaper has been saved to Photos!\n\nTo set it as your wallpaper:\n• Go to Settings > Wallpaper\n• Choose your new Live Photo\n• Set it as Lock Screen")
+        Text("""
+🎉 Live Wallpaper Created Successfully!
+
+Your Live Photo has been saved to Photos.
+
+To set it as your wallpaper:
+1. Open Settings
+2. Tap Wallpaper
+3. Choose your new Live Photo
+4. Set it as Lock Screen
+""")
     }
 }

