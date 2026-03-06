@@ -1,5 +1,5 @@
 //
-//  WallpaperViewModel.swift
+//  WallpaperViewModelTextAPI.swift
 //  WallPaperSWiftUI
 //
 //  Created by DREAMWORLD on 26/02/26.
