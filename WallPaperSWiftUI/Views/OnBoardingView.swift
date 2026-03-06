@@ -160,7 +160,44 @@ struct OnBoardingView: View {
                     .padding(.horizontal, 30)
                     .padding(.bottom, isIpad ? 60 : 40)
                 }
+                .onAppear {
+                    if currentIndex == 3 { // 4th screen (index 3)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            if currentIndex == 3 {
+                                isOnboardingDone = true
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        }
+                    }
+                }
             }
+            // MARK: - Swipe Gesture Added (No UI changes)
+            .gesture(
+                DragGesture(minimumDistance: 50)
+                    .onEnded { value in
+                        let horizontalAmount = value.translation.width
+                        
+                        if horizontalAmount < -50 {
+                            // Swipe Left - Next
+                            if currentIndex < pages.count - 1 {
+                                withAnimation {
+                                    currentIndex += 1
+                                }
+                            } else if currentIndex == pages.count - 1 {
+                                // On last screen, swipe left to complete
+                                isOnboardingDone = true
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        } else if horizontalAmount > 50 {
+                            // Swipe Right - Previous
+                            if currentIndex > 0 {
+                                withAnimation {
+                                    currentIndex -= 1
+                                }
+                            }
+                        }
+                    }
+            )
         }
     }
 }

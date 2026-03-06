@@ -15,6 +15,9 @@ struct VideoSelectionView: View {
     @State private var selectedVideoURL: URL?
     @State private var navigateToEditor = false
     
+    // Add this to track if we're coming back from editor
+    @State private var isNavigating = false
+    
     var body: some View {
         
         ZStack {
@@ -49,7 +52,8 @@ struct VideoSelectionView: View {
                 // PhotosPicker directly opens Gallery
                 PhotosPicker(
                     selection: $selectedItem,
-                    matching: .videos
+                    matching: .videos,
+                    photoLibrary: .shared()
                 ) {
                     Text("Choose Your Video")
                         .font(.system(size: 16, weight: .medium))
@@ -63,7 +67,17 @@ struct VideoSelectionView: View {
                 .padding(.bottom, 40)
                 
                 NavigationLink(
-                    destination: VideoEditingView(videoURL: selectedVideoURL ?? URL(fileURLWithPath: "")),
+                    destination: Group {
+                        if let videoURL = selectedVideoURL {
+                            VideoEditingView(videoURL: videoURL)
+                                .onDisappear {
+                                    // Reset state when coming back from editor
+                                    resetSelection()
+                                }
+                        } else {
+                            EmptyView()
+                        }
+                    },
                     isActive: $navigateToEditor
                 ) {
                     EmptyView()
@@ -73,44 +87,85 @@ struct VideoSelectionView: View {
         .navigationTitle("Choose Video")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedItem) { _, newItem in
-            loadVideo(from: newItem)
+            if let newItem = newItem {
+                loadVideo(from: newItem)
+            }
+        }
+        // Request permission when view appears
+        .onAppear {
+            requestPhotoLibraryAccess()
         }
     }
     
+    // MARK: Request Photo Library Permission
     
-    // MARK: Load Selected Video
-    
-    func loadVideo(from item: PhotosPickerItem?) {
-        
-        guard let item else { return }
-        
-        Task {
-            if let data = try? await item.loadTransferable(type: Data.self) {
-                
-                let tempURL = FileManager.default.temporaryDirectory
-                    .appendingPathComponent("selectedVideo.mov")
-                
-                try? data.write(to: tempURL)
-                
-                await MainActor.run {
-                    selectedVideoURL = tempURL
-                    navigateToEditor = true
+    func requestPhotoLibraryAccess() {
+        PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+            DispatchQueue.main.async {
+                switch status {
+                case .authorized, .limited:
+                    print("✅ Photo library access granted")
+                case .denied, .restricted:
+                    print("❌ Photo library access denied")
+                    // Optionally show an alert to guide user to settings
+                case .notDetermined:
+                    print("⚠️ Photo library access not determined")
+                @unknown default:
+                    break
                 }
             }
         }
     }
     
+    // MARK: Load Selected Video
     
-    // MARK: Video Editing Interface
-    
-    func videoEditingInterface() -> some View {
+    func loadVideo(from item: PhotosPickerItem) {
         
-        VStack {
-            Text("Video Editing Screen")
-                .font(.title)
-                .foregroundColor(.white)
+        // Show loading indicator (optional)
+        // You can add a @State loading variable and show ProgressView
+        
+        Task {
+            do {
+                // Load video data
+                if let data = try? await item.loadTransferable(type: Data.self) {
+                    
+                    // Create unique filename to avoid conflicts
+                    let fileName = "selectedVideo_\(UUID().uuidString).mov"
+                    let tempURL = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(fileName)
+                    
+                    // Remove existing file if any
+                    if FileManager.default.fileExists(atPath: tempURL.path) {
+                        try FileManager.default.removeItem(at: tempURL)
+                    }
+                    
+                    // Write new data
+                    try data.write(to: tempURL)
+                    
+                    await MainActor.run {
+                        selectedVideoURL = tempURL
+                        navigateToEditor = true
+                    }
+                }
+            } catch {
+                print("Error loading video: \(error)")
+                // Handle error (show alert)
+            }
         }
-        .background(Color.black)
-        .ignoresSafeArea()
+    }
+    
+    // MARK: Reset Selection
+    
+    func resetSelection() {
+        // Clear the selected item to allow reselection
+        selectedItem = nil
+        selectedVideoURL = nil
+        navigateToEditor = false
+        
+        // Optional: Clean up temporary file
+        if let oldURL = selectedVideoURL {
+            try? FileManager.default.removeItem(at: oldURL)
+        }
     }
 }
+
