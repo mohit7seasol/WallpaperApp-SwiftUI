@@ -2,8 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This app needs access to save wallpapers to your photo library. You can save wallpapers to set them as home screen or lock screen background.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to select videos for creating Live Wallpapers.</string>
+
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app needs permission to save created Live Wallpapers to your photo library.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict/>

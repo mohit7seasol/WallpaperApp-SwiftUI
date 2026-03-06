@@ -111,9 +111,11 @@ struct HomeView: View {
                     .padding(.top, -50)
                     
                     // Live Wallpaper Banner
-                    WallpaperBannerView()
-                        .padding(.horizontal, 15)
-                        .padding(.top, -30)
+                    NavigationLink(destination: VideoSelectionView()) {
+                        WallpaperBannerView()
+                    }
+                    .padding(.horizontal, 15)
+                    .padding(.top, -30)
                     
                     // Trending Wallpaper Static Title
                     HStack(spacing: 8) {
