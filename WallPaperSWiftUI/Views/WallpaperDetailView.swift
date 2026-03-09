@@ -16,7 +16,6 @@ struct WallpaperDetailView: View {
     @State private var selectedIndex: Int
     @State private var isFavorite: Bool = false
     @State private var showDownloadOptions = false
-    @State private var selectedWallpaperForDownload: PexelWallpaperData?
     @StateObject private var favoritesManager = FavoritesManager.shared
     
     @Environment(\.dismiss) private var dismiss
@@ -75,48 +74,38 @@ struct WallpaperDetailView: View {
     
     // Get download buttons based on available image qualities
     private func getDownloadButtons() -> [ActionSheet.Button] {
-        guard let wallpaper = selectedWallpaperForDownload ?? wallpapers[safe: selectedIndex] else {
+        
+        guard let wallpaper = wallpapers[safe: selectedIndex] else {
             return [.cancel()]
         }
         
-        var buttons: [ActionSheet.Button] = []
-        
-        // Add all available qualities
-        buttons.append(.default(Text("Original")) {
-            downloadImage(from: wallpaper.src.original, quality: "Original")
-        })
-        
-        buttons.append(.default(Text("Large 2X")) {
-            downloadImage(from: wallpaper.src.large2x, quality: "Large 2X")
-        })
-        
-        buttons.append(.default(Text("Large")) {
-            downloadImage(from: wallpaper.src.large, quality: "Large")
-        })
-        
-        buttons.append(.default(Text("Medium")) {
-            downloadImage(from: wallpaper.src.medium, quality: "Medium")
-        })
-        
-        buttons.append(.default(Text("Portrait")) {
-            downloadImage(from: wallpaper.src.portrait, quality: "Portrait")
-        })
-        
-        buttons.append(.default(Text("Landscape")) {
-            downloadImage(from: wallpaper.src.landscape, quality: "Landscape")
-        })
-        
-        buttons.append(.default(Text("Small")) {
-            downloadImage(from: wallpaper.src.small, quality: "Small")
-        })
-        
-        buttons.append(.default(Text("Tiny")) {
-            downloadImage(from: wallpaper.src.tiny, quality: "Tiny")
-        })
-        
-        buttons.append(.cancel())
-        
-        return buttons
+        return [
+            .default(Text("Original")) {
+                downloadImage(from: wallpaper.src.original, quality: "Original")
+            },
+            .default(Text("Large 2X")) {
+                downloadImage(from: wallpaper.src.large2x, quality: "Large 2X")
+            },
+            .default(Text("Large")) {
+                downloadImage(from: wallpaper.src.large, quality: "Large")
+            },
+            .default(Text("Medium")) {
+                downloadImage(from: wallpaper.src.medium, quality: "Medium")
+            },
+            .default(Text("Portrait")) {
+                downloadImage(from: wallpaper.src.portrait, quality: "Portrait")
+            },
+            .default(Text("Landscape")) {
+                downloadImage(from: wallpaper.src.landscape, quality: "Landscape")
+            },
+            .default(Text("Small")) {
+                downloadImage(from: wallpaper.src.small, quality: "Small")
+            },
+            .default(Text("Tiny")) {
+                downloadImage(from: wallpaper.src.tiny, quality: "Tiny")
+            },
+            .cancel()
+        ]
     }
     
     // Download image function
@@ -312,8 +301,11 @@ private extension WallpaperDetailView {
             
             Button {
                 // Show download options
-                selectedWallpaperForDownload = wallpapers[safe: selectedIndex]
-                showDownloadOptions = true
+                showDownloadOptions = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    showDownloadOptions = true
+                }
             } label: {
                 HStack(spacing: 8) {
                     Image("down_arrow")

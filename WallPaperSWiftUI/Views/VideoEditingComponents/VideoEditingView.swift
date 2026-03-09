@@ -9,6 +9,7 @@ import SwiftUI
 import AVKit
 import AVFoundation
 import Photos
+import Toasts
 
 struct VideoEditingView: View {
     
@@ -42,6 +43,7 @@ struct VideoEditingView: View {
     @StateObject private var viewModel = WallpaperViewModel()
     @Environment(\.dismiss) private var dismiss
     @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
+    @Environment(\.presentToast) private var presentToast
     
     // MARK: - Computed
     
@@ -179,7 +181,10 @@ struct VideoEditingView: View {
         viewModel.speedMultiplier = speedMultiplier
 
         if viewModel.trimmedVideoURL != nil {
-            viewModel.saveToPhotoLibrary()
+            // Wrap presentToast in a closure that matches (ToastValue) -> Void
+            viewModel.saveToPhotoLibrary { toastValue in
+                presentToast(toastValue)
+            }
         } else {
             viewModel.processVideo()
         }

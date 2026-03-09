@@ -11,6 +11,7 @@ import AVKit
 import UniformTypeIdentifiers
 import UIKit
 import Combine
+import Toasts // Add this import
 
 class WallpaperViewModel: ObservableObject {
     
@@ -27,6 +28,9 @@ class WallpaperViewModel: ObservableObject {
     @Published var showSuccessMessage = false
     @Published var errorMessage: String?
     @Published var livePhotoURL: URL?
+    
+    // MARK: - Toast Publisher (Option B)
+    let toastPublisher = PassthroughSubject<ToastValue, Never>()
     
     // MARK: - Public Methods
     
@@ -127,18 +131,28 @@ class WallpaperViewModel: ObservableObject {
         }
     }
     
-    func saveToPhotoLibrary() {
-
+    // MARK: - UPDATED: Save to Photo Library with Toast
+    func saveToPhotoLibrary(presentToast: @escaping (ToastValue) -> Void) {
         guard let trimmedVideoURL = trimmedVideoURL else {
-            errorMessage = "No processed video available"
+            let toast = ToastValue(
+                icon: Image(systemName: "exclamationmark.triangle"),
+                message: "No processed video available"
+            )
+            presentToast(toast)
             return
         }
 
         let asset = AVAsset(url: trimmedVideoURL)
         let duration = asset.duration.seconds
 
+        // Show error toast if duration exceeds 5 seconds
         if duration > 5 {
-            errorMessage = "Live Photo video must be 5 seconds or less"
+            let toast = ToastValue(
+                icon: Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.orange),
+                message: "Live Photo video must be 5 seconds or less"
+            )
+            presentToast(toast)
             return
         }
 
@@ -151,15 +165,68 @@ class WallpaperViewModel: ObservableObject {
                 self.isProcessing = false
 
                 switch result {
-
                 case .success:
                     self.showSuccessMessage = true
                     let successFeedback = UINotificationFeedbackGenerator()
                     successFeedback.notificationOccurred(.success)
+                    
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+                    let errorToast = ToastValue(
+                        icon: Image(systemName: "xmark.circle"),
+                        message: error.localizedDescription
+                    )
+                    presentToast(errorToast)
+                    
                     let errorFeedback = UINotificationFeedbackGenerator()
                     errorFeedback.notificationOccurred(.error)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Alternative: Using Publisher (Option B)
+    func saveToPhotoLibraryWithPublisher() {
+        guard let trimmedVideoURL = trimmedVideoURL else {
+            toastPublisher.send(
+                ToastValue(
+                    icon: Image(systemName: "exclamationmark.triangle"),
+                    message: "No processed video available"
+                )
+            )
+            return
+        }
+
+        let asset = AVAsset(url: trimmedVideoURL)
+        let duration = asset.duration.seconds
+
+        if duration > 5 {
+            toastPublisher.send(
+                ToastValue(
+                    icon: Image(systemName: "exclamationmark.triangle.fill"),
+                    message: "Live Photo video must be 5 seconds or less"
+                )
+            )
+            return
+        }
+
+        isProcessing = true
+
+        VideoProcessor.saveAsLivePhoto(from: trimmedVideoURL) { [weak self] result in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                self.isProcessing = false
+
+                switch result {
+                case .success:
+                    self.showSuccessMessage = true
+                case .failure(let error):
+                    self.toastPublisher.send(
+                        ToastValue(
+                            icon: Image(systemName: "xmark.circle"),
+                            message: error.localizedDescription
+                        )
+                    )
                 }
             }
         }
