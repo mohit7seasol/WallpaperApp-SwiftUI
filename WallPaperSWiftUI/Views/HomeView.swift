@@ -135,10 +135,19 @@ struct HomeView: View {
                     
                     // Scrollable Grid Section
                     if trendingViewModel.isLoading && trendingViewModel.wallpapers.isEmpty {
+                        
                         Spacer()
+                        
                         ProgressView()
                             .tint(.white)
+                        
                         Spacer()
+
+                    } else if trendingViewModel.wallpapers.isEmpty {
+                        
+                        NoTrendingWallpaperView()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
                     } else {
                         ScrollView(showsIndicators: false) {
                             LazyVStack(spacing: 0) {
@@ -434,6 +443,29 @@ struct WallpaperBannerView: View {
             .padding(.leading, 20)
         }
         .frame(width: screenWidth - 30, height: bannerHeight)
+    }
+}
+// MARK: - No Trending Wallpaper View
+struct NoTrendingWallpaperView: View {
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
+    private var iconSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 100 : 70
+    }
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            
+            Image("no_trend")
+                .resizable()
+                .scaledToFit()
+                .frame(width: iconSize, height: iconSize)
+            
+            Text("No Trending Wallpaper".localized(language))
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(Color(hex: "#7A7A8C"))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.clear)
     }
 }
 // MARK: - Preview
