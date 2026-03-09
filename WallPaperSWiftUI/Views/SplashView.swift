@@ -73,14 +73,14 @@ struct SplashContent: View {
                 .scaledToFill()
                 .ignoresSafeArea()
 
+            // Center Icon
+            Image("app_icon")
+                .resizable()
+                .frame(width: 120, height: 120)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+
+            // Bottom Loader
             VStack {
-
-                Spacer()
-
-                Image("app_icon")
-                    .resizable()
-                    .frame(width: 120, height: 120)
-
                 Spacer()
 
                 MyLottieView(
@@ -89,7 +89,6 @@ struct SplashContent: View {
                 )
                 .frame(width: 100, height: 100)
                 .padding(.bottom, 60)
-
             }
         }
     }
