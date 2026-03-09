@@ -106,6 +106,16 @@ struct CategoryDetailView: View {
         .onAppear {
             viewModel.fetchWallpapers(for: category.searchKeyword, loadMore: false)
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink(destination: FavouriteWallpaperListView()) {
+                    Image("favourite_home")
+                        .resizable()
+                        .frame(width: 32, height: 32)
+                        .foregroundColor(.white)
+                }
+            }
+        }
         .onDisappear {
             // Clear prefetcher when leaving view
             SDWebImagePrefetcher.shared.cancelPrefetching()
