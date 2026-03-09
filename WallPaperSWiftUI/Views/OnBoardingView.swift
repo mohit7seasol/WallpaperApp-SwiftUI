@@ -18,6 +18,7 @@ struct OnBoardingView: View {
     
     @AppStorage(SessionKeys.isLanguageDone) var isLanguageDone = false
     @AppStorage(SessionKeys.isOnboardingDone) var isOnboardingDone = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     @State private var currentIndex = 0
     
@@ -90,7 +91,7 @@ struct OnBoardingView: View {
                         .padding(.bottom, 30)
                     
                     // Title
-                    Text(pages[currentIndex].title)
+                    Text(pages[currentIndex].title.localized(language))
                         .font(.custom("Oxanium-SemiBold", size: 32))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)

@@ -17,6 +17,7 @@ struct VideoSelectionView: View {
     
     // Add this to track if we're coming back from editor
     @State private var isNavigating = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         
@@ -36,12 +37,12 @@ struct VideoSelectionView: View {
                     .offset(y: -40)
                 
                 // Title
-                Text("Live Wallpaper Creator")
+                Text("Live Wallpaper Creator".localized(language))
                     .font(.system(size: 28, weight: .semibold))
                     .foregroundColor(.white)
                 
                 // Subtitle
-                Text("Transform your videos into stunning Live Wallpapers")
+                Text("Transform your videos into stunning Live Wallpapers".localized(language))
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
@@ -55,7 +56,7 @@ struct VideoSelectionView: View {
                     matching: .videos,
                     photoLibrary: .shared()
                 ) {
-                    Text("Choose Your Video")
+                    Text("Choose Your Video".localized(language))
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)

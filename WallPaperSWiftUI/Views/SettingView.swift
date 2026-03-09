@@ -13,6 +13,7 @@ struct SettingView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showingRateDialog = false
     @State private var navigateToLanguage = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     private var isIpad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -87,7 +88,7 @@ struct SettingView: View {
                     
                     Spacer()
                     
-                    Text("Settings")
+                    Text("Settings".localized(language))
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(.white)
                     
@@ -145,6 +146,7 @@ struct SettingCell: View {
     let item: SettingItem
     @Binding var showingRateDialog: Bool
     @Binding var navigateToLanguage: Bool
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     let cellHeight: CGFloat
     let iconSize: CGFloat
     
@@ -159,7 +161,7 @@ struct SettingCell: View {
                     .scaledToFit()
                     .frame(width: iconSize, height: iconSize)
                 
-                Text(item.title)
+                Text(item.title.localized(language))
                     .font(.system(size: iconSize == 50 ? 22 : 17, weight: .medium))
                     .foregroundColor(.white)
                 

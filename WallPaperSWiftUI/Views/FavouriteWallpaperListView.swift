@@ -11,6 +11,7 @@ import SDWebImageSwiftUI
 struct FavouriteWallpaperListView: View {
     @StateObject private var favoritesManager = FavoritesManager.shared
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     let screenWidth = UIScreen.main.bounds.width
     let columns = [
@@ -35,19 +36,19 @@ struct FavouriteWallpaperListView: View {
                         .font(.system(size: 70))
                         .foregroundColor(.gray)
                     
-                    Text("No Favorites Yet")
+                    Text("No Favorites Yet".localized(language))
                         .font(.title2)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                     
-                    Text("Your favorite wallpapers will appear here")
+                    Text("Your favorite wallpapers will appear here".localized(language))
                         .font(.body)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                     
                     Button(action: { dismiss() }) {
-                        Text("Browse Wallpapers")
+                        Text("Browse Wallpapers".localized(language))
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding(.horizontal, 30)
@@ -107,7 +108,7 @@ struct FavouriteWallpaperListView: View {
                 }
             }
         }
-        .navigationTitle("Favorites")
+        .navigationTitle("Favorites".localized(language))
         .navigationBarTitleDisplayMode(.inline)
         .foregroundColor(.white)
         .toolbar {

@@ -20,6 +20,7 @@ struct WallpaperDetailView: View {
     @StateObject private var favoritesManager = FavoritesManager.shared
     
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     init(wallpapers: [PexelWallpaperData], selectedIndex: Int) {
         self.wallpapers = wallpapers
@@ -313,7 +314,7 @@ private extension WallpaperDetailView {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 18, height: 18)
-                    Text("Download")
+                    Text("Download".localized(language))
                         .font(.system(size: 18, weight: .semibold))
                 }
                 .foregroundColor(.white)

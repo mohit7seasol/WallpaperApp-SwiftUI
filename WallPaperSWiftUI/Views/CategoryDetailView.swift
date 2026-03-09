@@ -12,6 +12,7 @@ struct CategoryDetailView: View {
     let category: StaticCategory
     @StateObject private var viewModel = CategoryWallpaperViewModel()
     @StateObject private var favoritesManager = FavoritesManager.shared
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     // Get screen width
     let screenWidth = UIScreen.main.bounds.width
@@ -99,7 +100,7 @@ struct CategoryDetailView: View {
                 .padding(.top, 16)
             }
         }
-        .navigationTitle(category.title)
+        .navigationTitle(category.title.localized(language))
         .navigationBarTitleDisplayMode(.inline)
         .foregroundColor(.white)
         .onAppear {

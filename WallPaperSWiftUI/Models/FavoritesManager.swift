@@ -16,6 +16,7 @@ class FavoritesManager: ObservableObject {
     @Published var favoriteWallpapers: [PexelWallpaperData] = []
     @Published var showToast: Bool = false
     @Published var toastMessage: String = ""
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     private let favoritesKey = "favorite_wallpapers"
     private var toastWorkItem: DispatchWorkItem?
@@ -57,7 +58,7 @@ class FavoritesManager: ObservableObject {
                     self.favoriteWallpapers.append(wallpaper)
                     self.saveFavorites()
                     self.objectWillChange.send()
-                    self.showToastMessage("Added to favorites")
+                    self.showToastMessage("Added to favorites".localized(self.language))
                 }
             }
         }
@@ -69,7 +70,7 @@ class FavoritesManager: ObservableObject {
                 self.favoriteWallpapers.removeAll(where: { $0.id == wallpaper.id })
                 self.saveFavorites()
                 self.objectWillChange.send()
-                self.showToastMessage("Removed from favorites")
+                self.showToastMessage("Removed from favorites".localized(self.language))
             }
         }
     }
@@ -110,7 +111,7 @@ class FavoritesManager: ObservableObject {
                 self.favoriteWallpapers.removeAll()
                 self.saveFavorites()
                 self.objectWillChange.send()
-                self.showToastMessage("All favorites cleared")
+                self.showToastMessage("All favorites cleared".localized(self.language))
             }
         }
     }
