@@ -19,19 +19,20 @@ struct VideoTrimmingComponent: View {
     let formatTime: (Double)->String
     let onStartChanged: ()->Void
     let onEndChanged: ()->Void
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         
         VStack(spacing: 20) {
             
             HStack{
-                Text("Trim Video")
+                Text("Trim Video".localized(language))
                     .font(.headline)
                     .foregroundColor(.white)
                 
                 Spacer()
                 
-                Text("Max 5 Seconds")
+                Text("Max 5 Seconds".localized(language))
                     .font(.caption)
                     .foregroundColor(Color(red: 153/255, green: 147/255, blue: 177/255))
             }
@@ -39,19 +40,19 @@ struct VideoTrimmingComponent: View {
             HStack(spacing:10){
                 
                 TrimInfoBox(
-                    title: "Start",
+                    title: "Start".localized(language),
                     value: formatTime(startTime),
                     color: .orange
                 )
                 
                 TrimInfoBox(
-                    title: "Duration",
+                    title: "Duration".localized(language),
                     value: formatTime(endTime-startTime),
                     color: .blue
                 )
                 
                 TrimInfoBox(
-                    title: "End",
+                    title: "End".localized(language),
                     value: formatTime(endTime),
                     color: .purple
                 )
@@ -72,7 +73,7 @@ struct VideoTrimmingComponent: View {
             }
             
             if !isFinalDurationValid {
-                Text("Max Duration Reached")
+                Text("Max Duration Reached".localized(language))
                     .font(.caption)
                     .padding(.horizontal,16)
                     .padding(.vertical,6)

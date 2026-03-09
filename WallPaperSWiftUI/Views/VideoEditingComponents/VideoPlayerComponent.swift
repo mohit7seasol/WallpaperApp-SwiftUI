@@ -20,6 +20,7 @@ struct VideoPlayerComponent: View {
     let onSeekToStart: () -> Void
     let onShowAspectRatioWarning: () -> Void
     let onDismissAspectRatioWarning: () -> Void
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         VStack(spacing: 16) {
@@ -63,7 +64,7 @@ struct VideoPlayerComponent: View {
                     Image(systemName: "play.fill")
                         .font(.subheadline)
                     
-                    Text("Preview")
+                    Text("Preview".localized(language))
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
@@ -93,7 +94,7 @@ struct VideoPlayerComponent: View {
                     
                     Image(systemName: "info.circle")
                     
-                    Text("Info")
+                    Text("Info".localized(language))
                 }
                 .font(.headline)
                 .foregroundColor(.white)
@@ -131,6 +132,7 @@ struct AspectRatioWarningView: View {
     let currentRatio: CGFloat
     let resolution: CGSize
     let onDismiss: () -> Void
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     private var isPortrait: Bool {
         resolution.height > resolution.width
@@ -143,22 +145,22 @@ struct AspectRatioWarningView: View {
         
         if abs(currentDisplayRatio - idealRatio) < 0.1 {
             return (
-                title: "Perfect Match",
-                message: "Your video is perfectly optimized for Live Wallpapers",
+                title: "Perfect Match".localized(language),
+                message: "Your video is perfectly optimized for Live Wallpapers".localized(language),
                 color: .green,
                 icon: "checkmark.circle.fill"
             )
         } else if abs(currentDisplayRatio - idealRatio) < 0.2 {
             return (
-                title: "Good Compatibility",
-                message: "Your video has good aspect ratio for Live Wallpapers",
+                title: "Good Compatibility".localized(language),
+                message: "Your video has good aspect ratio for Live Wallpapers".localized(language),
                 color: .orange,
                 icon: "exclamationmark.triangle.fill"
             )
         } else {
             return (
-                title: "Compatibility Warning",
-                message: "Your video may not fill the screen perfectly",
+                title: "Compatibility Warning".localized(language),
+                message: "Your video may not fill the screen perfectly".localized(language),
                 color: .red,
                 icon: "xmark.circle.fill"
             )
@@ -186,7 +188,7 @@ struct AspectRatioWarningView: View {
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                     
-                    Text("Video Analysis Report")
+                    Text("Video Analysis Report".localized(language))
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
@@ -228,7 +230,7 @@ struct AspectRatioWarningView: View {
                 // Progress indicator for aspect ratio match
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Compatibility Score")
+                        Text("Compatibility Score".localized(language))
                             .font(.caption)
                             .foregroundColor(.gray)
                         
@@ -265,7 +267,7 @@ struct AspectRatioWarningView: View {
             
             // Video Specifications Card
             VStack(alignment: .leading, spacing: 16) {
-                Text("VIDEO SPECIFICATIONS")
+                Text("VIDEO SPECIFICATIONS".localized(language))
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.gray)
@@ -275,7 +277,7 @@ struct AspectRatioWarningView: View {
                     // Resolution row
                     HStack {
                         Label {
-                            Text("Resolution")
+                            Text("Resolution".localized(language))
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         } icon: {
@@ -305,7 +307,7 @@ struct AspectRatioWarningView: View {
                     // Orientation row
                     HStack {
                         Label {
-                            Text("Orientation")
+                            Text("Orientation".localized(language))
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         } icon: {
@@ -322,7 +324,7 @@ struct AspectRatioWarningView: View {
                                 .font(.caption2)
                                 .foregroundColor(.purple)
                             
-                            Text(isPortrait ? "Portrait" : "Landscape")
+                            Text(isPortrait ? "Portrait".localized(language) : "Landscape".localized(language))
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(.purple)
@@ -341,7 +343,7 @@ struct AspectRatioWarningView: View {
                     // Aspect Ratio row
                     HStack {
                         Label {
-                            Text("Aspect Ratio")
+                            Text("Aspect Ratio".localized(language))
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         } icon: {
@@ -379,7 +381,7 @@ struct AspectRatioWarningView: View {
                         .font(.caption)
                         .foregroundColor(.yellow)
                     
-                    Text("PRO TIPS")
+                    Text("PRO TIPS".localized(language))
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.gray)
@@ -390,19 +392,19 @@ struct AspectRatioWarningView: View {
                     TipRow(
                         icon: "checkmark.circle.fill",
                         iconColor: .green,
-                        text: "Portrait videos (9:16) work best for Live Wallpapers"
+                        text: "Portrait videos (9:16) work best for Live Wallpapers".localized(language)
                     )
                     
                     TipRow(
                         icon: "checkmark.circle.fill",
                         iconColor: .green,
-                        text: "Square videos (1:1) are also good"
+                        text: "Square videos (1:1) are also good".localized(language)
                     )
                     
                     TipRow(
                         icon: "exclamationmark.triangle.fill",
                         iconColor: .orange,
-                        text: "Landscape videos may have black bars on sides"
+                        text: "Landscape videos may have black bars on sides".localized(language)
                     )
                 }
             }
@@ -476,13 +478,13 @@ struct AspectRatioWarningView: View {
     private var compatibilityScore: String {
         let percentage = compatibilityPercentage * 100
         if percentage >= 80 {
-            return "Excellent"
+            return "Excellent".localized(language)
         } else if percentage >= 60 {
-            return "Good"
+            return "Good".localized(language)
         } else if percentage >= 40 {
-            return "Fair"
+            return "Fair".localized(language)
         } else {
-            return "Poor"
+            return "Poor".localized(language)
         }
     }
 }

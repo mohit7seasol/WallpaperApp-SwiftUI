@@ -40,11 +40,11 @@ struct LanguageView: View {
                     
                     VStack(alignment: .leading, spacing: 6) {
                         
-                        Text("Choose Language")
+                        Text("Choose Language".localized(language))
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
                         
-                        Text("Select your preferred app\nlanguage")
+                        Text("\("Select your preferred app".localized(language))\n\("language".localized(language))")
                             .font(.system(size: 14))
                             .foregroundColor(Color(hex: "#9398C8"))
                             .multilineTextAlignment(.leading)
@@ -68,7 +68,7 @@ struct LanguageView: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                 } label: {
-                    Text("Continue")
+                    Text("Continue".localized(language))
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.horizontal, 30)

@@ -250,11 +250,12 @@ struct TopGradientView: View {
     @StateObject private var favoritesManager = FavoritesManager.shared
     @State private var animateFavorite = false
     @State private var showingSetting = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Wallpaper")
+                Text("Wallpaper".localized(language))
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
                 

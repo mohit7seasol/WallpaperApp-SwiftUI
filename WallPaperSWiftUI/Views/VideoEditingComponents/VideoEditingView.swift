@@ -41,6 +41,7 @@ struct VideoEditingView: View {
     @State private var videoResolution: CGSize = .zero
     @StateObject private var viewModel = WallpaperViewModel()
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     // MARK: - Computed
     
@@ -136,8 +137,8 @@ struct VideoEditingView: View {
                     onCreateWallpaper: handleCreateLiveWallpaper,
                     onPreview: playSelection
                 )
-                .alert("🎉 Success!", isPresented: $viewModel.showSuccessMessage) {
-                    Button("OK") {
+                .alert("🎉 Success!".localized(language), isPresented: $viewModel.showSuccessMessage) {
+                    Button("OK".localized(language)) {
                         dismiss()   // Navigate back to previous/root view
                     }
                     
@@ -147,7 +148,7 @@ struct VideoEditingView: View {
             }
             .padding()
         }
-        .navigationTitle("Live Wallpaper")
+        .navigationTitle("Live Wallpaper".localized(language))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             setupVideo()

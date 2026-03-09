@@ -10,6 +10,7 @@ import SwiftUI
 struct SpeedControlComponent: View {
     
     @Binding var speedMultiplier: Double
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     let startTime: Double
     let endTime: Double
@@ -51,13 +52,13 @@ struct SpeedControlComponent: View {
             
             // Header
             HStack {
-                Text("Playback Speed")
+                Text("Playback Speed".localized(language))
                     .font(.headline)
                 
                 Spacer()
                 
                 VStack(alignment: .trailing) {
-                    Text("Final Duration")
+                    Text("Final Duration".localized(language))
                         .font(.caption2)
                         .foregroundColor(.secondary)
                     
@@ -125,7 +126,7 @@ struct SpeedControlComponent: View {
                     Image(systemName: "info.circle.fill")
                         .foregroundColor(Color(red: 120/255, green: 124/255, blue: 238/255))
                     
-                    Text("Speed Conversion Preview :")
+                    Text("Speed Conversion Preview :".localized(language))
                         .font(.caption)
                         .foregroundColor(Color(red: 120/255, green: 124/255, blue: 238/255))
                 }
@@ -140,8 +141,8 @@ struct SpeedControlComponent: View {
                     
                     Text(
                         isFinalDurationValid
-                        ? "Perfect! Final duration is within Live Photo limits."
-                        : "Final duration exceeds 5 seconds."
+                        ? "Perfect! Final duration is within Live Photo limits.".localized(language)
+                        : "Final duration exceeds 5 seconds.".localized(language)
                     )
                     .font(.caption)
                     .foregroundColor(isFinalDurationValid ? .green : .orange)
@@ -157,10 +158,10 @@ struct SpeedControlComponent: View {
     
     private func speedDescription(_ speed: Double) -> String {
         switch speed {
-        case 1.0: return "Normal\nSpeed"
-        case 1.5: return "Smooth\nMotion"
-        case 2.0: return "Smooth\nMotion"
-        case 2.5: return "Smooth\nMotion"
+        case 1.0: return "\("Normal".localized(language))\n\("Speed".localized(language))"
+        case 1.5: return "\("Smooth".localized(language))\n\("Motion".localized(language))"
+        case 2.0: return "\("Smooth".localized(language))\n\("Motion".localized(language))"
+        case 2.5: return "\("Smooth".localized(language))\n\("Motion".localized(language))"
         default: return ""
         }
     }

@@ -48,6 +48,12 @@ struct WallpaperDetailView: View {
                 bottomBar
                     .padding(.bottom, 40)
             }
+            if favoritesManager.showToast {
+                VStack {
+                    Spacer()
+                    ToastView(message: favoritesManager.toastMessage)
+                }
+            }
         }
         .navigationBarHidden(true)
         .ignoresSafeArea()
@@ -448,5 +454,23 @@ struct DetailFavoriteButton: View {
                 .scaleEffect(animate ? 1.1 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
+    }
+}
+struct ToastView: View {
+    
+    let message: String
+    
+    var body: some View {
+        Text(message)
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(.white)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background(
+                Capsule()
+                    .fill(Color.black.opacity(0.85))
+            )
+            .padding(.bottom, 40)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }

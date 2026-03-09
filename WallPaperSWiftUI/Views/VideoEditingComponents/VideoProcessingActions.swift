@@ -14,6 +14,7 @@ struct VideoProcessingActions: View {
     @Binding var isProcessing: Bool
     @Binding var showAlert: Bool
     @Binding var alertMessage: String
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     let asset: AVAsset?
     let startTime: Double
@@ -39,7 +40,7 @@ struct VideoProcessingActions: View {
     }
     
     private var buttonTitle: String {
-        trimmedVideoURL == nil ? "Trim Video First" : "Create Live Wallpaper"
+        trimmedVideoURL == nil ? "Trim Video First".localized(language) : "Create Live Wallpaper".localized(language)
     }
     
     private var canExecute: Bool {
@@ -69,7 +70,7 @@ struct VideoProcessingActions: View {
                             .font(.title3)
                     }
                     
-                    Text(isProcessing ? "Processing..." : buttonTitle)
+                    Text(isProcessing ? "Processing...".localized(language) : buttonTitle)
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
@@ -93,7 +94,7 @@ struct VideoProcessingActions: View {
                 
                 HStack(spacing: 8) {
                     Image(systemName: "play.fill")
-                    Text("Preview Selection")
+                    Text("Preview Selection".localized(language))
                         .fontWeight(.medium)
                 }
                 .frame(maxWidth: .infinity)

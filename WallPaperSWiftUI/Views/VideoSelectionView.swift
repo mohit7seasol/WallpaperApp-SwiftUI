@@ -85,7 +85,7 @@ struct VideoSelectionView: View {
                 }
             }
         }
-        .navigationTitle("Choose Video")
+        .navigationTitle("Choose Video".localized(language))
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedItem) { _, newItem in
             if let newItem = newItem {
