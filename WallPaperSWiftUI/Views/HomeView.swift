@@ -124,7 +124,7 @@ struct HomeView: View {
                             .frame(width: 20, height: 20)
                             .foregroundColor(.white)
                         
-                        Text("Trending Wallpaper")
+                        Text("Trending Wallpaper".localized(language))
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -333,6 +333,7 @@ struct StaticCategoriesSection: View {
 struct StaticCategoryCell: View {
     let category: StaticCategory
     let isSelected: Bool
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         ZStack {
@@ -352,7 +353,7 @@ struct StaticCategoryCell: View {
                 .cornerRadius(20)
             
             // Title
-            Text(category.title)
+            Text(category.title.localized(language))
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
@@ -405,6 +406,7 @@ struct WallpaperBannerView: View {
     }
     
     let screenWidth = UIScreen.main.bounds.width
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         ZStack(alignment: .leading) {
@@ -420,11 +422,11 @@ struct WallpaperBannerView: View {
             // Text Content
             VStack(alignment: .leading, spacing: 6) {
                 
-                Text("Live Wallpaper")
+                Text("Live Wallpaper".localized(language))
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.white)
                 
-                Text("Set animated wallpapers effortlessly")
+                Text("Set animated wallpapers effortlessly".localized(language))
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.white)
             }

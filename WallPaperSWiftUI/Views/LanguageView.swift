@@ -87,7 +87,7 @@ struct LanguageView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 16) {
                         
-                        ForEach(languages, id: \.id) { item in
+                        ForEach(languages, id: \.languageCode) { item in
                             
                             LanguageRow(
                                 item: item,
@@ -96,7 +96,9 @@ struct LanguageView: View {
                                 iconSize: iconSize
                             )
                             .onTapGesture {
-                                vm.selectedLanguage = item.languageCode
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    vm.selectedLanguage = item.languageCode
+                                }
                             }
                         }
                     }
@@ -108,7 +110,7 @@ struct LanguageView: View {
             }
         }
         .onAppear {
-            vm.selectedLanguage = languages.first?.languageCode // Default first selected
+            vm.selectedLanguage = language
         }
     }
 }
