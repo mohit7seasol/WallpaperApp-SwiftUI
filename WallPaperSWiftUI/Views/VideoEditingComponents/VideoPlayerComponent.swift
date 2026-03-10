@@ -37,20 +37,20 @@ struct VideoPlayerComponent: View {
                     )
                 
                 // Play button overlay
-                if player?.timeControlStatus != .playing {
-                    Button(action: onPlaySelection) {
-                        ZStack {
-                            
-                            Circle()
-                                .fill(.black.opacity(0.6))
-                                .frame(width: 70,height: 70)
-                            
-                            Image(systemName: "play.fill")
-                                .font(.title)
-                                .foregroundColor(.white)
-                        }
-                    }
-                }
+//                if player?.timeControlStatus != .playing {
+//                    Button(action: onPlaySelection) {
+//                        ZStack {
+//                            
+//                            Circle()
+//                                .fill(.black.opacity(0.6))
+//                                .frame(width: 70,height: 70)
+//                            
+//                            Image(systemName: "play.fill")
+//                                .font(.title)
+//                                .foregroundColor(.white)
+//                        }
+//                    }
+//                }
             }
             
             //////////////////////////////////////////////////////
