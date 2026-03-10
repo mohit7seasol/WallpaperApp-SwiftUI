@@ -68,17 +68,31 @@ struct LanguageView: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                 } label: {
-                    Text("Continue".localized(language))
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 12)
-                        .background(
-                            Color(hex: "#5A5ED9")
-                                .opacity(0.3)
-                        )
-                        .clipShape(Capsule())
-                        .glassEffect()
+                    if #available(iOS 26.0, *) {
+                        Text("Continue".localized(language))
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 30)
+                            .padding(.vertical, 12)
+                            .background(
+                                Color(hex: "#5A5ED9")
+                                    .opacity(0.3)
+                            )
+                            .clipShape(Capsule())
+                            .glassEffect()
+                    } else {
+                        // Fallback on earlier versions
+                        Text("Continue".localized(language))
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 30)
+                            .padding(.vertical, 12)
+                            .background(
+                                Color(hex: "#5A5ED9")
+                                    .opacity(0.3)
+                            )
+                            .clipShape(Capsule())
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, -50)

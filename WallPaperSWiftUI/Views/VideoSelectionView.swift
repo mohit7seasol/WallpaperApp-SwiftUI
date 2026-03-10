@@ -67,28 +67,21 @@ struct VideoSelectionView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
                 
-                NavigationLink(
-                    destination: Group {
-                        if let videoURL = selectedVideoURL {
-                            VideoEditingView(videoURL: videoURL)
-                                .onDisappear {
-                                    // Reset state when coming back from editor
-                                    resetSelection()
-                                }
-                        } else {
-                            EmptyView()
-                        }
-                    },
-                    isActive: $navigateToEditor
-                ) {
-                    EmptyView()
+                .navigationDestination(isPresented: $navigateToEditor) {
+                    if let videoURL = selectedVideoURL {
+                        VideoEditingView(videoURL: videoURL)
+                            .onDisappear {
+                                // Reset state when coming back from editor
+                                resetSelection()
+                            }
+                    }
                 }
             }
         }
         .navigationTitle("Choose Video".localized(language))
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: selectedItem) { _, newItem in
-            if let newItem = newItem {
+        .onChange(of: selectedItem) { newValue in
+            if let newItem = newValue {
                 loadVideo(from: newItem)
             }
         }
@@ -160,13 +153,14 @@ struct VideoSelectionView: View {
     func resetSelection() {
         // Clear the selected item to allow reselection
         selectedItem = nil
-        selectedVideoURL = nil
-        navigateToEditor = false
         
         // Optional: Clean up temporary file
         if let oldURL = selectedVideoURL {
             try? FileManager.default.removeItem(at: oldURL)
         }
+        
+        selectedVideoURL = nil
+        navigateToEditor = false
     }
 }
 

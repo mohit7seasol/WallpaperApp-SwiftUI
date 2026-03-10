@@ -59,17 +59,32 @@ struct VideoTrimmingComponent: View {
             }
             
             if videoDuration > 0 {
-                RangeSlider(
-                    lowerValue: $startTime,
-                    upperValue: $endTime,
-                    minimumValue: 0,
-                    maximumValue: videoDuration,
-                    step: 0.1,
-                    maxRange: min(5.0 * speedMultiplier, videoDuration)
-                )
-                .frame(height:40)
-                .onChange(of: startTime){_,_ in onStartChanged()}
-                .onChange(of: endTime){_,_ in onEndChanged()}
+                if #available(iOS 17.0, *) {
+                    RangeSlider(
+                        lowerValue: $startTime,
+                        upperValue: $endTime,
+                        minimumValue: 0,
+                        maximumValue: videoDuration,
+                        step: 0.1,
+                        maxRange: min(5.0 * speedMultiplier, videoDuration)
+                    )
+                    .frame(height:40)
+                    .onChange(of: startTime){_,_ in onStartChanged()}
+                    .onChange(of: endTime){_,_ in onEndChanged()}
+                } else {
+                    // Fallback on earlier versions
+                    RangeSlider(
+                        lowerValue: $startTime,
+                        upperValue: $endTime,
+                        minimumValue: 0,
+                        maximumValue: videoDuration,
+                        step: 0.1,
+                        maxRange: min(5.0 * speedMultiplier, videoDuration)
+                    )
+                    .frame(height:40)
+                    .onChange(of: startTime){_ in onStartChanged()}
+                    .onChange(of: endTime){_ in onEndChanged()}
+                }
             }
             
             if !isFinalDurationValid {
