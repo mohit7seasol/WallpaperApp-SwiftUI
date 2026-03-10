@@ -172,7 +172,9 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            trendingViewModel.fetchTrendingWallpapers(loadMore: false)
+            if trendingViewModel.wallpapers.isEmpty {
+                trendingViewModel.fetchTrendingWallpapers(loadMore: false)
+            }
         }
         .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
     }
@@ -250,7 +252,6 @@ struct TrendingWallpapersGrid: View {
             }
         }
         .padding(.horizontal, 16)
-        .toast(isShowing: $favoritesManager.showToast, message: favoritesManager.toastMessage)
     }
 }
 
@@ -264,10 +265,11 @@ struct TopGradientView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Wallpaper".localized(language))
+                Text("Wallpaper")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
-                
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                 Spacer()
                 
                 // Favorite Icon - Navigation to Favorites with animation
@@ -439,6 +441,7 @@ struct WallpaperBannerView: View {
                 Text("Set animated wallpapers effortlessly".localized(language))
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.leading, 20)
         }
