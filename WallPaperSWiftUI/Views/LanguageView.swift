@@ -126,6 +126,9 @@ struct LanguageView: View {
         .onAppear {
             vm.selectedLanguage = language
         }
+        .toolbarBackground(.clear, for: .navigationBar)
+        .toolbarBackground(.clear, for: .navigationBar)
+        .toolbarColorScheme(.none, for: .navigationBar)
     }
 }
 struct LanguageRow: View {

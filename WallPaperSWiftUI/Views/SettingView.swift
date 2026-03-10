@@ -71,49 +71,15 @@ struct SettingView: View {
                 .padding(.top, 180)
                 .padding(.bottom, 40)
             }
-            
-            // MARK: - Custom Navigation Bar
-            VStack {
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding(12)
-                            .background(Color.black.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Settings".localized(language))
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
-                    Color.clear
-                        .frame(width: 44, height: 44)
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, safeAreaTop())
-                
-                Spacer()
-            }
-            
-            // ✅ Hidden NavigationLink (No UI change)
-            NavigationLink(
-                destination: LanguageView(),
-                isActive: $navigateToLanguage
-            ) {
-                EmptyView()
+            .navigationDestination(isPresented: $navigateToLanguage) {
+                LanguageView()
             }
         }
         .ignoresSafeArea(edges: .top)
-        .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
+        .navigationTitle("Settings".localized(language))
+        .toolbarBackground(.clear, for: .navigationBar)
+        .toolbarBackground(.clear, for: .navigationBar)
+        .toolbarColorScheme(.none, for: .navigationBar)
     }
     
     // MARK: - Safe Area Fix
