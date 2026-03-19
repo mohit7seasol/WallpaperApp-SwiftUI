@@ -318,26 +318,50 @@ struct StaticCategoriesSection: View {
     let categories: [StaticCategory]
     @Binding var selectedIndex: Int
     
+    @State private var scrollOffset: CGFloat = 0
+    
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
-                ForEach(0..<categories.count, id: \.self) { index in
-                    let category = categories[index]
-                    
-                    NavigationLink(destination: CategoryDetailView(category: category)) {
-                        StaticCategoryCell(
-                            category: category,
-                            isSelected: selectedIndex == index
-                        )
+        GeometryReader { outerGeo in
+            let screenCenter = outerGeo.size.width / 2
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(0..<categories.count, id: \.self) { index in
+                        let category = categories[index]
+                        
+                        GeometryReader { geo in
+                            let cardMidX = geo.frame(in: .global).midX
+                            
+                            NavigationLink(destination: CategoryDetailView(category: category)) {
+                                StaticCategoryCell(
+                                    category: category,
+                                    isSelected: selectedIndex == index
+                                )
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .simultaneousGesture(TapGesture().onEnded {
+                                selectedIndex = index
+                            })
+                            .onChange(of: cardMidX) { _ in
+                                let distance = abs(cardMidX - screenCenter)
+                                
+                                // Threshold for center detection (adjust if needed)
+                                if distance < 70 {
+                                    if selectedIndex != index {
+                                        DispatchQueue.main.async {
+                                            selectedIndex = index
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .frame(width: 130, height: 86)
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    .simultaneousGesture(TapGesture().onEnded {
-                        selectedIndex = index
-                    })
                 }
+                .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16)
         }
+        .frame(height: 100) // important to stabilize GeometryReader
     }
 }
 
@@ -355,10 +379,10 @@ struct StaticCategoryCell: View {
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 130, height: 86)
                 .cornerRadius(20)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(isSelected ? Color.pageSelected : Color.clear, lineWidth: 1)
-                )
+//                .overlay(
+//                    RoundedRectangle(cornerRadius: 20)
+//                        .stroke(isSelected ? Color.pageSelected : Color.clear, lineWidth: 1)
+//                )
             
             // Dark Overlay
             Color.black.opacity(0.3)
