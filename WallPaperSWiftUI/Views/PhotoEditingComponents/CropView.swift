@@ -57,7 +57,7 @@ struct CropView: View {
                 
                 // Crop View
                 CropViewControllerWrapper(image: image, croppedImage: $croppedImage)
-                    .frame(height: UIScreen.main.bounds.height - 200)
+                    .frame(height: UIScreen.main.bounds.height - 100)
                 
                 Spacer()
             }
