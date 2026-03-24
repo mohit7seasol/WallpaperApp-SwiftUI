@@ -28,7 +28,8 @@ struct DrawView: View {
     
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Constant.previewBlueGradient
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Top Bar

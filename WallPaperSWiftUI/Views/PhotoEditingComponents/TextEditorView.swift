@@ -25,7 +25,8 @@ struct TextEditorView: View {
     
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Constant.previewBlueGradient
+                .ignoresSafeArea()
             
             VStack {
                 // Top Bar
@@ -53,7 +54,6 @@ struct TextEditorView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 50)
                 
                 // Image with text overlay
                 GeometryReader { geometry in
