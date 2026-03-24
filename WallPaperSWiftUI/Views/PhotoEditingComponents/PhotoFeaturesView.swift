@@ -12,36 +12,44 @@ struct PhotoFeaturesView: View {
     
     let onTap: (PhotoFeature) -> Void
     
-    let icons = ["pencil", "crop", "textformat", "camera.filters", "slider.horizontal.3", "drop"]
-    let labels = ["Draw", "Crop", "Text", "Filter", "Adjust", "Blur"]
+    let icons = ["draw_ic", "crop_ic", "text_ic", "filter_ic", "adjust_ic", "blur_ic"]
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 15) {
+            HStack(spacing: 14) {
+                
                 ForEach(0..<icons.count, id: \.self) { i in
+                    
                     Button {
                         if let feature = PhotoFeature(rawValue: i) {
                             onTap(feature)
                         }
                     } label: {
-                        VStack(spacing: 8) {
-                            Image(systemName: icons[i])
-                                .foregroundColor(.white)
-                                .font(.system(size: 24))
-                                .frame(width: 50, height: 50)
-                                .background(Color.white.opacity(0.15))
-                                .cornerRadius(12)
+                        
+                        ZStack {
                             
-                            Text(labels[i])
-                                .font(.custom("Urbanist-Medium", size: 11))
+                            // ✅ Rounded Square Background (20% white)
+                            RoundedRectangle(cornerRadius: 18)
+                                .fill(Color.white.opacity(0.2))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 18)
+                                        .stroke(Color.white.opacity(0.25), lineWidth: 1)
+                                )
+                            
+                            // ✅ Icon
+                            Image(icons[i])
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 26, height: 26)
                                 .foregroundColor(.white)
                         }
+                        .frame(width: 64, height: 64) // Square
                     }
                 }
             }
             .padding(.horizontal, 20)
         }
-        .padding(.vertical, 12)
-        .padding(.bottom, 10)
+        .padding(.top, 10)
+        .padding(.bottom, 12)
     }
 }

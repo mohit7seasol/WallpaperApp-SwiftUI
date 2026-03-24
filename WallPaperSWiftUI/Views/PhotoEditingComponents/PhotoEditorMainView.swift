@@ -32,7 +32,7 @@ struct PhotoEditorMainView: View {
     var body: some View {
         ZStack {
             // Background
-            Color.appBgColor
+            Constant.previewBlueGradient
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -96,6 +96,7 @@ struct PhotoEditorMainView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 25)
+                .padding(.top, 20)
             }
         }
         // ✅ DEFAULT NAVIGATION BAR

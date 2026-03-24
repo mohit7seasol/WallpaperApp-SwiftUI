@@ -26,7 +26,7 @@ struct PhotoChooseView: View {
     
     var body: some View {
         ZStack {
-            Color.appBgColor
+            Constant.previewBlueGradient
                 .ignoresSafeArea()
             
             if isLoading {
