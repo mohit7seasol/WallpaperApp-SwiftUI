@@ -20,7 +20,6 @@ enum PhotoFeature: Int, Identifiable {
     var id: Int { rawValue }
 }
 
-
 struct PhotoEditorMainView: View {
     
     let asset: PHAsset
@@ -32,43 +31,13 @@ struct PhotoEditorMainView: View {
     
     var body: some View {
         ZStack {
-            Image("app_bg_image")
-                .resizable()
+            // Background
+            Color.appBgColor
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // NAVBAR - Styled like WallpaperListView
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
-                            .font(.system(size: 20, weight: .semibold))
-                    }
-                    
-                    Text("Photo Editor")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(.leading, 10)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 60)
-                .padding(.bottom, 20)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color(red: 0.1, green: 0.1, blue: 0.15).opacity(0.9),
-                            Color.black.opacity(0.95)
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
                 
-                // IMAGE
+                // ✅ IMAGE
                 if let displayImage = editedImage ?? image {
                     Image(uiImage: displayImage)
                         .resizable()
@@ -84,18 +53,19 @@ struct PhotoEditorMainView: View {
                 
                 Spacer()
                 
-                // TOOLBAR
+                // ✅ FEATURES TOOLBAR
                 PhotoFeaturesView { feature in
                     selectedFeature = feature
                 }
                 
-                // BOTTOM BUTTONS
+                // ✅ BOTTOM BUTTONS
                 HStack(spacing: 20) {
                     
                     Button {
                         dismiss()
                     } label: {
                         Text("Cancel")
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -107,6 +77,7 @@ struct PhotoEditorMainView: View {
                         applyChanges()
                     } label: {
                         Text("Done")
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -127,8 +98,10 @@ struct PhotoEditorMainView: View {
                 .padding(.bottom, 25)
             }
         }
-        .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
+        // ✅ DEFAULT NAVIGATION BAR
+        .navigationTitle("Photo Editor")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .onAppear {
             loadImage()
         }
@@ -137,6 +110,7 @@ struct PhotoEditorMainView: View {
         }
     }
     
+    // MARK: - Load Image
     private func loadImage() {
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
@@ -153,6 +127,7 @@ struct PhotoEditorMainView: View {
         }
     }
     
+    // MARK: - Apply Changes
     private func applyChanges() {
         if let finalImage = editedImage ?? image {
             UIImageWriteToSavedPhotosAlbum(finalImage, nil, nil, nil)
@@ -160,6 +135,7 @@ struct PhotoEditorMainView: View {
         }
     }
     
+    // MARK: - Feature Navigation
     @ViewBuilder
     private func featureView(_ feature: PhotoFeature) -> some View {
         if let currentImage = editedImage ?? image {
