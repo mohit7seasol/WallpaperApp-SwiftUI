@@ -10,31 +10,6 @@ import Photos
 import PhotosUI
 import Combine
 
-// MARK: - PhotoAsset Model
-struct PhotoAsset: Identifiable {
-    let id = UUID()
-    let asset: PHAsset
-}
-class PhotoLibraryObserver: NSObject, ObservableObject, PHPhotoLibraryChangeObserver {
-    
-    var onChange: (() -> Void)?
-    
-    override init() {
-        super.init()
-        PHPhotoLibrary.shared().register(self)
-    }
-    
-    deinit {
-        PHPhotoLibrary.shared().unregisterChangeObserver(self)
-    }
-    
-    func photoLibraryDidChange(_ changeInstance: PHChange) {
-        DispatchQueue.main.async {
-            self.onChange?()
-        }
-    }
-}
-
 struct PhotoChooseView: View {
     
     @Environment(\.dismiss) var dismiss
@@ -51,112 +26,88 @@ struct PhotoChooseView: View {
     
     var body: some View {
         ZStack {
-            Color(hex: "#121217")
+            Color.appBgColor
                 .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // NAVBAR - Removed top padding to start from safe area top
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
-                            .font(.system(size: 20, weight: .semibold))
-                    }
+            if isLoading {
+                ProgressView()
+                    .tint(.white)
+            } else if images.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .font(.system(size: 60))
+                        .foregroundColor(.white.opacity(0.5))
                     
-                    Text("Select Photo".localized(self.language))
-                        .font(.custom("Poppins-Black", size: 20))
+                    Text("No Photos Found".localized(self.language))
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(.white)
-                        .padding(.leading, 10)
                     
-                    Spacer()
-                    
-                    // Manage Button - Only show for limited access
-                    if PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited {
-                        Button {
-                            showPermissionManagement()
-                        } label: {
-                            Text("Manage".localized(self.language))
-                                .font(.custom("Urbanist-Medium", size: 16))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .stroke(Color.white, lineWidth: 1)
-                                )
-                        }
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 0) // Set to 0 to remove extra space
-                
-                // Limited Access Message - Only show when limited access
-                if PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited {
-                    LimitAccessPhotoView(appName: appName)
-                }
-                
-                if isLoading {
-                    Spacer()
-                    ProgressView().tint(.white)
-                    Spacer()
-                } else if images.isEmpty {
-                    Spacer()
-                    VStack(spacing: 16) {
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .font(.system(size: 50))
-                            .foregroundColor(.white.opacity(0.5))
-                        
-                        Text("No Photos Found".localized(self.language))
-                            .font(.custom("Poppins-Black", size: 18))
-                            .foregroundColor(.white)
-                        
-                        Text("Tap below to access your photos".localized(self.language))
-                            .font(.custom("Urbanist-Medium", size: 14))
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                    Spacer()
+                    Text("Tap below to access your photos".localized(self.language))
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
                     
                     Button {
                         checkPermission()
                     } label: {
                         Text("Access Photos".localized(self.language))
-                            .font(.custom("Urbanist-Bold", size: 16))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
-                            .frame(width: 150)
+                            .frame(width: 160)
                             .frame(height: 50)
                             .background(
                                 LinearGradient(
-                                    colors: [
+                                    gradient: Gradient(colors: [
                                         Color(hex: "1973E8"),
                                         Color(hex: "0E4082")
-                                    ],
+                                    ]),
                                     startPoint: .top,
                                     endPoint: .bottom
                                 )
                             )
                             .cornerRadius(25)
                     }
-                    .padding(.bottom, 40)
-                } else {
-                    ScrollView {
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 3), spacing: 10) {
-                            ForEach(images) { img in
-                                PhotoThumbnailView(asset: img)
-                                    .onTapGesture {
-                                        selectedImage = img
-                                    }
-                            }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView(showsIndicators: false) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                        ForEach(images) { img in
+                            PhotoThumbnailView(asset: img)
+                                .onTapGesture {
+                                    selectedImage = img
+                                    navigateToEditor = true
+                                }
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 20)
-                        .padding(.bottom, 30)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 20)
+                }
+            }
+        }
+        .navigationTitle("Select Photo".localized(self.language))
+        .navigationBarTitleDisplayMode(.inline)
+        .foregroundColor(.white)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited {
+                    Button {
+                        showPermissionManagement()
+                    } label: {
+                        Text("Manage".localized(self.language))
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.white.opacity(0.2))
+                            .cornerRadius(15)
                     }
                 }
             }
         }
-        .navigationBarHidden(true)
+        .toolbarBackground(.visible, for: .navigationBar)
         .onAppear {
             photoObserver.onChange = {
                 loadImages()
@@ -173,8 +124,17 @@ struct PhotoChooseView: View {
         } message: {
             Text("Please grant photo library access to select photos".localized(self.language))
         }
-        .fullScreenCover(item: $selectedImage) { img in
-            PhotoEditorMainView(asset: img.asset)
+        NavigationLink(
+            destination: Group {
+                if let img = selectedImage {
+                    PhotoEditorMainView(asset: img.asset)
+                } else {
+                    EmptyView()
+                }
+            },
+            isActive: $navigateToEditor
+        ) {
+            EmptyView()
         }
     }
     
@@ -225,64 +185,10 @@ struct PhotoChooseView: View {
     }
 }
 
-// MARK: - LimitAccessPhotoView
-struct LimitAccessPhotoView: View {
-    let appName: String
-    @State private var showManageOptions = false
-    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Select Photo".localized(self.language))
-                    .font(.custom("Urbanist-Medium", size: 14))
-                    .foregroundColor(.white.opacity(0.8))
-                
-                Spacer()
-                
-                Button {
-                    showManageOptions = true
-                } label: {
-                    Text("Manage".localized(self.language))
-                        .font(.custom("Urbanist-Medium", size: 14))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(Color.blue.opacity(0.3))
-                        .cornerRadius(12)
-                }
-            }
-            
-            Text("\("You've given".localized(self.language)) \(appName) \("limited access to select number of photos".localized(self.language))")
-                .font(.custom("Urbanist-Medium", size: 13))
-                .foregroundColor(.white.opacity(0.7))
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 12)
-        .background(Color.black.opacity(0.3))
-        .cornerRadius(8)
-        .padding(.horizontal, 16)
-        .padding(.top, 10)
-        .alert("Manage".localized(self.language), isPresented: $showManageOptions) {
-            Button("Select More Photos".localized(self.language)) {
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootViewController = windowScene.windows.first?.rootViewController {
-                    PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: rootViewController)
-                }
-            }
-            
-            Button("Change Settings".localized(self.language)) {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
-                }
-            }
-            
-            Button("Cancel".localized(self.language), role: .cancel) { }
-        } message: {
-            Text("\("You've given".localized(self.language)) \(appName) \("limited access to select number of photos".localized(self.language))")
-        }
-    }
+// MARK: - PhotoAsset Model
+struct PhotoAsset: Identifiable {
+    let id = UUID()
+    let asset: PHAsset
 }
 
 // MARK: - PhotoThumbnailView
@@ -290,19 +196,24 @@ struct PhotoThumbnailView: View {
     let asset: PhotoAsset
     @State private var image: UIImage?
     
+    let screenWidth = UIScreen.main.bounds.width
+    var cellWidth: CGFloat {
+        return (screenWidth - 48) / 3
+    }
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             if let image = image {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: (UIScreen.main.bounds.width - 40) / 3, height: (UIScreen.main.bounds.width - 40) / 3)
+                    .frame(width: cellWidth, height: cellWidth * 1.5)
                     .clipped()
                     .cornerRadius(12)
             } else {
                 Rectangle()
                     .fill(Color.gray.opacity(0.3))
-                    .frame(width: (UIScreen.main.bounds.width - 40) / 3, height: (UIScreen.main.bounds.width - 40) / 3)
+                    .frame(width: cellWidth, height: cellWidth * 1.5)
                     .cornerRadius(12)
                     .overlay {
                         ProgressView()
@@ -333,6 +244,87 @@ struct PhotoThumbnailView: View {
                     self.image = img
                 }
             }
+        }
+    }
+}
+
+// MARK: - LimitAccessPhotoView
+struct LimitAccessPhotoView: View {
+    let appName: String
+    @State private var showManageOptions = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Select Photo".localized(self.language))
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
+                
+                Spacer()
+                
+                Button {
+                    showManageOptions = true
+                } label: {
+                    Text("Manage".localized(self.language))
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color.blue.opacity(0.3))
+                        .cornerRadius(12)
+                }
+            }
+            
+            Text("\("You've given".localized(self.language)) \(appName) \("limited access to select number of photos".localized(self.language))")
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(.white.opacity(0.7))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.black.opacity(0.3))
+        .cornerRadius(8)
+        .padding(.horizontal, 16)
+        .padding(.top, 12)
+        .alert("Manage".localized(self.language), isPresented: $showManageOptions) {
+            Button("Select More Photos".localized(self.language)) {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let rootViewController = windowScene.windows.first?.rootViewController {
+                    PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: rootViewController)
+                }
+            }
+            
+            Button("Change Settings".localized(self.language)) {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            
+            Button("Cancel".localized(self.language), role: .cancel) { }
+        } message: {
+            Text("\("You've given".localized(self.language)) \(appName) \("limited access to select number of photos".localized(self.language))")
+        }
+    }
+}
+
+// MARK: - PhotoLibraryObserver
+class PhotoLibraryObserver: NSObject, ObservableObject, PHPhotoLibraryChangeObserver {
+    
+    var onChange: (() -> Void)?
+    
+    override init() {
+        super.init()
+        PHPhotoLibrary.shared().register(self)
+    }
+    
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
+    }
+    
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        DispatchQueue.main.async {
+            self.onChange?()
         }
     }
 }

@@ -11,36 +11,32 @@ import Photos
 
 struct EditPhotoAnimatedView: View {
     
-    @State private var openPhotoChooser = false
-    
     var body: some View {
-        ZStack {
-            
-            // Glass Background
-            RoundedRectangle(cornerRadius: 40)
-                .fill(.ultraThinMaterial)
-                .frame(width: 80, height: 80)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 40)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                )
-            
-            // Lottie Circle View
+        
+        NavigationLink(destination: PhotoChooseView()) {
             ZStack {
-                Circle()
-                    .fill(Constant.commonBlueGradient)
-                    .frame(width: 64, height: 64)
                 
-                LottieView(name: "Edit")
-                    .frame(width: 40, height: 40)
+                // Glass Background
+                RoundedRectangle(cornerRadius: 40)
+                    .fill(.ultraThinMaterial)
+                    .frame(width: 80, height: 80)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 40)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                
+                // Lottie Circle
+                ZStack {
+                    Circle()
+                        .fill(Constant.commonBlueGradient)
+                        .frame(width: 64, height: 64)
+                    
+                    LottieView(name: "Edit")
+                        .frame(width: 40, height: 40)
+                }
             }
         }
-        .onTapGesture {
-            openPhotoChooser = true
-        }
-        .fullScreenCover(isPresented: $openPhotoChooser) {
-            PhotoChooseView()
-        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

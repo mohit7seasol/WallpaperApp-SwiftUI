@@ -36,7 +36,37 @@ struct PhotoEditorMainView: View {
                 .resizable()
                 .ignoresSafeArea()
             
-            VStack {
+            VStack(spacing: 0) {
+                // NAVBAR - Styled like WallpaperListView
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.white)
+                            .font(.system(size: 20, weight: .semibold))
+                    }
+                    
+                    Text("Photo Editor")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.leading, 10)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 60)
+                .padding(.bottom, 20)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color(red: 0.1, green: 0.1, blue: 0.15).opacity(0.9),
+                            Color.black.opacity(0.95)
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
                 
                 // IMAGE
                 if let displayImage = editedImage ?? image {
@@ -54,12 +84,12 @@ struct PhotoEditorMainView: View {
                 
                 Spacer()
                 
-                // TOOLBAR (Updated)
+                // TOOLBAR
                 PhotoFeaturesView { feature in
                     selectedFeature = feature
                 }
                 
-                // BOTTOM BUTTONS (Updated UI)
+                // BOTTOM BUTTONS
                 HStack(spacing: 20) {
                     
                     Button {
@@ -80,7 +110,16 @@ struct PhotoEditorMainView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
-                            .background(Constant.commonBlueGradient)
+                            .background(
+                                LinearGradient(
+                                    colors: [
+                                        Color(hex: "1973E8"),
+                                        Color(hex: "0E4082")
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
                             .cornerRadius(25)
                     }
                 }
@@ -89,6 +128,7 @@ struct PhotoEditorMainView: View {
             }
         }
         .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
             loadImage()
         }
@@ -107,7 +147,9 @@ struct PhotoEditorMainView: View {
             contentMode: .aspectFit,
             options: options
         ) { img, _ in
-            self.image = img
+            DispatchQueue.main.async {
+                self.image = img
+            }
         }
     }
     
@@ -138,3 +180,4 @@ struct PhotoEditorMainView: View {
         }
     }
 }
+
