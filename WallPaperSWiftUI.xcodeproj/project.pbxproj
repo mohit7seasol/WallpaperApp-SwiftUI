@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BD695B682F50503000C2CB9D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B672F50503000C2CB9D /* Alamofire */; };
 		BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B812F50537500C2CB9D /* WindowSceneReader */; };
+		BD6E1D4B2F72719E00CB5EEC /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = BD6E1D4A2F72719E00CB5EEC /* CropViewController */; };
 		BD989BC92F56E34300C963EC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = BD989BC82F56E34300C963EC /* Lottie */; };
 		BDC1A8A02F50454C000891D9 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A89F2F50454C000891D9 /* SDWebImageSwiftUI */; };
 		BDC1A8A32F5048F7000891D9 /* Toasts in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8A22F5048F7000891D9 /* Toasts */; };
@@ -67,6 +68,7 @@
 			files = (
 				BDC1A8A92F5049D3000891D9 /* Kingfisher in Frameworks */,
 				BDC1A8A62F50495C000891D9 /* Shimmer in Frameworks */,
+				BD6E1D4B2F72719E00CB5EEC /* CropViewController in Frameworks */,
 				BDC1A8A32F5048F7000891D9 /* Toasts in Frameworks */,
 				BD695B682F50503000C2CB9D /* Alamofire in Frameworks */,
 				BDC1A8A02F50454C000891D9 /* SDWebImageSwiftUI in Frameworks */,
@@ -125,6 +127,7 @@
 				BD695B672F50503000C2CB9D /* Alamofire */,
 				BD695B812F50537500C2CB9D /* WindowSceneReader */,
 				BD989BC82F56E34300C963EC /* Lottie */,
+				BD6E1D4A2F72719E00CB5EEC /* CropViewController */,
 			);
 			productName = WallPaperSWiftUI;
 			productReference = BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */;
@@ -177,6 +180,7 @@
 				BD695B662F50503000C2CB9D /* XCRemoteSwiftPackageReference "Alamofire" */,
 				BD695B802F50537500C2CB9D /* XCRemoteSwiftPackageReference "WindowSceneReader" */,
 				BD989BC72F56E34300C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				BD6E1D492F72719E00CB5EEC /* XCRemoteSwiftPackageReference "TOCropViewController" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BD06D9ED2F5020E4007F8736 /* Products */;
@@ -464,6 +468,14 @@
 				minimumVersion = 3.3.0;
 			};
 		};
+		BD6E1D492F72719E00CB5EEC /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TimOliver/TOCropViewController";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.1;
+			};
+		};
 		BD989BC72F56E34300C963EC /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios";
@@ -524,6 +536,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BD695B802F50537500C2CB9D /* XCRemoteSwiftPackageReference "WindowSceneReader" */;
 			productName = WindowSceneReader;
+		};
+		BD6E1D4A2F72719E00CB5EEC /* CropViewController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BD6E1D492F72719E00CB5EEC /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			productName = CropViewController;
 		};
 		BD989BC82F56E34300C963EC /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

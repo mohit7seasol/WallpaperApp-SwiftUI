@@ -10,6 +10,7 @@ import SDWebImageSwiftUI
 import Alamofire
 import Combine
 import ACarousel
+import Photos
 
 // MARK: - Static Category Model
 struct StaticCategory: Identifiable {
@@ -175,6 +176,17 @@ struct HomeView: View {
                                 .padding(.bottom, 20)
                             }
                         }
+                    }
+                }
+                VStack {
+                    Spacer()
+                    
+                    HStack {
+                        Spacer()
+                        
+                        EditPhotoAnimatedView()
+                            .padding(.trailing, 15)
+                            .padding(.bottom, 15)
                     }
                 }
             }
