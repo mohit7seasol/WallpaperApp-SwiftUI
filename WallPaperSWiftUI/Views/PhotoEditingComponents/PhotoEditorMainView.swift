@@ -60,7 +60,6 @@ struct PhotoEditorMainView: View {
                 
                 // ✅ BOTTOM BUTTONS
                 HStack(spacing: 20) {
-                    
                     Button {
                         dismiss()
                     } label: {
@@ -72,6 +71,7 @@ struct PhotoEditorMainView: View {
                             .background(Color.white.opacity(0.15))
                             .cornerRadius(25)
                     }
+                    .applyGlassIfNeeded()
                     
                     Button {
                         applyChanges()
@@ -81,18 +81,10 @@ struct PhotoEditorMainView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
-                            .background(
-                                LinearGradient(
-                                    colors: [
-                                        Color(hex: "1973E8"),
-                                        Color(hex: "0E4082")
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
+                            .background(Color.init(hex: "5A5ED9").opacity(0.3))
                             .cornerRadius(25)
                     }
+                    .applyGlassIfNeeded()
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 25)

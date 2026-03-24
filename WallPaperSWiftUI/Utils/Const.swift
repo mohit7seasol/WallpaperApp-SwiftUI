@@ -158,6 +158,19 @@ extension View {
     func addBackGround() -> some View {
         modifier(BackgroundModifier())
     }
+    
+    @ViewBuilder
+    func applyGlassIfNeeded() -> some View {
+        if #available(iOS 26.0, *) {
+            if AppVersion.isIOS26 {
+                self.glassEffect()
+            } else {
+                self
+            }
+        } else {
+            self
+        }
+    }
 }
 
 struct BackgroundModifier: ViewModifier {

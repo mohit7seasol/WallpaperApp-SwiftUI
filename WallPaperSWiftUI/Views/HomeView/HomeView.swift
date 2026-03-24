@@ -185,8 +185,8 @@ struct HomeView: View {
                         Spacer()
                         
                         EditPhotoAnimatedView()
-                            .padding(.trailing, 15)
-                            .padding(.bottom, 15)
+                            .padding(.trailing, 25)
+                            .padding(.bottom, 6)
                     }
                 }
             }

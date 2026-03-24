@@ -9,3 +9,12 @@ struct Blur: UIViewRepresentable {
         uiView.effect = UIBlurEffect(style: style)
     }
 }
+
+struct AppVersion {
+    static var isIOS26: Bool {
+        if #available(iOS 26.0, *) {
+            return true
+        }
+        return false
+    }
+}
