@@ -122,15 +122,15 @@ struct BlurDrawView: View {
                             Text("Clear All".localized(LocalizationService.shared.language))
                                 .font(.custom("Urbanist-Medium", size: 14))
                         }
-                        .foregroundColor(.red)
+                        .foregroundColor(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                         .background(
                             RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.red.opacity(0.2))
+                                .fill(Color.white.opacity(0.2))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 20)
-                                        .stroke(Color.red, lineWidth: 1)
+                                        .stroke(Color.white, lineWidth: 1)
                                 )
                         )
                     }
