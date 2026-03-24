@@ -52,7 +52,7 @@ struct CropView: View {
                     }
                 }
                 .padding(.horizontal, 24)
-                .padding(.top, 0) // Changed from 50 to 0
+                .padding(.top, 20) // Changed from 50 to 0
                 .padding(.bottom, 20)
                 
                 // Crop View

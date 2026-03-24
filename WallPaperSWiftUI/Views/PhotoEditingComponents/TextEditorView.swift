@@ -283,11 +283,11 @@ struct TextInputSheet: View {
                         
                         // MARK: TEXT INPUT
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Text")
+                            Text("Text".localized(LocalizationService.shared.language))
                                 .foregroundColor(.white)
                                 .font(.headline)
                             
-                            TextField("Enter text", text: $text)
+                            TextField("Enter text".localized(LocalizationService.shared.language), text: $text)
                                 .padding()
                                 .background(Color.gray.opacity(0.2))
                                 .cornerRadius(12)
@@ -300,7 +300,7 @@ struct TextInputSheet: View {
                         
                         // MARK: FONT SIZE
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Font Size")
+                            Text("Font Size".localized(LocalizationService.shared.language))
                                 .foregroundColor(.white)
                                 .font(.headline)
                             
@@ -314,7 +314,7 @@ struct TextInputSheet: View {
                         
                         // MARK: FONT PICKER
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Font")
+                            Text("Font".localized(LocalizationService.shared.language))
                                 .foregroundColor(.white)
                                 .font(.headline)
                             
@@ -342,7 +342,7 @@ struct TextInputSheet: View {
                         // MARK: COLOR PICKER (ATTRACTIVE UI)
                         VStack(alignment: .leading, spacing: 12) {
                             
-                            Text("Color")
+                            Text("Color".localized(LocalizationService.shared.language))
                                 .foregroundColor(.white)
                                 .font(.headline)
                             
@@ -359,7 +359,7 @@ struct TextInputSheet: View {
                                 
                                 // ✅ SYSTEM COLOR PICKER (CLEAN STYLE)
                                 ColorPicker(
-                                    "Choose Color",
+                                    "Choose Color".localized(LocalizationService.shared.language),
                                     selection: $color,
                                     supportsOpacity: true
                                 )
@@ -390,20 +390,20 @@ struct TextInputSheet: View {
             }
             
             // NAVBAR
-            .navigationTitle("Add Text")
+            .navigationTitle("Add Text".localized(LocalizationService.shared.language))
             .navigationBarTitleDisplayMode(.inline)
             
             .toolbar {
                 
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button("Cancel".localized(LocalizationService.shared.language)) {
                         isFocused = false
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Add") {
+                    Button("Add".localized(LocalizationService.shared.language)) {
                         if !text.isEmpty {
                             onSave()
                         }

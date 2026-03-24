@@ -63,7 +63,7 @@ struct PhotoEditorMainView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Text("Cancel")
+                        Text("Cancel".localized(LocalizationService.shared.language))
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -76,7 +76,7 @@ struct PhotoEditorMainView: View {
                     Button {
                         applyChanges()
                     } label: {
-                        Text("Done")
+                        Text("Save".localized(LocalizationService.shared.language))
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -92,7 +92,7 @@ struct PhotoEditorMainView: View {
             }
         }
         // ✅ DEFAULT NAVIGATION BAR
-        .navigationTitle("Photo Editor")
+        .navigationTitle("Photo Editor".localized(LocalizationService.shared.language))
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .onAppear {
