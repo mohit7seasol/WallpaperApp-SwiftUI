@@ -32,6 +32,7 @@ struct HomeView: View {
     @State private var selectedStaticIndex = 0
     @StateObject private var favoritesManager = FavoritesManager.shared
     @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
+    @State private var categorySectionHeight: CGFloat = 0
     
     // Get screen width for cell calculation
     let screenWidth = UIScreen.main.bounds.width
@@ -100,7 +101,16 @@ struct HomeView: View {
                         categories: staticCategories,
                         selectedIndex: $selectedStaticIndex
                     )
-                    .offset(y: -114)
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear
+                                .onAppear {
+                                    categorySectionHeight = geo.size.height
+                                }
+                        }
+                    )
+                    .offset(y: -(categorySectionHeight))
+//                    .padding(.bottom, -(categorySectionHeight))
                     .padding(.bottom, -43)
                     
                     // Page Control
@@ -108,14 +118,14 @@ struct HomeView: View {
                         numberOfPages: staticCategories.count,
                         currentPage: selectedStaticIndex
                     )
-                    .padding(.top, -50)
+                    .padding(.top, -60)
                     
                     // Live Wallpaper Banner
                     NavigationLink(destination: VideoSelectionView()) {
                         WallpaperBannerView()
                     }
                     .padding(.horizontal, 15)
-                    .padding(.top, -30)
+                    .padding(.top, -40)
                     
                     // Trending Wallpaper Static Title
                     HStack(spacing: 8) {
