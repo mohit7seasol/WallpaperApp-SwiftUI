@@ -29,10 +29,15 @@ struct WallpaperPreviewView: View {
         ZStack {
             
             // MARK: Wallpaper
-            WebImage(url: URL(string: imageURL))
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
+            GeometryReader { geo in
+                WebImage(url: URL(string: imageURL))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clipped()
+                    .position(x: geo.size.width / 2, y: geo.size.height / 2)
+            }
+            .ignoresSafeArea()
             
             overlayView
         }
@@ -109,53 +114,30 @@ private extension WallpaperPreviewView {
 ////////////////////////////////////////////////////////////
 
 private extension WallpaperPreviewView {
+    @ViewBuilder
+    var dockBackground: some View {
+        if AppVersion.isIOS26 {
+            // ✅ Native glass (iOS 26+)
+            Color.clear
+                .background(.ultraThinMaterial)
+        } else {
+            // ✅ Custom glass (fallback)
+            ZStack {
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(Color.white.opacity(0.15))
+                
+                RoundedRectangle(cornerRadius: 30)
+                    .stroke(Color.white.opacity(0.25), lineWidth: 1)
+                
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(.ultraThinMaterial)
+            }
+        }
+    }
     
     var homePreview: some View {
-        VStack(spacing: 0) {
-            
-            // ✅ Top spacing (safe + visual balance)
-            Color.clear
-                .frame(height: getSafeAreaTop() + 20)
-            
-            // MARK: Widgets
-            HStack(spacing: 16) {
-                
-                Image("weather_ic")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 150)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
-                    .cornerRadius(22)
-                
-                Image("photos_ic")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 150)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
-                    .cornerRadius(22)
-            }
-            .padding(.horizontal, 20)
-            
-            // MARK: App Grid
-            LazyVGrid(
-                columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 4),
-                spacing: 22
-            ) {
-                appIcon("FaceTime_ic", "FaceTime")
-                appIcon("Calendar_ic", "Calendar")
-                appIcon("Gallery_ic", "Photos")
-                appIcon("Camera_ic", "Camera")
-                appIcon("Mail_ic", "Mail")
-                appIcon("Note_ic", "Notes")
-                appIcon("Reminders_ic", "Reminders")
-                appIcon("Clock_ic", "Clock")
-            }
-            .padding(.top, 25)
-            .padding(.horizontal, 20)
-            
-            Spacer()
+        VStack {
+            Spacer() // Pushes content to bottom
             
             // MARK: Dock
             HStack(spacing: 25) {
@@ -164,16 +146,13 @@ private extension WallpaperPreviewView {
                 dockIcon("Message_ic")
                 dockIcon("Music_ic")
             }
-            .padding(.vertical, 14)
-            .frame(maxWidth: .infinity)
-            .background(
-                Image("Glass_bg")
-                    .resizable()
-                    .scaledToFill()
-            )
-            .cornerRadius(30)
             .padding(.horizontal, 20)
-            .padding(.bottom, getSafeAreaBottom() + 10)
+            .frame(height: 88)
+            .frame(maxWidth: .infinity)
+            .background(dockBackground) // ✅ NEW
+            .clipShape(RoundedRectangle(cornerRadius: 30))
+            .padding(.horizontal, 20)
+            .padding(.bottom, 40)
         }
         .ignoresSafeArea()
     }
@@ -212,19 +191,18 @@ private extension WallpaperPreviewView {
 }
 
 ////////////////////////////////////////////////////////////
-// MARK: - LOCK PREVIEW
+// MARK: - LOCK PREVIEW (FIXED LAYOUT)
 ////////////////////////////////////////////////////////////
 
 private extension WallpaperPreviewView {
     
     var lockPreview: some View {
         VStack(spacing: 10) {
-            
-            Spacer()
-            
+            // Top spacing of 40 (using padding top on VStack)
             Text(currentDate)
                 .font(.system(size: 20, weight: .medium))
                 .foregroundColor(.white.opacity(0.9))
+                .padding(.top, 50) // Top padding 40
             
             Text(currentTime)
                 .font(.system(size: 72, weight: .bold))
@@ -237,6 +215,7 @@ private extension WallpaperPreviewView {
                 .frame(width: 140, height: 5)
                 .padding(.bottom, 20)
         }
+        .padding(.horizontal, 20) // Left and right padding 20
         .ignoresSafeArea()
     }
     
