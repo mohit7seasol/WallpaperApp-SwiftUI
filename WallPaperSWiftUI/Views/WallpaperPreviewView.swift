@@ -23,7 +23,7 @@ struct WallpaperPreviewView: View {
     
     @State private var previewMode: PreviewMode = .wallpaper // ✅ start with wallpaper
     @State private var showNavBar: Bool = true
-    @State private var showDownloadOptions = false
+    @State private var showDownloadSheet = false
     
     var body: some View {
         ZStack {
@@ -49,7 +49,7 @@ struct WallpaperPreviewView: View {
             if showNavBar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showDownloadOptions = true
+                        showDownloadSheet = true
                     } label: {
                         Image(systemName: "arrow.down.circle")
                             .foregroundColor(.white)
@@ -76,16 +76,84 @@ struct WallpaperPreviewView: View {
             }
         }
         
-        .actionSheet(isPresented: $showDownloadOptions) {
-            ActionSheet(
-                title: Text("Download"),
-                buttons: [
-                    .default(Text("Download")) {
+        // ✅ CUSTOM DOWNLOAD SHEET
+        .sheet(isPresented: $showDownloadSheet) {
+            VStack(spacing: 0) {
+                // Drag indicator
+                Capsule()
+                    .fill(Color.gray.opacity(0.5))
+                    .frame(width: 40, height: 5)
+                    .padding(.top, 10)
+                    .padding(.bottom, 20)
+                
+                // Title
+                Text("Download Wallpaper")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .padding(.bottom, 20)
+                
+                // Preview image (optional)
+                WebImage(url: URL(string: imageURL))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 150, height: 300)
+                    .clipped()
+                    .cornerRadius(12)
+                    .padding(.bottom, 20)
+                
+                Divider()
+                    .padding(.horizontal, 20)
+                
+                // Download button
+                Button(action: {
+                    showDownloadSheet = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         downloadImage(from: imageURL)
-                    },
-                    .cancel()
-                ]
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "arrow.down.circle.fill")
+                            .font(.title3)
+                        Text("Save to Photos")
+                            .font(.headline)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(
+                        LinearGradient(
+                            colors: [Color.blue, Color.purple],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(12)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                
+                // Cancel button
+                Button(action: {
+                    showDownloadSheet = false
+                }) {
+                    Text("Cancel")
+                        .font(.headline)
+                        .foregroundColor(.red)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                .padding(.bottom, 20)
+            }
+            .background(
+                Color(.systemBackground)
+                    .ignoresSafeArea()
             )
+            .presentationDetents([.height(520)])
+            .presentationDragIndicator(.hidden)
         }
     }
 }
@@ -202,7 +270,10 @@ private extension WallpaperPreviewView {
             Text(currentDate)
                 .font(.system(size: 20, weight: .medium))
                 .foregroundColor(.white.opacity(0.9))
-                .padding(.top, 50) // Top padding 40
+                .padding(.top, UIApplication.shared.connectedScenes
+                    .compactMap { $0 as? UIWindowScene }
+                    .first?.windows
+                    .first?.safeAreaInsets.top ?? 0)
             
             Text(currentTime)
                 .font(.system(size: 72, weight: .bold))
@@ -261,6 +332,15 @@ private extension WallpaperPreviewView {
                       let image = UIImage(data: data) else { return }
                 
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                
+                // Show success alert
+                let success = UIAlertController(title: "Success", message: "Wallpaper saved to Photos", preferredStyle: .alert)
+                success.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let root = scene.windows.first?.rootViewController {
+                    root.present(success, animated: true)
+                }
             }
         }.resume()
     }
