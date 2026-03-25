@@ -21,6 +21,9 @@ struct WallpaperDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
+    @State private var selectedWallpaper: PexelWallpaperData?
+    @State private var showPreview = false
+    
     init(wallpapers: [PexelWallpaperData], selectedIndex: Int) {
         self.wallpapers = wallpapers
         self._selectedIndex = State(initialValue: selectedIndex)
@@ -52,6 +55,18 @@ struct WallpaperDetailView: View {
                     Spacer()
                     ToastView(message: favoritesManager.toastMessage)
                 }
+            }
+            NavigationLink(
+                destination: Group {
+                    if let wp = selectedWallpaper {
+                        WallpaperPreviewView(imageURL: wp.src.large)
+                    } else {
+                        EmptyView()
+                    }
+                },
+                isActive: $showPreview
+            ) {
+                EmptyView()
             }
         }
         .navigationBarHidden(true)
@@ -222,6 +237,10 @@ private extension WallpaperDetailView {
                     width: geo.size.width * 0.8,
                     height: geo.size.height * 0.85
                 )
+                .onTapGesture {
+                    selectedWallpaper = wallpaper
+                    showPreview = true
+                }
                 .scaleEffect(wallpaper.id == wallpapers[selectedIndex].id ? 1.0 : 0.95)
                 .shadow(color: wallpaper.id == wallpapers[selectedIndex].id ?
                         Color.white.opacity(0.3) : Color.clear,
