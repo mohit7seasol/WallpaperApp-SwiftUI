@@ -166,6 +166,8 @@ class WallpaperViewModel: ObservableObject {
 
                 switch result {
                 case .success:
+                    // Save live photo info to storage
+                    self.saveLivePhotoInfo(fileURL: trimmedVideoURL)
                     self.showSuccessMessage = true
                     let successFeedback = UINotificationFeedbackGenerator()
                     successFeedback.notificationOccurred(.success)
@@ -240,5 +242,105 @@ class WallpaperViewModel: ObservableObject {
         } else {
             return 1.0
         }
+    }
+}
+
+// MARK: - Live Photo & Edited Photo Storage
+extension WallpaperViewModel {
+    
+    func saveLivePhotoInfo(fileURL: URL) {
+        let fileName = fileURL.lastPathComponent
+        let livePhoto = LivePhotoInfo(
+            id: UUID(),
+            fileName: fileName,
+            fileURL: fileURL,
+            createdAt: Date()
+        )
+        
+        var livePhotos = loadLivePhotos()
+        livePhotos.insert(livePhoto, at: 0)
+        
+        do {
+            let data = try JSONEncoder().encode(livePhotos)
+            UserDefaults.standard.set(data, forKey: "livePhotos")
+            print("✅ Saved live photo info: \(fileName)")
+        } catch {
+            print("❌ Failed to save live photo info: \(error)")
+        }
+    }
+    
+    func loadLivePhotos() -> [LivePhotoInfo] {
+        guard let data = UserDefaults.standard.data(forKey: "livePhotos") else { return [] }
+        
+        do {
+            let photos = try JSONDecoder().decode([LivePhotoInfo].self, from: data)
+            return photos
+        } catch {
+            print("❌ Failed to load live photos: \(error)")
+            return []
+        }
+    }
+    
+    func deleteLivePhoto(_ photo: LivePhotoInfo) {
+        var livePhotos = loadLivePhotos()
+        livePhotos.removeAll { $0.id == photo.id }
+        
+        // Delete file from documents
+        do {
+            try FileManager.default.removeItem(at: photo.fileURL)
+            print("✅ Deleted live photo file: \(photo.fileName)")
+        } catch {
+            print("❌ Failed to delete live photo file: \(error)")
+        }
+        
+        // Save updated list
+        do {
+            let data = try JSONEncoder().encode(livePhotos)
+            UserDefaults.standard.set(data, forKey: "livePhotos")
+        } catch {
+            print("❌ Failed to save updated live photos: \(error)")
+        }
+    }
+}
+
+struct LivePhotoInfo: Codable, Identifiable {
+    let id: UUID
+    let fileName: String
+    let fileURL: URL
+    let createdAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case fileName
+        case fileURL
+        case createdAt
+    }
+    
+    init(id: UUID, fileName: String, fileURL: URL, createdAt: Date) {
+        self.id = id
+        self.fileName = fileName
+        self.fileURL = fileURL
+        self.createdAt = createdAt
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        fileName = try container.decode(String.self, forKey: .fileName)
+        let urlString = try container.decode(String.self, forKey: .fileURL)
+        fileURL = URL(string: urlString) ?? Self.getDocumentsDirectory().appendingPathComponent(fileName)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(fileName, forKey: .fileName)
+        try container.encode(fileURL.absoluteString, forKey: .fileURL)
+        try container.encode(createdAt, forKey: .createdAt)
+    }
+    
+    private static func getDocumentsDirectory() -> URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 }

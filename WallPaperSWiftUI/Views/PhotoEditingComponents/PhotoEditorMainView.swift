@@ -28,6 +28,7 @@ struct PhotoEditorMainView: View {
     @State private var image: UIImage?
     @State private var editedImage: UIImage?
     @State private var selectedFeature: PhotoFeature?
+    @StateObject private var viewModel = PhotoEditorViewModel()
     
     var body: some View {
         ZStack {
@@ -101,6 +102,13 @@ struct PhotoEditorMainView: View {
         .fullScreenCover(item: $selectedFeature) { feature in
             featureView(feature)
         }
+        .alert("Success", isPresented: $viewModel.showSuccessMessage) {
+            Button("OK") {
+                dismiss()
+            }
+        } message: {
+            Text("Photo saved successfully!")
+        }
     }
     
     // MARK: - Load Image
@@ -123,8 +131,14 @@ struct PhotoEditorMainView: View {
     // MARK: - Apply Changes
     private func applyChanges() {
         if let finalImage = editedImage ?? image {
+            // Save to photos
             UIImageWriteToSavedPhotosAlbum(finalImage, nil, nil, nil)
-            dismiss()
+            
+            // Save to local storage for EditedPhotoListView
+            viewModel.saveEditedPhoto(finalImage)
+            
+            // Show success message
+            viewModel.showSuccessMessage = true
         }
     }
     
@@ -149,4 +163,3 @@ struct PhotoEditorMainView: View {
         }
     }
 }
-
