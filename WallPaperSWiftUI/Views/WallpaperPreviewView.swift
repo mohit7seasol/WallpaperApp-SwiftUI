@@ -24,6 +24,7 @@ struct WallpaperPreviewView: View {
     @State private var previewMode: PreviewMode = .wallpaper // ✅ start with wallpaper
     @State private var showNavBar: Bool = true
     @State private var showDownloadSheet = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         ZStack {
@@ -87,7 +88,7 @@ struct WallpaperPreviewView: View {
                     .padding(.bottom, 20)
                 
                 // Title
-                Text("Download Wallpaper")
+                Text("Download Wallpaper".localized(language))
                     .font(.title3)
                     .fontWeight(.semibold)
                     .padding(.bottom, 20)
@@ -114,7 +115,7 @@ struct WallpaperPreviewView: View {
                     HStack {
                         Image(systemName: "arrow.down.circle.fill")
                             .font(.title3)
-                        Text("Save to Photos")
+                        Text("Save to Photos".localized(language))
                             .font(.headline)
                     }
                     .foregroundColor(.white)
@@ -136,7 +137,7 @@ struct WallpaperPreviewView: View {
                 Button(action: {
                     showDownloadSheet = false
                 }) {
-                    Text("Cancel")
+                    Text("Cancel".localized(language))
                         .font(.headline)
                         .foregroundColor(.red)
                         .frame(maxWidth: .infinity)
@@ -312,7 +313,7 @@ private extension WallpaperPreviewView {
     func downloadImage(from urlString: String) {
         guard let url = URL(string: urlString) else { return }
         
-        let loading = UIAlertController(title: "Downloading...", message: nil, preferredStyle: .alert)
+        let loading = UIAlertController(title: "Downloading...".localized(language), message: nil, preferredStyle: .alert)
         
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let root = scene.windows.first?.rootViewController {
