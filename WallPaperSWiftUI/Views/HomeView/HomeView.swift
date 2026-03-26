@@ -178,17 +178,6 @@ struct HomeView: View {
                         }
                     }
                 }
-                VStack {
-                    Spacer()
-                    
-                    HStack {
-                        Spacer()
-                        
-                        EditPhotoAnimatedView()
-                            .padding(.trailing, 25)
-                            .padding(.bottom, 6)
-                    }
-                }
             }
             .navigationBarHidden(true)
         }
