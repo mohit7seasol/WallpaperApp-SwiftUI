@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "editer_photo_ic.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
