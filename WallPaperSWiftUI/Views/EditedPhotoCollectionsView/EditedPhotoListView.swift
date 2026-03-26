@@ -7,6 +7,8 @@
 
 import SwiftUI
 import AVFoundation
+import SDWebImageSwiftUI
+import _AVKit_SwiftUI
 
 struct EditedPhotoListView: View {
     
@@ -15,6 +17,9 @@ struct EditedPhotoListView: View {
     @StateObject private var photoEditorViewModel = PhotoEditorViewModel()
     @State private var livePhotos: [LivePhotoInfo] = []
     @State private var editedPhotos: [EditedPhoto] = []
+    @State private var selectedLivePhoto: LivePhotoInfo?
+    @State private var selectedEditedPhoto: EditedPhoto?
+    @State private var showPreview = false
     
     @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
@@ -42,7 +47,14 @@ struct EditedPhotoListView: View {
                     } else {
                         LazyVStack(spacing: 16) {
                             ForEach(livePhotos) { photo in
-                                LivePhotoCard(photo: photo)
+                                LivePhotoCard(
+                                    photo: photo,
+                                    onDelete: { deleteLivePhoto(photo) },
+                                    onTap: {
+                                        selectedLivePhoto = photo
+                                        showPreview = true
+                                    }
+                                )
                             }
                         }
                         .padding()
@@ -61,7 +73,14 @@ struct EditedPhotoListView: View {
                     } else {
                         LazyVStack(spacing: 16) {
                             ForEach(editedPhotos) { photo in
-                                EditedPhotoCard(photo: photo)
+                                EditedPhotoCard(
+                                    photo: photo,
+                                    onDelete: { deleteEditedPhoto(photo) },
+                                    onTap: {
+                                        selectedEditedPhoto = photo
+                                        showPreview = true
+                                    }
+                                )
                             }
                         }
                         .padding()
@@ -76,76 +95,104 @@ struct EditedPhotoListView: View {
         .onAppear {
             loadData()
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("RefreshCreations"))) { _ in
+            loadData()
+        }
+        .fullScreenCover(isPresented: $showPreview) {
+            if let livePhoto = selectedLivePhoto {
+                LivePhotoPreviewView(photo: livePhoto)
+            } else if let editedPhoto = selectedEditedPhoto {
+                EditedPhotoPreviewView(photo: editedPhoto)
+            }
+        }
     }
     
     private func loadData() {
         livePhotos = wallpaperViewModel.loadLivePhotos()
         editedPhotos = photoEditorViewModel.editedPhotos
     }
+    
+    private func deleteLivePhoto(_ photo: LivePhotoInfo) {
+        wallpaperViewModel.deleteLivePhoto(photo)
+        // Reload data immediately
+        loadData()
+    }
+    
+    private func deleteEditedPhoto(_ photo: EditedPhoto) {
+        photoEditorViewModel.deleteEditedPhoto(photo)
+        // Reload data immediately
+        loadData()
+    }
 }
 
 // MARK: - Live Photo Card
 struct LivePhotoCard: View {
     let photo: LivePhotoInfo
+    let onDelete: () -> Void
+    let onTap: () -> Void
+    
     @State private var thumbnail: UIImage?
-    @StateObject private var wallpaperViewModel = WallpaperViewModel()
     @State private var showDeleteAlert = false
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Thumbnail
-            if let thumbnail = thumbnail {
-                Image(uiImage: thumbnail)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 80, height: 80)
-                    .cornerRadius(12)
-                    .clipped()
-            } else {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 80, height: 80)
-                    .overlay(
-                        Image(systemName: "livephoto")
-                            .foregroundColor(.white)
-                    )
-            }
-            
-            // Info
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Live Photo")
-                    .font(.headline)
-                    .foregroundColor(.white)
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Thumbnail
+                if let thumbnail = thumbnail {
+                    Image(uiImage: thumbnail)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80, height: 80)
+                        .cornerRadius(12)
+                        .clipped()
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 80, height: 80)
+                        .overlay(
+                            Image(systemName: "livephoto")
+                                .foregroundColor(.white)
+                        )
+                }
                 
-                Text(formatDate(photo.createdAt))
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                // Info
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Live Photo")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    Text(formatDate(photo.createdAt))
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                // Delete Button
+                Button(action: {
+                    showDeleteAlert = true
+                }) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                        .font(.system(size: 18))
+                        .frame(width: 44, height: 44)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(8)
+                }
+                .buttonStyle(BorderlessButtonStyle())
             }
-            
-            Spacer()
-            
-            // Delete Button
-            Button(action: {
-                showDeleteAlert = true
-            }) {
-                Image(systemName: "trash")
-                    .foregroundColor(.red)
-                    .font(.system(size: 18))
-                    .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(8)
-            }
+            .padding()
+            .background(Color.white.opacity(0.05))
+            .cornerRadius(16)
         }
-        .padding()
-        .background(Color.white.opacity(0.05))
-        .cornerRadius(16)
+        .buttonStyle(PlainButtonStyle())
         .onAppear {
             generateThumbnail()
         }
         .alert("Delete Live Photo", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                deleteLivePhoto()
+                onDelete()
             }
         } message: {
             Text("Are you sure you want to delete this live photo?")
@@ -169,14 +216,6 @@ struct LivePhotoCard: View {
         }
     }
     
-    private func deleteLivePhoto() {
-        wallpaperViewModel.deleteLivePhoto(photo)
-        // Refresh the list
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            // You might want to use a notification or refresh callback
-        }
-    }
-    
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d, yyyy • h:mm a"
@@ -187,65 +226,71 @@ struct LivePhotoCard: View {
 // MARK: - Edited Photo Card
 struct EditedPhotoCard: View {
     let photo: EditedPhoto
+    let onDelete: () -> Void
+    let onTap: () -> Void
+    
     @State private var image: UIImage?
     @State private var showDeleteAlert = false
-    @StateObject private var photoEditorViewModel = PhotoEditorViewModel()
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Thumbnail
-            if let image = image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 80, height: 80)
-                    .cornerRadius(12)
-                    .clipped()
-            } else {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 80, height: 80)
-                    .overlay(
-                        Image(systemName: "photo")
-                            .foregroundColor(.white)
-                    )
-            }
-            
-            // Info
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Edited Photo")
-                    .font(.headline)
-                    .foregroundColor(.white)
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Thumbnail
+                if let image = image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80, height: 80)
+                        .cornerRadius(12)
+                        .clipped()
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 80, height: 80)
+                        .overlay(
+                            Image(systemName: "photo")
+                                .foregroundColor(.white)
+                        )
+                }
                 
-                Text(formatDate(photo.createdAt))
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                // Info
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Edited Photo")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    Text(formatDate(photo.createdAt))
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                // Delete Button
+                Button(action: {
+                    showDeleteAlert = true
+                }) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                        .font(.system(size: 18))
+                        .frame(width: 44, height: 44)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(8)
+                }
+                .buttonStyle(BorderlessButtonStyle())
             }
-            
-            Spacer()
-            
-            // Delete Button
-            Button(action: {
-                showDeleteAlert = true
-            }) {
-                Image(systemName: "trash")
-                    .foregroundColor(.red)
-                    .font(.system(size: 18))
-                    .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(8)
-            }
+            .padding()
+            .background(Color.white.opacity(0.05))
+            .cornerRadius(16)
         }
-        .padding()
-        .background(Color.white.opacity(0.05))
-        .cornerRadius(16)
+        .buttonStyle(PlainButtonStyle())
         .onAppear {
             loadImage()
         }
         .alert("Delete Edited Photo", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                deleteEditedPhoto()
+                onDelete()
             }
         } message: {
             Text("Are you sure you want to delete this edited photo?")
@@ -259,17 +304,157 @@ struct EditedPhotoCard: View {
         }
     }
     
-    private func deleteEditedPhoto() {
-        photoEditorViewModel.deleteEditedPhoto(photo)
-        // Refresh the list
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            // You might want to use a notification or refresh callback
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy • h:mm a"
+        return formatter.string(from: date)
+    }
+}
+
+// MARK: - Live Photo Preview View
+struct LivePhotoPreviewView: View {
+    let photo: LivePhotoInfo
+    @Environment(\.dismiss) private var dismiss
+    @State private var player: AVPlayer?
+    @State private var isPlaying = false
+    
+    var body: some View {
+        ZStack {
+            // Background
+            Color.black.ignoresSafeArea()
+            
+            VStack {
+                // Close Button
+                HStack {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.white)
+                            .background(Color.black.opacity(0.5))
+                            .clipShape(Circle())
+                    }
+                    Spacer()
+                }
+                .padding()
+                
+                Spacer()
+                
+                // Video Player
+                if let player = player {
+                    VideoPlayer(player: player)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: UIScreen.main.bounds.height * 0.7)
+                        .cornerRadius(20)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                        )
+                        .onTapGesture {
+                            if isPlaying {
+                                player.pause()
+                            } else {
+                                player.play()
+                            }
+                            isPlaying.toggle()
+                        }
+                        .overlay(
+                            // Play/Pause Overlay
+                            Button(action: {
+                                if isPlaying {
+                                    player.pause()
+                                } else {
+                                    player.play()
+                                }
+                                isPlaying.toggle()
+                            }) {
+                                Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .background(Color.black.opacity(0.5))
+                                    .clipShape(Circle())
+                            }
+                            .opacity(isPlaying ? 0 : 1)
+                            .animation(.easeInOut(duration: 0.3), value: isPlaying)
+                        )
+                } else {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: UIScreen.main.bounds.height * 0.7)
+                        .overlay(
+                            ProgressView()
+                                .tint(.white)
+                        )
+                }
+                
+                Spacer()
+                
+                // Info Card
+                VStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "livephoto")
+                            .foregroundColor(.blue)
+                        Text("Live Photo")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        Image(systemName: "calendar")
+                            .foregroundColor(.gray)
+                        Text(formatDate(photo.createdAt))
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Spacer()
+                    }
+                    
+                    Divider()
+                        .background(Color.gray.opacity(0.3))
+                    
+                    HStack {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.gray)
+                        Text("Tap to play/pause")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Spacer()
+                    }
+                }
+                .padding()
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(16)
+                .padding(.horizontal)
+                .padding(.bottom, 30)
+            }
+        }
+        .onAppear {
+            setupPlayer()
+        }
+        .onDisappear {
+            player?.pause()
+            player = nil
+        }
+    }
+    
+    private func setupPlayer() {
+        player = AVPlayer(url: photo.fileURL)
+        player?.actionAtItemEnd = .none
+        
+        // Loop video
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: player?.currentItem,
+            queue: .main
+        ) { _ in
+            player?.seek(to: .zero)
+            player?.play()
         }
     }
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, yyyy • h:mm a"
+        formatter.dateFormat = "EEEE, MMM d, yyyy • h:mm a"
         return formatter.string(from: date)
     }
 }
