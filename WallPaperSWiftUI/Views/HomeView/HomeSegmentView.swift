@@ -29,7 +29,7 @@ struct HomeSegmentView: View {
                 Spacer()
                 
                 CustomSegmentBar(selectedIndex: $selectedIndex)
-                    .padding(.bottom, 40)
+                    .padding(.bottom, Device.bottomSafeArea)
             }
         }
     }
@@ -94,16 +94,26 @@ struct CustomSegmentBar: View {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(
-                        isSelected ? Color(hex: "#4F4FC2") : .white
+                        isSelected ? Color(hex: "#4F4FC2") : .white.opacity(0.9)
                     )
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 48) // ✅ inner pill height
+            .frame(height: 48)
             .background(
-                Group {
+                ZStack {
+                    
                     if isSelected {
+                        // ✅ Selected (white pill)
                         Capsule()
                             .fill(Color.white)
+                    } else {
+                        // ✅ Unselected (glass dark effect like screenshot)
+                        Capsule()
+                            .fill(Color.white.opacity(0.08))
+                            .background(
+                                Capsule()
+                                    .fill(.ultraThinMaterial)
+                            )
                     }
                 }
             )

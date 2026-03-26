@@ -67,8 +67,8 @@ struct ImageEditorView: View {
                                         Color("gradientOne"),
                                         Color("gradientTwo")
                                     ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
+                                    startPoint: .top,
+                                    endPoint: .bottom
                                 )
                             )
                             .cornerRadius(14)
@@ -83,7 +83,7 @@ struct ImageEditorView: View {
                         .foregroundColor(Color("gradientOne"))
                 )
                 .padding(.horizontal, 30)
-                
+                .offset(y: -30)
                 Spacer()
             }
         }
