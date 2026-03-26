@@ -66,7 +66,7 @@ struct CategoryDetailView: View {
                                 .onAppear {
                                     // Preload next images when approaching the end
                                     if index >= viewModel.wallpapers.count - 6 {
-                                        let urls = viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.src.medium) }
+                                        let urls = viewModel.wallpapers.suffix(6).compactMap { URL(string: $0.src.original) }
                                         SDWebImagePrefetcher.shared.prefetchURLs(urls)
                                     }
                                     

