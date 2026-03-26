@@ -12,11 +12,13 @@ import _AVKit_SwiftUI
 
 struct EditedPhotoListView: View {
     
-    @State private var selectedSegment = 0 // 0: Live Photo, 1: Edited Photo
+    @State private var selectedSegment = 0
     @StateObject private var wallpaperViewModel = WallpaperViewModel()
     @StateObject private var photoEditorViewModel = PhotoEditorViewModel()
+    
     @State private var livePhotos: [LivePhotoInfo] = []
     @State private var editedPhotos: [EditedPhoto] = []
+    
     @State private var selectedLivePhoto: LivePhotoInfo?
     @State private var selectedEditedPhoto: EditedPhoto?
     @State private var navigateToLivePreview = false
@@ -25,90 +27,91 @@ struct EditedPhotoListView: View {
     @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // MARK: - Segment Control
-                Picker("", selection: $selectedSegment) {
-                    Text("Live Photo Creation".localized(language)).tag(0)
-                    Text("Edited Photo Creation".localized(language)).tag(1)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                .background(Color.black.opacity(0.3))
-                
-                // MARK: - Content
-                TabView(selection: $selectedSegment) {
-                    // Live Photo Tab
-                    ScrollView {
-                        if livePhotos.isEmpty {
-                            EmptyStateView(
-                                icon: "livephoto",
-                                title: "No Live Photos",
-                                message: "Create your first live wallpaper by trimming a video and saving it as a live photo."
-                            )
-                        } else {
-                            LazyVStack(spacing: 16) {
-                                ForEach(livePhotos) { photo in
-                                    LivePhotoCard(
-                                        photo: photo,
-                                        onDelete: { deleteLivePhoto(photo) },
-                                        onTap: {
-                                            selectedLivePhoto = photo
-                                            navigateToLivePreview = true
-                                        }
-                                    )
-                                }
-                            }
-                            .padding()
-                        }
-                    }
-                    .tag(0)
-                    
-                    // Edited Photo Tab
-                    ScrollView {
-                        if editedPhotos.isEmpty {
-                            EmptyStateView(
-                                icon: "photo.on.rectangle.angled",
-                                title: "No Edited Photos",
-                                message: "Edit your first photo using the photo editor and save it."
-                            )
-                        } else {
-                            LazyVStack(spacing: 16) {
-                                ForEach(editedPhotos) { photo in
-                                    EditedPhotoCard(
-                                        photo: photo,
-                                        onDelete: { deleteEditedPhoto(photo) },
-                                        onTap: {
-                                            selectedEditedPhoto = photo
-                                            navigateToEditedPreview = true
-                                        }
-                                    )
-                                }
-                            }
-                            .padding()
-                        }
-                    }
-                    .tag(1)
-                }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+        VStack(spacing: 0) {
+            
+            // MARK: Segment
+            Picker("", selection: $selectedSegment) {
+                Text("Live Photo Creation".localized(language)).tag(0)
+                Text("Edited Photo Creation".localized(language)).tag(1)
             }
-            .navigationTitle("My Creations".localized(language))
-            .navigationBarTitleDisplayMode(.inline)
-            .background(
-                NavigationLink(
-                    destination: LivePhotoPreviewView(photo: selectedLivePhoto ?? LivePhotoInfo(id: UUID(), fileName: "", fileURL: URL(string: "about:blank")!, createdAt: Date())),
-                    isActive: $navigateToLivePreview,
-                    label: { EmptyView() }
-                )
-            )
-            .background(
-                NavigationLink(
-                    destination: EditedPhotoPreviewView(photo: selectedEditedPhoto ?? EditedPhoto(id: UUID(), fileName: "", fileURL: URL(string: "about:blank")!, createdAt: Date())),
-                    isActive: $navigateToEditedPreview,
-                    label: { EmptyView() }
-                )
-            )
+            .pickerStyle(SegmentedPickerStyle())
+            .padding()
+            .background(Color.black.opacity(0.3))
+            
+            // MARK: Content
+            TabView(selection: $selectedSegment) {
+                
+                // Live Photos
+                ScrollView {
+                    if livePhotos.isEmpty {
+                        EmptyStateView(
+                            icon: "livephoto",
+                            title: "No Live Photos",
+                            message: "Create your first live wallpaper."
+                        )
+                    } else {
+                        LazyVStack(spacing: 16) {
+                            ForEach(livePhotos) { photo in
+                                LivePhotoCard(
+                                    photo: photo,
+                                    onDelete: { deleteLivePhoto(photo) },
+                                    onTap: {
+                                        selectedLivePhoto = photo
+                                        navigateToLivePreview = true
+                                    }
+                                )
+                            }
+                        }
+                        .padding()
+                    }
+                }
+                .tag(0)
+                
+                // Edited Photos
+                ScrollView {
+                    if editedPhotos.isEmpty {
+                        EmptyStateView(
+                            icon: "photo.on.rectangle.angled",
+                            title: "No Edited Photos",
+                            message: "Edit your first photo."
+                        )
+                    } else {
+                        LazyVStack(spacing: 16) {
+                            ForEach(editedPhotos) { photo in
+                                EditedPhotoCard(
+                                    photo: photo,
+                                    onDelete: { deleteEditedPhoto(photo) },
+                                    onTap: {
+                                        selectedEditedPhoto = photo
+                                        navigateToEditedPreview = true
+                                    }
+                                )
+                            }
+                        }
+                        .padding()
+                    }
+                }
+                .tag(1)
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
+        // ✅ KEEP ONLY THIS (default navigation title)
+        .navigationTitle("My Creations".localized(language))
+        .navigationBarTitleDisplayMode(.inline)
+        
+        // ✅ Navigation links
+        .background(
+            NavigationLink(
+                destination: LivePhotoPreviewView(photo: selectedLivePhoto ?? LivePhotoInfo(id: UUID(), fileName: "", fileURL: URL(string: "about:blank")!, createdAt: Date())),
+                isActive: $navigateToLivePreview
+            ) { EmptyView() }
+        )
+        .background(
+            NavigationLink(
+                destination: EditedPhotoPreviewView(photo: selectedEditedPhoto ?? EditedPhoto(id: UUID(), fileName: "", fileURL: URL(string: "about:blank")!, createdAt: Date())),
+                isActive: $navigateToEditedPreview
+            ) { EmptyView() }
+        )
         .onAppear {
             loadData()
         }
@@ -124,13 +127,11 @@ struct EditedPhotoListView: View {
     
     private func deleteLivePhoto(_ photo: LivePhotoInfo) {
         wallpaperViewModel.deleteLivePhoto(photo)
-        // Reload data immediately
         loadData()
     }
     
     private func deleteEditedPhoto(_ photo: EditedPhoto) {
         photoEditorViewModel.deleteEditedPhoto(photo)
-        // Reload data immediately
         loadData()
     }
 }

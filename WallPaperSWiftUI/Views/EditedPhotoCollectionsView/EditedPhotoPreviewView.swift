@@ -12,158 +12,158 @@ import _AVKit_SwiftUI
 
 struct EditedPhotoPreviewView: View {
     let photo: EditedPhoto
-    @Environment(\.presentationMode) var presentationMode
+    
     @State private var image: UIImage?
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
+    
+    // Zoom + Pan
+    @State private var scale: CGFloat = 1
+    @State private var lastScale: CGFloat = 1
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
     
     var body: some View {
         ZStack {
-            // Background
             Color.black.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Navigation Bar - Same as EditedPhotoListView
-                HStack {
-                    // Back button using NavigationLink style
-                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.white)
-                    }
-                    
-                    Spacer()
-                    
-                    Text("My Creations")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
-                    // Share Button
-                    Button(action: shareImage) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 20))
-                            .foregroundColor(.white)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
-                .padding(.bottom, 8)
-                .background(Color.black.opacity(0.8))
+                // ✅ Respect Safe Area Top
+                Spacer().frame(height: Device.topSafeArea)
                 
-                Spacer()
-                
-                // Image with Zoom & Pan
                 if let image = image {
-                    GeometryReader { geometry in
+                    // Image Container with equal padding on both sides
+                    GeometryReader { geo in
+                        let size = geo.size
+                        
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFit()
                             .scaleEffect(scale)
                             .offset(offset)
-                            .gesture(
-                                MagnificationGesture()
-                                    .onChanged { value in
-                                        let delta = value / lastScale
-                                        lastScale = value
-                                        let newScale = scale * delta
-                                        scale = min(max(newScale, 1), 4)
-                                    }
-                                    .onEnded { _ in
-                                        lastScale = 1.0
-                                    }
-                                    .simultaneously(with: DragGesture()
-                                        .onChanged { value in
-                                            if scale > 1 {
-                                                let newOffset = CGSize(
-                                                    width: lastOffset.width + value.translation.width,
-                                                    height: lastOffset.height + value.translation.height
-                                                )
-                                                offset = newOffset
-                                            }
-                                        }
-                                        .onEnded { _ in
-                                            lastOffset = offset
-                                        }
-                                    )
-                            )
+                            .gesture(zoomGesture(size: size))
+                            .gesture(panGesture(size: size))
                             .onTapGesture(count: 2) {
                                 withAnimation(.spring()) {
                                     if scale > 1 {
-                                        scale = 1
-                                        offset = .zero
-                                        lastOffset = .zero
+                                        resetImage()
                                     } else {
                                         scale = 3
                                     }
                                 }
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipped()
                     }
-                    .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.7)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: UIScreen.main.bounds.height * 0.7)
+                    .padding(.horizontal, 10) // Equal padding left and right
                 } else {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.gray.opacity(0.3))
+                    ProgressView()
+                        .tint(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: UIScreen.main.bounds.height * 0.7)
-                        .overlay(
-                            VStack(spacing: 16) {
-                                ProgressView()
-                                    .tint(.white)
-                                Text("Loading image...")
-                                    .foregroundColor(.white)
-                            }
-                        )
                 }
                 
                 Spacer()
                 
-                // Info Card
-                VStack(spacing: 12) {
-                    HStack {
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .foregroundColor(.green)
-                        Text("Edited Photo")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        Spacer()
-                    }
-                    
-                    HStack {
-                        Image(systemName: "calendar")
-                            .foregroundColor(.gray)
-                        Text(formatDate(photo.createdAt))
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Spacer()
-                    }
-                    
-                    Divider()
-                        .background(Color.gray.opacity(0.3))
-                    
-                    HStack {
-                        Image(systemName: "hand.draw")
-                            .foregroundColor(.gray)
-                        Text("Pinch to zoom • Double tap to reset")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Spacer()
-                    }
-                }
-                .padding()
-                .background(Color.white.opacity(0.1))
-                .cornerRadius(16)
-                .padding(.horizontal)
-                .padding(.bottom, 30)
+                infoView
+                    .padding(.bottom, 30)
             }
         }
-        .navigationBarHidden(true)
+        .navigationTitle("My Creations")
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             loadImage()
         }
+    }
+    
+    // MARK: - Zoom Gesture
+    private func zoomGesture(size: CGSize) -> some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                let delta = value / lastScale
+                lastScale = value
+                let newScale = scale * delta
+                scale = min(max(newScale, 1), 4)
+            }
+            .onEnded { _ in
+                lastScale = 1
+                offset = boundedOffset(offset, scale: scale, size: size)
+            }
+    }
+    
+    // MARK: - Pan Gesture (Bounded)
+    private func panGesture(size: CGSize) -> some Gesture {
+        DragGesture()
+            .onChanged { value in
+                guard scale > 1 else { return }
+                
+                let newOffset = CGSize(
+                    width: lastOffset.width + value.translation.width,
+                    height: lastOffset.height + value.translation.height
+                )
+                
+                offset = boundedOffset(newOffset, scale: scale, size: size)
+            }
+            .onEnded { _ in
+                lastOffset = offset
+            }
+    }
+    
+    // MARK: - Bound Offset
+    private func boundedOffset(_ offset: CGSize, scale: CGFloat, size: CGSize) -> CGSize {
+        let widthLimit = (size.width * (scale - 1)) / 2
+        let heightLimit = (size.height * (scale - 1)) / 2
+        
+        return CGSize(
+            width: min(max(offset.width, -widthLimit), widthLimit),
+            height: min(max(offset.height, -heightLimit), heightLimit)
+        )
+    }
+    
+    private func resetImage() {
+        withAnimation(.spring()) {
+            scale = 1
+            offset = .zero
+            lastOffset = .zero
+        }
+    }
+    
+    // MARK: - Info View
+    private var infoView: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "photo.on.rectangle.angled")
+                    .foregroundColor(.green)
+                Text("Edited Photo")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                Spacer()
+            }
+            
+            HStack {
+                Image(systemName: "calendar")
+                    .foregroundColor(.gray)
+                Text(formatDate(photo.createdAt))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                Spacer()
+            }
+            
+            Divider()
+                .background(Color.gray.opacity(0.3))
+            
+            HStack {
+                Image(systemName: "hand.draw")
+                    .foregroundColor(.gray)
+                Text("Pinch to zoom • Double tap to reset")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                Spacer()
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(16)
+        .padding(.horizontal, 10) // Equal padding left and right for info view
     }
     
     private func loadImage() {
@@ -184,24 +184,9 @@ struct EditedPhotoPreviewView: View {
         }
     }
     
-    private func shareImage() {
-        guard let image = image else { return }
-        
-        let activityVC = UIActivityViewController(
-            activityItems: [image],
-            applicationActivities: nil
-        )
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = windowScene.windows.first?.rootViewController {
-            rootVC.present(activityVC, animated: true)
-        }
-    }
-    
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMM d, yyyy • h:mm a"
+        formatter.dateFormat = "MMM d, yyyy • h:mm a"
         return formatter.string(from: date)
     }
 }
-
