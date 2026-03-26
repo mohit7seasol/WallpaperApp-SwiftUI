@@ -12,7 +12,7 @@ import _AVKit_SwiftUI
 
 struct EditedPhotoPreviewView: View {
     let photo: EditedPhoto
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) var presentationMode
     @State private var image: UIImage?
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
@@ -24,30 +24,35 @@ struct EditedPhotoPreviewView: View {
             // Background
             Color.black.ignoresSafeArea()
             
-            VStack {
-                // Top Bar
+            VStack(spacing: 0) {
+                // Navigation Bar - Same as EditedPhotoListView
                 HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 30))
+                    // Back button using NavigationLink style
+                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
-                            .background(Color.black.opacity(0.5))
-                            .clipShape(Circle())
                     }
+                    
+                    Spacer()
+                    
+                    Text("My Creations")
+                        .font(.headline)
+                        .foregroundColor(.white)
                     
                     Spacer()
                     
                     // Share Button
                     Button(action: shareImage) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 22))
+                            .font(.system(size: 20))
                             .foregroundColor(.white)
-                            .frame(width: 44, height: 44)
-                            .background(Color.white.opacity(0.2))
-                            .clipShape(Circle())
                     }
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 8)
+                .background(Color.black.opacity(0.8))
                 
                 Spacer()
                 
@@ -64,20 +69,23 @@ struct EditedPhotoPreviewView: View {
                                     .onChanged { value in
                                         let delta = value / lastScale
                                         lastScale = value
-                                        scale = min(max(scale * delta, 1), 4)
+                                        let newScale = scale * delta
+                                        scale = min(max(newScale, 1), 4)
                                     }
                                     .onEnded { _ in
                                         lastScale = 1.0
                                     }
                                     .simultaneously(with: DragGesture()
                                         .onChanged { value in
-                                            let newOffset = CGSize(
-                                                width: lastOffset.width + value.translation.width,
-                                                height: lastOffset.height + value.translation.height
-                                            )
-                                            offset = newOffset
+                                            if scale > 1 {
+                                                let newOffset = CGSize(
+                                                    width: lastOffset.width + value.translation.width,
+                                                    height: lastOffset.height + value.translation.height
+                                                )
+                                                offset = newOffset
+                                            }
                                         }
-                                        .onEnded { value in
+                                        .onEnded { _ in
                                             lastOffset = offset
                                         }
                                     )
@@ -102,8 +110,12 @@ struct EditedPhotoPreviewView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: UIScreen.main.bounds.height * 0.7)
                         .overlay(
-                            ProgressView()
-                                .tint(.white)
+                            VStack(spacing: 16) {
+                                ProgressView()
+                                    .tint(.white)
+                                Text("Loading image...")
+                                    .foregroundColor(.white)
+                            }
                         )
                 }
                 
@@ -148,15 +160,27 @@ struct EditedPhotoPreviewView: View {
                 .padding(.bottom, 30)
             }
         }
+        .navigationBarHidden(true)
         .onAppear {
             loadImage()
         }
     }
     
     private func loadImage() {
-        if let data = try? Data(contentsOf: photo.fileURL),
-           let uiImage = UIImage(data: data) {
-            image = uiImage
+        guard FileManager.default.fileExists(atPath: photo.fileURL.path) else {
+            print("❌ Image file does not exist at path: \(photo.fileURL.path)")
+            return
+        }
+        
+        DispatchQueue.global(qos: .background).async {
+            if let data = try? Data(contentsOf: photo.fileURL),
+               let uiImage = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self.image = uiImage
+                }
+            } else {
+                print("❌ Failed to load image data from: \(photo.fileURL.path)")
+            }
         }
     }
     
@@ -180,3 +204,4 @@ struct EditedPhotoPreviewView: View {
         return formatter.string(from: date)
     }
 }
+

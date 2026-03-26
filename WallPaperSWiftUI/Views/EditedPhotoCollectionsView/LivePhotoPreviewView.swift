@@ -12,76 +12,85 @@ import _AVKit_SwiftUI
 
 struct LivePhotoPreviewView: View {
     let photo: LivePhotoInfo
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) var presentationMode
     @State private var player: AVPlayer?
     @State private var isPlaying = false
+    @State private var playerItem: AVPlayerItem?
     
     var body: some View {
         ZStack {
             // Background
             Color.black.ignoresSafeArea()
             
-            VStack {
-                // Close Button
+            VStack(spacing: 0) {
+                // Navigation Bar - Same as EditedPhotoListView
                 HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 30))
+                    // Back button using NavigationLink style
+                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
-                            .background(Color.black.opacity(0.5))
-                            .clipShape(Circle())
                     }
+                    
                     Spacer()
+                    
+                    Text("My Creations")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    // Share Button
+                    Button(action: shareVideo) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                    }
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 8)
+                .background(Color.black.opacity(0.8))
                 
                 Spacer()
                 
                 // Video Player
                 if let player = player {
-                    VideoPlayer(player: player)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: UIScreen.main.bounds.height * 0.7)
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                        )
-                        .onTapGesture {
-                            if isPlaying {
-                                player.pause()
-                            } else {
-                                player.play()
-                            }
-                            isPlaying.toggle()
+                    ZStack {
+                        VideoPlayer(player: player)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: UIScreen.main.bounds.height * 0.7)
+                            .cornerRadius(20)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                            )
+                        
+                        // Play/Pause Overlay Button
+                        Button(action: togglePlayPause) {
+                            Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.white)
+                                .shadow(radius: 10)
                         }
-                        .overlay(
-                            // Play/Pause Overlay
-                            Button(action: {
-                                if isPlaying {
-                                    player.pause()
-                                } else {
-                                    player.play()
-                                }
-                                isPlaying.toggle()
-                            }) {
-                                Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                                    .font(.system(size: 60))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .background(Color.black.opacity(0.5))
-                                    .clipShape(Circle())
-                            }
-                            .opacity(isPlaying ? 0 : 1)
-                            .animation(.easeInOut(duration: 0.3), value: isPlaying)
-                        )
+                        .opacity(isPlaying ? 0 : 1)
+                        .animation(.easeInOut(duration: 0.2), value: isPlaying)
+                    }
+                    .onTapGesture {
+                        togglePlayPause()
+                    }
                 } else {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color.gray.opacity(0.3))
                         .frame(maxWidth: .infinity)
                         .frame(height: UIScreen.main.bounds.height * 0.7)
                         .overlay(
-                            ProgressView()
-                                .tint(.white)
+                            VStack(spacing: 16) {
+                                ProgressView()
+                                    .tint(.white)
+                                Text("Loading video...")
+                                    .foregroundColor(.white)
+                            }
                         )
                 }
                 
@@ -113,7 +122,7 @@ struct LivePhotoPreviewView: View {
                     HStack {
                         Image(systemName: "info.circle")
                             .foregroundColor(.gray)
-                        Text("Tap to play/pause")
+                        Text("Tap video to play/pause")
                             .font(.caption)
                             .foregroundColor(.gray)
                         Spacer()
@@ -126,6 +135,7 @@ struct LivePhotoPreviewView: View {
                 .padding(.bottom, 30)
             }
         }
+        .navigationBarHidden(true)
         .onAppear {
             setupPlayer()
         }
@@ -136,17 +146,52 @@ struct LivePhotoPreviewView: View {
     }
     
     private func setupPlayer() {
-        player = AVPlayer(url: photo.fileURL)
-        player?.actionAtItemEnd = .none
+        guard FileManager.default.fileExists(atPath: photo.fileURL.path) else {
+            print("❌ Video file does not exist at path: \(photo.fileURL.path)")
+            return
+        }
+        
+        playerItem = AVPlayerItem(url: photo.fileURL)
+        player = AVPlayer(playerItem: playerItem)
         
         // Loop video
+        let loopPlayerItem = playerItem
         NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
-            object: player?.currentItem,
+            object: loopPlayerItem,
             queue: .main
         ) { _ in
-            player?.seek(to: .zero)
+            if let currentPlayer = self.player {
+                currentPlayer.seek(to: .zero)
+                currentPlayer.play()
+            }
+        }
+        
+        // Auto-play when loaded
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.player?.play()
+            self.isPlaying = true
+        }
+    }
+    
+    private func togglePlayPause() {
+        if isPlaying {
+            player?.pause()
+        } else {
             player?.play()
+        }
+        isPlaying.toggle()
+    }
+    
+    private func shareVideo() {
+        let activityVC = UIActivityViewController(
+            activityItems: [photo.fileURL],
+            applicationActivities: nil
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(activityVC, animated: true)
         }
     }
     

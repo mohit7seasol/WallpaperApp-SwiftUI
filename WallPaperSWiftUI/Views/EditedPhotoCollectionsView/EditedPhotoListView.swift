@@ -19,91 +19,101 @@ struct EditedPhotoListView: View {
     @State private var editedPhotos: [EditedPhoto] = []
     @State private var selectedLivePhoto: LivePhotoInfo?
     @State private var selectedEditedPhoto: EditedPhoto?
-    @State private var showPreview = false
+    @State private var navigateToLivePreview = false
+    @State private var navigateToEditedPreview = false
     
     @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
-        VStack(spacing: 0) {
-            // MARK: - Segment Control
-            Picker("", selection: $selectedSegment) {
-                Text("Live Photo Creation".localized(language)).tag(0)
-                Text("Edited Photo Creation".localized(language)).tag(1)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
-            .background(Color.black.opacity(0.3))
-            
-            // MARK: - Content
-            TabView(selection: $selectedSegment) {
-                // Live Photo Tab
-                ScrollView {
-                    if livePhotos.isEmpty {
-                        EmptyStateView(
-                            icon: "livephoto",
-                            title: "No Live Photos",
-                            message: "Create your first live wallpaper by trimming a video and saving it as a live photo."
-                        )
-                    } else {
-                        LazyVStack(spacing: 16) {
-                            ForEach(livePhotos) { photo in
-                                LivePhotoCard(
-                                    photo: photo,
-                                    onDelete: { deleteLivePhoto(photo) },
-                                    onTap: {
-                                        selectedLivePhoto = photo
-                                        showPreview = true
-                                    }
-                                )
-                            }
-                        }
-                        .padding()
-                    }
+        NavigationView {
+            VStack(spacing: 0) {
+                // MARK: - Segment Control
+                Picker("", selection: $selectedSegment) {
+                    Text("Live Photo Creation".localized(language)).tag(0)
+                    Text("Edited Photo Creation".localized(language)).tag(1)
                 }
-                .tag(0)
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+                .background(Color.black.opacity(0.3))
                 
-                // Edited Photo Tab
-                ScrollView {
-                    if editedPhotos.isEmpty {
-                        EmptyStateView(
-                            icon: "photo.on.rectangle.angled",
-                            title: "No Edited Photos",
-                            message: "Edit your first photo using the photo editor and save it."
-                        )
-                    } else {
-                        LazyVStack(spacing: 16) {
-                            ForEach(editedPhotos) { photo in
-                                EditedPhotoCard(
-                                    photo: photo,
-                                    onDelete: { deleteEditedPhoto(photo) },
-                                    onTap: {
-                                        selectedEditedPhoto = photo
-                                        showPreview = true
-                                    }
-                                )
+                // MARK: - Content
+                TabView(selection: $selectedSegment) {
+                    // Live Photo Tab
+                    ScrollView {
+                        if livePhotos.isEmpty {
+                            EmptyStateView(
+                                icon: "livephoto",
+                                title: "No Live Photos",
+                                message: "Create your first live wallpaper by trimming a video and saving it as a live photo."
+                            )
+                        } else {
+                            LazyVStack(spacing: 16) {
+                                ForEach(livePhotos) { photo in
+                                    LivePhotoCard(
+                                        photo: photo,
+                                        onDelete: { deleteLivePhoto(photo) },
+                                        onTap: {
+                                            selectedLivePhoto = photo
+                                            navigateToLivePreview = true
+                                        }
+                                    )
+                                }
                             }
+                            .padding()
                         }
-                        .padding()
                     }
+                    .tag(0)
+                    
+                    // Edited Photo Tab
+                    ScrollView {
+                        if editedPhotos.isEmpty {
+                            EmptyStateView(
+                                icon: "photo.on.rectangle.angled",
+                                title: "No Edited Photos",
+                                message: "Edit your first photo using the photo editor and save it."
+                            )
+                        } else {
+                            LazyVStack(spacing: 16) {
+                                ForEach(editedPhotos) { photo in
+                                    EditedPhotoCard(
+                                        photo: photo,
+                                        onDelete: { deleteEditedPhoto(photo) },
+                                        onTap: {
+                                            selectedEditedPhoto = photo
+                                            navigateToEditedPreview = true
+                                        }
+                                    )
+                                }
+                            }
+                            .padding()
+                        }
+                    }
+                    .tag(1)
                 }
-                .tag(1)
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .navigationTitle("My Creations".localized(language))
+            .navigationBarTitleDisplayMode(.inline)
+            .background(
+                NavigationLink(
+                    destination: LivePhotoPreviewView(photo: selectedLivePhoto ?? LivePhotoInfo(id: UUID(), fileName: "", fileURL: URL(string: "about:blank")!, createdAt: Date())),
+                    isActive: $navigateToLivePreview,
+                    label: { EmptyView() }
+                )
+            )
+            .background(
+                NavigationLink(
+                    destination: EditedPhotoPreviewView(photo: selectedEditedPhoto ?? EditedPhoto(id: UUID(), fileName: "", fileURL: URL(string: "about:blank")!, createdAt: Date())),
+                    isActive: $navigateToEditedPreview,
+                    label: { EmptyView() }
+                )
+            )
         }
-        .navigationTitle("My Creations".localized(language))
-        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             loadData()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("RefreshCreations"))) { _ in
             loadData()
-        }
-        .fullScreenCover(isPresented: $showPreview) {
-            if let livePhoto = selectedLivePhoto {
-                LivePhotoPreviewView(photo: livePhoto)
-            } else if let editedPhoto = selectedEditedPhoto {
-                EditedPhotoPreviewView(photo: editedPhoto)
-            }
         }
     }
     
