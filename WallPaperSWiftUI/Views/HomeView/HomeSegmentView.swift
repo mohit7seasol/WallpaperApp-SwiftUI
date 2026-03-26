@@ -19,7 +19,7 @@ struct HomeSegmentView: View {
                 if selectedIndex == 0 {
                     HomeView()
                 } else {
-                    EditedPhotoListView()
+                    ImageEditorView()
                 }
             }
             .ignoresSafeArea()
@@ -29,7 +29,7 @@ struct HomeSegmentView: View {
                 Spacer()
                 
                 CustomSegmentBar(selectedIndex: $selectedIndex)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 40)
             }
         }
     }
@@ -40,7 +40,7 @@ struct CustomSegmentBar: View {
     @Binding var selectedIndex: Int
     
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 6) {
             
             segmentItem(
                 index: 0,
@@ -57,20 +57,21 @@ struct CustomSegmentBar: View {
             )
         }
         .padding(6)
+        .frame(height: 60) // ✅ exact height
         .background(
             Group {
                 if AppVersion.isIOS26 {
-                    RoundedRectangle(cornerRadius: 30)
-                        .fill(.ultraThinMaterial) // Liquid glass
+                    Capsule()
+                        .fill(.ultraThinMaterial)
                 } else {
-                    RoundedRectangle(cornerRadius: 30)
-                        .fill(Color.white.opacity(0.15))
+                    Capsule()
+                        .fill(Color.white.opacity(0.12))
                         .background(.ultraThinMaterial)
                 }
             }
         )
-        .clipShape(RoundedRectangle(cornerRadius: 30))
-        .padding(.horizontal, 24)
+        .clipShape(Capsule())
+        .padding(.horizontal, 25) // ✅ exact padding
     }
     
     // MARK: Segment Item
@@ -79,23 +80,29 @@ struct CustomSegmentBar: View {
         let isSelected = selectedIndex == index
         
         return Button {
-            withAnimation {
+            withAnimation(.easeInOut) {
                 selectedIndex = index
             }
         } label: {
             HStack(spacing: 8) {
+                
                 Image(isSelected ? selectedIcon : unselectedIcon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
                 
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isSelected ? Color(hex: "#4F4FC2") : .white)
+                    .foregroundColor(
+                        isSelected ? Color(hex: "#4F4FC2") : .white
+                    )
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .frame(height: 48) // ✅ inner pill height
             .background(
                 Group {
                     if isSelected {
-                        RoundedRectangle(cornerRadius: 25)
+                        Capsule()
                             .fill(Color.white)
                     }
                 }

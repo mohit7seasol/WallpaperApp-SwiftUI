@@ -35,7 +35,7 @@ struct ImageEditorView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 10)
+                .padding(.top, 60)
                 
                 Spacer()
                 

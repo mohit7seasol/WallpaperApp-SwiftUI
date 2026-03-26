@@ -23,7 +23,7 @@ struct SplashView: View {
 
         VStack {
             if isShowHomeView {
-                HomeView()
+                HomeSegmentView()
             } else {
                 SplashContent()
             }
