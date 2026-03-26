@@ -18,6 +18,7 @@ struct BlurDrawView: View {
     @State private var blurPoints: [BlurPoint] = []
     @State private var blurRadius: CGFloat = 15
     @State private var imageViewSize = CGSize.zero
+    @State private var isDrawing = false
     
     struct BlurPoint: Identifiable {
         let id = UUID()
@@ -74,7 +75,7 @@ struct BlurDrawView: View {
                                 imageViewSize = size
                             }
                         
-                        // Apply real-time blur preview
+                        // Apply real-time blur preview for each point
                         ForEach(blurPoints) { blurPoint in
                             BlurPreviewView(
                                 image: image,
@@ -88,8 +89,12 @@ struct BlurDrawView: View {
                     .gesture(
                         DragGesture(minimumDistance: 0)
                             .onChanged { value in
+                                isDrawing = true
                                 let newPoint = BlurPoint(point: value.location, radius: blurRadius)
                                 blurPoints.append(newPoint)
+                            }
+                            .onEnded { _ in
+                                isDrawing = false
                             }
                     )
                 }
@@ -190,8 +195,12 @@ struct BlurDrawView: View {
         filter.inputImage = ciImage
         filter.radius = Float(radius)
         
-        guard let outputImage = filter.outputImage,
-              let cgImage = CIContext().createCGImage(outputImage, from: ciImage.extent) else {
+        // Extend the blur effect to the edges by expanding the context
+        let expandedRect = ciImage.extent.insetBy(dx: -radius, dy: -radius)
+        guard let outputImage = filter.outputImage else { return nil }
+        
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(outputImage, from: expandedRect) else {
             return nil
         }
         
@@ -207,50 +216,75 @@ struct BlurPreviewView: View {
     let viewSize: CGSize
     
     @State private var blurredImage: UIImage?
+    @State private var isLoading = true
     
     var body: some View {
-        if let blurred = blurredImage {
-            Image(uiImage: blurred)
-                .resizable()
-                .scaledToFit()
-                .frame(width: radius * 2, height: radius * 2)
-                .position(point)
-                .clipShape(Circle())
-        } else {
-            Circle()
-                .fill(Color.clear)
-                .frame(width: radius * 2, height: radius * 2)
-                .position(point)
-                .onAppear {
-                    generateBlurPreview()
-                }
+        Group {
+            if let blurred = blurredImage {
+                Image(uiImage: blurred)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: radius * 2, height: radius * 2)
+                    .position(point)
+                    // Removed .clipShape(Circle()) to allow rectangular blur area
+            } else if isLoading {
+                Rectangle()
+                    .fill(Color.white.opacity(0.3))
+                    .frame(width: radius * 2, height: radius * 2)
+                    .position(point)
+            }
+        }
+        .onAppear {
+            generateBlurPreview()
         }
     }
     
     private func generateBlurPreview() {
-        // Calculate the area to blur
-        let scaleX = image.size.width / viewSize.width
-        let scaleY = image.size.height / viewSize.height
+        isLoading = true
         
-        let scaledRadius = radius * min(scaleX, scaleY)
-        let scaledPoint = CGPoint(
-            x: point.x * scaleX,
-            y: point.y * scaleY
-        )
-        
-        let blurRect = CGRect(
-            x: scaledPoint.x - scaledRadius,
-            y: scaledPoint.y - scaledRadius,
-            width: scaledRadius * 2,
-            height: scaledRadius * 2
-        )
-        
-        // Crop the area and apply blur
-        if let cgImage = image.cgImage?.cropping(to: blurRect) {
-            let uiCropped = UIImage(cgImage: cgImage)
-            if let blurred = applyBlur(to: uiCropped, radius: radius) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Calculate the area to blur with proper scaling
+            let scaleX = image.size.width / viewSize.width
+            let scaleY = image.size.height / viewSize.height
+            
+            let scaledRadius = radius * min(scaleX, scaleY)
+            let scaledPoint = CGPoint(
+                x: point.x * scaleX,
+                y: point.y * scaleY
+            )
+            
+            let blurRect = CGRect(
+                x: scaledPoint.x - scaledRadius,
+                y: scaledPoint.y - scaledRadius,
+                width: scaledRadius * 2,
+                height: scaledRadius * 2
+            )
+            
+            // Ensure rect is within image bounds
+            let validRect = blurRect.intersection(CGRect(origin: .zero, size: image.size))
+            
+            if validRect.width > 0 && validRect.height > 0 {
+                // Crop the area and apply blur
+                if let cgImage = image.cgImage?.cropping(to: validRect) {
+                    let uiCropped = UIImage(cgImage: cgImage)
+                    if let blurred = applyBlur(to: uiCropped, radius: radius) {
+                        DispatchQueue.main.async {
+                            self.blurredImage = blurred
+                            self.isLoading = false
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.isLoading = false
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                    }
+                }
+            } else {
                 DispatchQueue.main.async {
-                    self.blurredImage = blurred
+                    self.isLoading = false
                 }
             }
         }
@@ -263,8 +297,12 @@ struct BlurPreviewView: View {
         filter.inputImage = ciImage
         filter.radius = Float(radius)
         
-        guard let outputImage = filter.outputImage,
-              let cgImage = CIContext().createCGImage(outputImage, from: ciImage.extent) else {
+        // Extend the blur effect to the edges
+        let expandedRect = ciImage.extent.insetBy(dx: -radius, dy: -radius)
+        guard let outputImage = filter.outputImage else { return nil }
+        
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(outputImage, from: expandedRect) else {
             return nil
         }
         
