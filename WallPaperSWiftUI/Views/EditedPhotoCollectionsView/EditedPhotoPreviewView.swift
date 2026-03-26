@@ -27,35 +27,35 @@ struct EditedPhotoPreviewView: View {
             Color.black.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // ✅ Respect Safe Area Top
+                
+                // ✅ Safe Area Top
                 Spacer().frame(height: Device.topSafeArea)
                 
                 if let image = image {
-                    // Image Container with equal padding on both sides
-                    GeometryReader { geo in
-                        let size = geo.size
-                        
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .scaleEffect(scale)
-                            .offset(offset)
-                            .gesture(zoomGesture(size: size))
-                            .gesture(panGesture(size: size))
-                            .onTapGesture(count: 2) {
-                                withAnimation(.spring()) {
-                                    if scale > 1 {
-                                        resetImage()
-                                    } else {
-                                        scale = 3
-                                    }
+                    
+                    let containerWidth = UIScreen.main.bounds.width - 20 // padding (10+10)
+                    let containerHeight = UIScreen.main.bounds.height * 0.7
+                    
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .scaleEffect(scale)
+                        .offset(offset)
+                        .frame(width: containerWidth, height: containerHeight)
+                        .clipped()
+                        .gesture(zoomGesture(size: CGSize(width: containerWidth, height: containerHeight)))
+                        .gesture(panGesture(size: CGSize(width: containerWidth, height: containerHeight)))
+                        .onTapGesture(count: 2) {
+                            withAnimation(.spring()) {
+                                if scale > 1 {
+                                    resetImage()
+                                } else {
+                                    scale = 3
                                 }
                             }
-                            .clipped()
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: UIScreen.main.bounds.height * 0.7)
-                    .padding(.horizontal, 10) // Equal padding left and right
+                        }
+                        .padding(.horizontal, 10) // ✅ equal padding
+                    
                 } else {
                     ProgressView()
                         .tint(.white)
