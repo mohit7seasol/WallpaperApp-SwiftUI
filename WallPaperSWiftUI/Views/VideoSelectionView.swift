@@ -14,6 +14,7 @@ struct VideoSelectionView: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedVideoURL: URL?
     @State private var navigateToEditor = false
+    @State private var showEditedList = false
     
     // Add this to track if we're coming back from editor
     @State private var isNavigating = false
@@ -79,11 +80,25 @@ struct VideoSelectionView: View {
             }
         }
         .navigationTitle("Choose Video".localized(language))
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showEditedList = true
+                } label: {
+                    Image("editer_photo_ic")
+                        .resizable()
+                        .frame(width: 36, height: 36)
+                }
+            }
+        }
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedItem) { newValue in
             if let newItem = newValue {
                 loadVideo(from: newItem)
             }
+        }
+        .navigationDestination(isPresented: $showEditedList) {
+            EditedPhotoListView()
         }
         // Request permission when view appears
         .onAppear {

@@ -85,26 +85,6 @@ struct VideoProcessingActions: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
             .disabled(!canExecute || isProcessing)
-            
-            // MARK: Preview Button
-            
-            Button {
-                onPreview()
-            } label: {
-                
-                HStack(spacing: 8) {
-                    Image(systemName: "play.fill")
-                    Text("Preview Selection".localized(language))
-                        .fontWeight(.medium)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(Color.white.opacity(0.08))
-                .foregroundColor(.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-            }
-            .disabled(asset == nil || isProcessing)
-            .opacity(asset == nil ? 0.5 : 1)
         }
     }
 }
