@@ -11,6 +11,7 @@ struct ImageEditorView: View {
     
     @State private var showPicker = false
     @State private var showEditedList = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         ZStack {
@@ -20,7 +21,7 @@ struct ImageEditorView: View {
                 
                 // MARK: Top Bar
                 HStack {
-                    Text("Image Editor")
+                    Text("Image Editor".localized(language))
                         .font(.system(size: 24, weight: .semibold))
                         .foregroundColor(.white)
                     
@@ -42,11 +43,11 @@ struct ImageEditorView: View {
                 // MARK: Dotted Box
                 VStack(spacing: 12) {
                     
-                    Text("Select Your Image")
+                    Text("Select Your Image".localized(language))
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.white)
                     
-                    Text("Choose any image and customize it with editing tools.")
+                    Text("Choose any image and customize it with editing tools.".localized(language))
                         .font(.system(size: 14))
                         .foregroundColor(Color(hex: "#838391"))
                         .multilineTextAlignment(.center)
@@ -56,7 +57,7 @@ struct ImageEditorView: View {
                     Button {
                         showPicker = true
                     } label: {
-                        Text("Browse Image")
+                        Text("Browse Image".localized(language))
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(height: 50)

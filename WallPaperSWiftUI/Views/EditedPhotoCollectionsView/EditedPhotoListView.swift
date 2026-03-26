@@ -45,9 +45,9 @@ struct EditedPhotoListView: View {
                 ScrollView {
                     if livePhotos.isEmpty {
                         EmptyStateView(
-                            icon: "livephoto",
-                            title: "No Live Photos",
-                            message: "Create your first live wallpaper."
+                            icon: "livephoto".localized(language),
+                            title: "No Live Photos".localized(language),
+                            message: "Create your first live wallpaper.".localized(language)
                         )
                     } else {
                         LazyVStack(spacing: 16) {
@@ -72,8 +72,8 @@ struct EditedPhotoListView: View {
                     if editedPhotos.isEmpty {
                         EmptyStateView(
                             icon: "photo.on.rectangle.angled",
-                            title: "No Edited Photos",
-                            message: "Edit your first photo."
+                            title: "No Edited Photos".localized(language),
+                            message: "Edit your first photo.".localized(language)
                         )
                     } else {
                         LazyVStack(spacing: 16) {
@@ -144,6 +144,7 @@ struct LivePhotoCard: View {
     
     @State private var thumbnail: UIImage?
     @State private var showDeleteAlert = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         Button(action: onTap) {
@@ -168,7 +169,7 @@ struct LivePhotoCard: View {
                 
                 // Info
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Live Photo")
+                    Text("Live Photo".localized(language))
                         .font(.headline)
                         .foregroundColor(.white)
                     
@@ -200,13 +201,13 @@ struct LivePhotoCard: View {
         .onAppear {
             generateThumbnail()
         }
-        .alert("Delete Live Photo", isPresented: $showDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
+        .alert("Delete Live Photo".localized(language), isPresented: $showDeleteAlert) {
+            Button("Cancel".localized(language), role: .cancel) { }
+            Button("Delete".localized(language), role: .destructive) {
                 onDelete()
             }
         } message: {
-            Text("Are you sure you want to delete this live photo?")
+            Text("Are you sure you want to delete this live photo?".localized(language))
         }
     }
     
@@ -242,6 +243,7 @@ struct EditedPhotoCard: View {
     
     @State private var image: UIImage?
     @State private var showDeleteAlert = false
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         Button(action: onTap) {
@@ -266,7 +268,7 @@ struct EditedPhotoCard: View {
                 
                 // Info
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Edited Photo")
+                    Text("Edited Photo".localized(language))
                         .font(.headline)
                         .foregroundColor(.white)
                     
@@ -298,13 +300,13 @@ struct EditedPhotoCard: View {
         .onAppear {
             loadImage()
         }
-        .alert("Delete Edited Photo", isPresented: $showDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
+        .alert("Delete Edited Photo".localized(language), isPresented: $showDeleteAlert) {
+            Button("Cancel".localized(language), role: .cancel) { }
+            Button("Delete".localized(language), role: .destructive) {
                 onDelete()
             }
         } message: {
-            Text("Are you sure you want to delete this edited photo?")
+            Text("Are you sure you want to delete this edited photo?".localized(language))
         }
     }
     

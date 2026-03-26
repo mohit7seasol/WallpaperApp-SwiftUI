@@ -36,7 +36,7 @@ struct HomeSegmentView: View {
 }
 // MARK: - CustomSegmentBar
 struct CustomSegmentBar: View {
-    
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     @Binding var selectedIndex: Int
     
     var body: some View {
@@ -44,14 +44,14 @@ struct CustomSegmentBar: View {
             
             segmentItem(
                 index: 0,
-                title: "Home",
+                title: "Home".localized(language),
                 selectedIcon: "home_selected_ic",
                 unselectedIcon: "home_unselected_ic"
             )
             
             segmentItem(
                 index: 1,
-                title: "Editor",
+                title: "Editor".localized(language),
                 selectedIcon: "editor_seg_selected_ic",
                 unselectedIcon: "editor_seg_unselected_ic"
             )

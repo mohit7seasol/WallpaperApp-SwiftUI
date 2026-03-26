@@ -102,12 +102,12 @@ struct PhotoEditorMainView: View {
         .fullScreenCover(item: $selectedFeature) { feature in
             featureView(feature)
         }
-        .alert("Success", isPresented: $viewModel.showSuccessMessage) {
-            Button("OK") {
+        .alert("Success".localized(LocalizationService.shared.language), isPresented: $viewModel.showSuccessMessage) {
+            Button("OK".localized(LocalizationService.shared.language)) {
                 dismiss()
             }
         } message: {
-            Text("Photo saved successfully!")
+            Text("Photo saved successfully!".localized(LocalizationService.shared.language))
         }
     }
     

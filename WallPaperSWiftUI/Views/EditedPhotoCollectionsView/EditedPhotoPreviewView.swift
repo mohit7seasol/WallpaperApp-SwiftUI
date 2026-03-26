@@ -20,6 +20,7 @@ struct EditedPhotoPreviewView: View {
     @State private var lastScale: CGFloat = 1
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         ZStack {
@@ -68,7 +69,7 @@ struct EditedPhotoPreviewView: View {
                     .padding(.bottom, 30)
             }
         }
-        .navigationTitle("My Creations")
+        .navigationTitle("My Creations".localized(language))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             loadImage()
@@ -133,7 +134,7 @@ struct EditedPhotoPreviewView: View {
             HStack {
                 Image(systemName: "photo.on.rectangle.angled")
                     .foregroundColor(.green)
-                Text("Edited Photo")
+                Text("Edited Photo".localized(language))
                     .font(.headline)
                     .foregroundColor(.white)
                 Spacer()
@@ -154,7 +155,7 @@ struct EditedPhotoPreviewView: View {
             HStack {
                 Image(systemName: "hand.draw")
                     .foregroundColor(.gray)
-                Text("Pinch to zoom • Double tap to reset")
+                Text("Pinch to zoom • Double tap to reset".localized(language))
                     .font(.caption)
                     .foregroundColor(.gray)
                 Spacer()

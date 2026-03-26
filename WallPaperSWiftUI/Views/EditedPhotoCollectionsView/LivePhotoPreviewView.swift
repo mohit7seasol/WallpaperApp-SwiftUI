@@ -14,6 +14,7 @@ struct LivePhotoPreviewView: View {
     let photo: LivePhotoInfo
     
     @State private var player: AVPlayer?
+    @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
     var body: some View {
         ZStack {
@@ -44,7 +45,7 @@ struct LivePhotoPreviewView: View {
                 Spacer().frame(height: Device.bottomSafeArea)
             }
         }
-        .navigationTitle("My Creations")
+        .navigationTitle("My Creations".localized(language))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             setupPlayer()
@@ -87,7 +88,7 @@ struct LivePhotoPreviewView: View {
         VStack(spacing: 10) {
             HStack {
                 Image(systemName: "livephoto")
-                Text("Live Photo")
+                Text("Live Photo".localized(language))
                 Spacer()
             }
             
