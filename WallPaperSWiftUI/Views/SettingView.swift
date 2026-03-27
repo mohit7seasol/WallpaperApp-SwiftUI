@@ -31,7 +31,7 @@ struct SettingView: View {
     let settingsItems: [SettingItem] = [
         SettingItem(icon: "language", title: "Language", action: .language),
         SettingItem(icon: "privacypolicy", title: "Privacy Policy", action: .url("privacyPolicy")),
-        SettingItem(icon: "aboutus", title: "About Us", action: .url("aboutUs")),
+//        SettingItem(icon: "aboutus", title: "About Us", action: .url("aboutUs")),
         SettingItem(icon: "termsofuse", title: "Terms Of Use", action: .url("termsOfUse")),
         SettingItem(icon: "rateus", title: "Rate App", action: .rate),
         SettingItem(icon: "inviteyourfriends", title: "Invite Your Friends", action: .url("shareApp")),
@@ -186,13 +186,13 @@ struct SettingCell: View {
         
         switch linkName {
         case "privacyPolicy":
-            urlString = "https://yourwebsite.com/privacy"
-        case "aboutUs":
-            urlString = "https://yourwebsite.com/about"
+            urlString = privacyPolicy
+//        case "aboutUs":
+//            urlString = "https://yourwebsite.com/about"
         case "termsOfUse":
-            urlString = "https://yourwebsite.com/terms"
+            urlString = termsOfUse
         case "eula":
-            urlString = "https://yourwebsite.com/eula"
+            urlString = eula
         case "shareApp":
             shareApp()
             return
@@ -206,7 +206,7 @@ struct SettingCell: View {
     }
     
     private func shareApp() {
-        let appURL = "https://apps.apple.com/app/id123456789"
+        let appURL = shareAppLink
         
         let activityVC = UIActivityViewController(
             activityItems: ["Check out this amazing app!", URL(string: appURL)!],

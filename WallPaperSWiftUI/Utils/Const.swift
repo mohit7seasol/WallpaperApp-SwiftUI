@@ -8,21 +8,21 @@
 import Foundation
 import SwiftUI
 
-var appName             = "Wallpaper"
-let privacyPolicy       = "https://smart-view.netlify.app/"
-let termsOfUse          = "https://smart-view.netlify.app/terms"
-let eula                = "https://smart-view.netlify.app/eula"
+var appName             = "Pixeloom"
+let privacyPolicy       = "https://carterreelssprt.blogspot.com/2025/11/privacypolicy.html"
+let termsOfUse          = "https://carterreelssprt.blogspot.com/2025/11/term.html"
+let eula                = "https://carterreelssprt.blogspot.com/2025/11/eula.html"
 let REVIEW_LINK         = "https://itunes.apple.com/in/app/id\(APP_ID)?mt=8"
-let shareApp            = "https://apps.apple.com/app/id\(APP_ID)"
-var APP_ID              = ""
+let shareAppLink        = "https://apps.apple.com/app/id\(APP_ID)"
+var APP_ID              = "6761248101"
 var myMail              = "kishanlakkad999@gmail.com"
 
 
 //MARK: - live json
-//let getJSON : String = "https://7seasol-application.s3.amazonaws.com/admin_prod/pbzfperradhvpxpnfgvat.json"
+let getJSON : String = "https://7seasol-application.s3.amazonaws.com/admin_prod/pbz-cvkry-bbz.json"
 
 //MARK: - test json
-let getJSON : String = "https://7seasol-application.s3.amazonaws.com/admin_prod/grfg.json"
+//let getJSON : String = "https://7seasol-application.s3.amazonaws.com/admin_prod/grfg.json"
 
 
 public let ACCESS = "AKIA2FCATE7MLGSZBHML"

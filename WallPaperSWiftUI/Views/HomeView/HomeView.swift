@@ -276,7 +276,7 @@ struct TopGradientView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Wallpaper")
+                Text(appName)
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
                     .lineLimit(1)

