@@ -202,10 +202,22 @@ struct TrendingWallpapersGrid: View {
     
     @StateObject private var favoritesManager = FavoritesManager.shared
     
-    let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
+    // Dynamic columns based on device
+    private var columns: [GridItem] {
+        if Device.isIpad {
+            return [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12)
+            ]
+        } else {
+            return [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12)
+            ]
+        }
+    }
     
     var body: some View {
         LazyVGrid(columns: columns, spacing: 12) {
