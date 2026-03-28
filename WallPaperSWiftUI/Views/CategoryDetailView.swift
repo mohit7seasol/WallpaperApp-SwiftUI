@@ -31,10 +31,21 @@ struct CategoryDetailView: View {
         return UIDevice.current.userInterfaceIdiom == .pad ? 250 : 220
     }
     
-    let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
+    private var columns: [GridItem] {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12)
+            ]
+        } else {
+            return [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12)
+            ]
+        }
+    }
     
     var body: some View {
         ZStack {
