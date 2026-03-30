@@ -221,12 +221,19 @@ private extension WallpaperDetailView {
         
         GeometryReader { geo in
             
+            let isIpad = UIDevice.current.userInterfaceIdiom == .pad
+            
+            // ✅ Dynamic values for iPad fix
+            let cardWidth = isIpad ? geo.size.width * 0.5 : geo.size.width * 0.8
+            let headspace = isIpad ? geo.size.width * 0.25 : 35
+            let spacing = isIpad ? 20 : 10
+            
             ACarousel(
                 wallpapers,
                 id: \.id,
                 index: $selectedIndex,
-                spacing: 10,
-                headspace: 35,
+                spacing: CGFloat(spacing),
+                headspace: headspace,
                 sidesScaling: 0.85,
                 isWrap: true,
                 autoScroll: .inactive
@@ -234,7 +241,7 @@ private extension WallpaperDetailView {
                 
                 WallpaperCardView(
                     wallpaper: wallpaper,
-                    width: geo.size.width * 0.8,
+                    width: cardWidth,
                     height: geo.size.height * 0.85
                 )
                 .onTapGesture {
@@ -242,9 +249,11 @@ private extension WallpaperDetailView {
                     showPreview = true
                 }
                 .scaleEffect(wallpaper.id == wallpapers[selectedIndex].id ? 1.0 : 0.95)
-                .shadow(color: wallpaper.id == wallpapers[selectedIndex].id ?
-                        Color.white.opacity(0.3) : Color.clear,
-                        radius: 15, x: 0, y: 0)
+                .shadow(
+                    color: wallpaper.id == wallpapers[selectedIndex].id ?
+                    Color.white.opacity(0.3) : Color.clear,
+                    radius: 15
+                )
                 .zIndex(wallpaper.id == wallpapers[selectedIndex].id ? 2 : 1)
                 .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedIndex)
             }
