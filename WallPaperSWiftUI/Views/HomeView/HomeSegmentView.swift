@@ -57,7 +57,7 @@ struct CustomSegmentBar: View {
             )
         }
         .padding(6)
-        .frame(height: 60) // ✅ exact height
+        .frame(height: Device.isIpad ? 65 : 60) // ✅ exact height
         .background(
             Group {
                 if AppVersion.isIOS26 {
@@ -89,16 +89,16 @@ struct CustomSegmentBar: View {
                 Image(isSelected ? selectedIcon : unselectedIcon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 18, height: 18)
+                    .frame(width: Device.isIpad ? 20 : 18, height: Device.isIpad ? 20 : 18)
                 
                 Text(title)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: Device.isIpad ? 20 :14, weight: .medium))
                     .foregroundColor(
                         isSelected ? Color(hex: "#4F4FC2") : .white.opacity(0.9)
                     )
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 48)
+            .frame(height: Device.isIpad ? 53 : 48)
             .background(
                 ZStack {
                     

@@ -13,6 +13,10 @@ struct ImageEditorView: View {
     @State private var showEditedList = false
     @AppStorage(SessionKeys.language) var language = LocalizationService.shared.language
     
+    private var isIpad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+    
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
@@ -77,7 +81,8 @@ struct ImageEditorView: View {
                     .padding(.top, 10)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 40)
+                .frame(height: isIpad ? 350 : nil) // ✅ FIX HERE
+                .padding(.vertical, isIpad ? 0 : 40) // ✅ avoid double height
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(style: StrokeStyle(lineWidth: 1.5, dash: [6]))
@@ -85,6 +90,7 @@ struct ImageEditorView: View {
                 )
                 .padding(.horizontal, 30)
                 .offset(y: -30)
+                
                 Spacer()
             }
         }
