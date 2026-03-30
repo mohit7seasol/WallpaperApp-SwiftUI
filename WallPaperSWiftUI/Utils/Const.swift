@@ -8,6 +8,17 @@
 import Foundation
 import SwiftUI
 
+/*
+ Account :  Carter Reel
+ App name : Pixeloom
+ Bundle id : com.pixel.oom
+ appid : 6761248101
+ JSONURL : https://7seasol-application.s3.amazonaws.com/admin_prod/pbz-cvkry-bbz.json
+ privacy policy : https://carterreelssprt.blogspot.com/2025/11/privacypolicy.html
+ TERMS & CONDITIONS : https://carterreelssprt.blogspot.com/2025/11/term.html
+ Eula : https://carterreelssprt.blogspot.com/2025/11/eula.html
+ */
+
 var appName             = "Pixeloom"
 let privacyPolicy       = "https://carterreelssprt.blogspot.com/2025/11/privacypolicy.html"
 let termsOfUse          = "https://carterreelssprt.blogspot.com/2025/11/term.html"
