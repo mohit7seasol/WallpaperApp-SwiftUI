@@ -14,9 +14,24 @@ struct PhotoFeaturesView: View {
     
     let icons = ["draw_ic", "crop_ic", "text_ic", "filter_ic", "adjust_ic", "blur_ic"]
     
+    // Dynamic square size based on device
+    private var squareSize: CGFloat {
+        Device.isIpad ? 88 : 64
+    }
+    
+    // Dynamic icon size based on device
+    private var iconSize: CGFloat {
+        Device.isIpad ? 36 : 26
+    }
+    
+    // Dynamic corner radius based on device
+    private var cornerRadius: CGFloat {
+        Device.isIpad ? 24 : 18
+    }
+    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 14) {
+            HStack(spacing: Device.isIpad ? 18 : 14) {
                 
                 ForEach(0..<icons.count, id: \.self) { i in
                     
@@ -29,10 +44,10 @@ struct PhotoFeaturesView: View {
                         ZStack {
                             
                             // ✅ Rounded Square Background (20% white)
-                            RoundedRectangle(cornerRadius: 18)
+                            RoundedRectangle(cornerRadius: cornerRadius)
                                 .fill(Color.white.opacity(0.2))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 18)
+                                    RoundedRectangle(cornerRadius: cornerRadius)
                                         .stroke(Color.white.opacity(0.25), lineWidth: 1)
                                 )
                             
@@ -40,10 +55,10 @@ struct PhotoFeaturesView: View {
                             Image(icons[i])
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 26, height: 26)
+                                .frame(width: iconSize, height: iconSize)
                                 .foregroundColor(.white)
                         }
-                        .frame(width: 64, height: 64) // Square
+                        .frame(width: squareSize, height: squareSize) // Square
                     }
                 }
             }

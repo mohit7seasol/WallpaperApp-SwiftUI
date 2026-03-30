@@ -35,47 +35,87 @@ struct OnBoardingView: View {
     }
     
     private let pages: [OnboardingItem] = [
-        OnboardingItem(
-            background: "on1",
-            centerImage: "on1_1",
-            title: "All Wallpaper You Need"
-        ),
-        OnboardingItem(
-            background: "on2",
-            centerImage: "on2_1",
-            title: "High Quality Wallpaper Download"
-        ),
-        OnboardingItem(
-            background: "on3",
-            centerImage: "on3_1",
-            title: "Upgrade Your Lock Screen"
-        ),
-        OnboardingItem(
-            background: "on4",
-            centerImage: "on4_1",
-            title: "Set Your Favorite Live Wallpaper"
-        )
+        OnboardingItem(background: "on1", centerImage: "on1_1", title: "All Wallpaper You Need"),
+        OnboardingItem(background: "on2", centerImage: "on2_1", title: "High Quality Wallpaper Download"),
+        OnboardingItem(background: "on3", centerImage: "on3_1", title: "Upgrade Your Lock Screen"),
+        OnboardingItem(background: "on4", centerImage: "on4_1", title: "Set Your Favorite Live Wallpaper")
     ]
     
     var body: some View {
         
-        // MARK: Language Screen First
         if !isLanguageDone {
             LanguageView()
         }
-        
-        // MARK: Onboarding Screens
         else if !isOnboardingDone {
             
-            ZStack {
+            if isIpad {
+                iPadLayout
+            } else {
+                iPhoneLayout 
+            }
+        }
+    }
+}
+
+// MARK: - iPhone (UNCHANGED)
+extension OnBoardingView {
+    
+    var iPhoneLayout: some View {
+        ZStack {
+            
+            Image(pages[currentIndex].background)
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+            
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+            
+            VStack {
                 
-                // Background
+                Spacer()
+                
+                Image(pages[currentIndex].centerImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 280)
+                    .padding(.bottom, 30)
+                
+                Text(pages[currentIndex].title.localized(language))
+                    .font(.custom("Oxanium-SemiBold", size: 32))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 30)
+                
+                Spacer()
+                
+                bottomControls
+                    .padding(.horizontal, 30)
+                    .padding(.bottom, 40)
+            }
+        }
+        .gesture(swipeGesture)
+    }
+}
+
+// MARK: - iPad (FIXED)
+extension OnBoardingView {
+    
+    var iPadLayout: some View {
+        GeometryReader { geo in
+            
+            ZStack(alignment: .bottom) {
+                
                 Image(pages[currentIndex].background)
                     .resizable()
                     .scaledToFill()
+                    .frame(
+                        width: geo.size.width,
+                        height: geo.size.height + 100 // ✅ force fill bottom
+                    )
+                    .clipped()
                     .ignoresSafeArea()
                 
-                // Dark overlay
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
                 
@@ -83,14 +123,12 @@ struct OnBoardingView: View {
                     
                     Spacer()
                     
-                    // Center Image
                     Image(pages[currentIndex].centerImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: isIpad ? 450 : 280)
-                        .padding(.bottom, 30)
+                        .frame(maxWidth: 450)
+                        .padding(.bottom, 50)
                     
-                    // Title
                     Text(pages[currentIndex].title.localized(language))
                         .font(.custom("Oxanium-SemiBold", size: 32))
                         .foregroundColor(.white)
@@ -98,111 +136,93 @@ struct OnBoardingView: View {
                         .padding(.horizontal, 30)
                     
                     Spacer()
-                    
-                    // Bottom Controls
-                    HStack {
-                        
-                        // Previous Button
-                        if currentIndex != 0 {
-                            Button {
-                                withAnimation {
-                                    currentIndex -= 1
-                                }
-                            } label: {
-                                Image("on_previous")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: buttonSize, height: buttonSize)
-                            }
-                        } else {
-                            Spacer()
-                                .frame(width: buttonSize, height: buttonSize)
-                        }
-                        
-                        Spacer()
-                        
-                        // Page Indicator
-                        HStack(spacing: 8) {
-                            ForEach(0..<pages.count, id: \.self) { index in
-                                Circle()
-                                    .fill(index == currentIndex ? Color.white : Color.white.opacity(0.4))
-                                    .frame(width: 8, height: 8)
-                            }
-                        }
-                        .frame(width: pageControlWidth)
-                        
-                        Spacer()
-                        
-                        // Next / Done Button
-                        Button {
-                            
-                            if currentIndex < pages.count - 1 {
-                                
-                                withAnimation {
-                                    currentIndex += 1
-                                }
-                                
-                            } else {
-                                
-                                // MARK: Last Screen Finished
-                                isOnboardingDone = true
-                                
-                                // dismiss onboarding
-                                presentationMode.wrappedValue.dismiss()
-                            }
-                            
-                        } label: {
-                            Image(currentIndex == pages.count - 1 ? "on_done" : "on_next")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: buttonSize, height: buttonSize)
-                        }
-                    }
-                    .padding(.horizontal, 30)
-                    .padding(.bottom, isIpad ? 60 : 40)
                 }
-                .onAppear {
-                    if currentIndex == 3 { // 4th screen (index 3)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            if currentIndex == 3 {
-                                isOnboardingDone = true
-                                presentationMode.wrappedValue.dismiss()
-                            }
-                        }
-                    }
+                
+                // ✅ FIXED: No black strip
+                bottomControls
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 50) // ← static padding (no safeAreaInsets)
+            }
+            .frame(width: geo.size.width, height: geo.size.height) // ✅ force full screen
+        }
+        .gesture(swipeGesture)
+    }
+}
+
+// MARK: - Bottom Controls (COMMON)
+extension OnBoardingView {
+    
+    var bottomControls: some View {
+        HStack {
+            
+            if currentIndex != 0 {
+                Button {
+                    withAnimation { currentIndex -= 1 }
+                } label: {
+                    Image("on_previous")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: buttonSize, height: buttonSize)
+                }
+            } else {
+                Spacer().frame(width: buttonSize, height: buttonSize)
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 8) {
+                ForEach(0..<pages.count, id: \.self) { index in
+                    Circle()
+                        .fill(index == currentIndex ? Color.white : Color.white.opacity(0.4))
+                        .frame(width: 8, height: 8)
                 }
             }
-            // MARK: - Swipe Gesture Added (No UI changes)
-            .gesture(
-                DragGesture(minimumDistance: 50)
-                    .onEnded { value in
-                        let horizontalAmount = value.translation.width
-                        
-                        if horizontalAmount < -50 {
-                            // Swipe Left - Next
-                            if currentIndex < pages.count - 1 {
-                                withAnimation {
-                                    currentIndex += 1
-                                }
-                            } else if currentIndex == pages.count - 1 {
-                                // On last screen, swipe left to complete
-                                isOnboardingDone = true
-                                presentationMode.wrappedValue.dismiss()
-                            }
-                        } else if horizontalAmount > 50 {
-                            // Swipe Right - Previous
-                            if currentIndex > 0 {
-                                withAnimation {
-                                    currentIndex -= 1
-                                }
-                            }
-                        }
-                    }
-            )
+            .frame(width: pageControlWidth)
+            
+            Spacer()
+            
+            Button {
+                if currentIndex < pages.count - 1 {
+                    withAnimation { currentIndex += 1 }
+                } else {
+                    isOnboardingDone = true
+                    presentationMode.wrappedValue.dismiss()
+                }
+            } label: {
+                Image(currentIndex == pages.count - 1 ? "on_done" : "on_next")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: buttonSize, height: buttonSize)
+            }
         }
     }
 }
 
+// MARK: - Swipe Gesture
+extension OnBoardingView {
+    
+    var swipeGesture: some Gesture {
+        DragGesture(minimumDistance: 50)
+            .onEnded { value in
+                let horizontalAmount = value.translation.width
+                
+                if horizontalAmount < -50 {
+                    if currentIndex < pages.count - 1 {
+                        withAnimation { currentIndex += 1 }
+                    } else {
+                        isOnboardingDone = true
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                } else if horizontalAmount > 50 {
+                    if currentIndex > 0 {
+                        withAnimation { currentIndex -= 1 }
+                    }
+                }
+            }
+    }
+}
+
+// MARK: - Model
 struct OnboardingItem {
     let background: String
     let centerImage: String
